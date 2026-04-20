@@ -1,0 +1,547 @@
+
+                        <!DOCTYPE html>
+                        <html lang="en">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+							<style>
+								body {
+									background-color: white; /* Ensure the iframe has a white background */
+								}
+
+								
+							</style>
+                        </head>
+                        <body>
+                            <!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五恒系统 V20 - 西湖一号院 (修正版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        body { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 冰川极简 - 玻璃拟态 V2 */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(148, 163, 184, 0.05);
+        }
+        
+        .glass-card-active {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid rgba(186, 230, 253, 0.6);
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.1);
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        /* 开关样式 */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #0ea5e9;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #0ea5e9;
+        }
+
+        /* 范围滑块自定义 */
+        input[type=range] {
+            -webkit-appearance: none; 
+            background: transparent; 
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid #0ea5e9;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            margin-top: -8px; 
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="bg-slate-200 flex items-center justify-center min-h-screen p-4">
+
+    <!-- iPhone 15 Pro Frame -->
+    <div class="relative w-[375px] h-[812px] bg-[#F1F5F9] rounded-[50px] shadow-2xl overflow-hidden border-[8px] border-white ring-1 ring-slate-300">
+        
+        <!-- Status Bar -->
+        <div class="absolute top-0 w-full h-[44px] z-50 flex justify-between items-end px-6 pb-2 text-xs font-medium text-slate-800">
+            <span>9:41</span>
+            <div class="flex gap-1.5">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-full"></i>
+            </div>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="h-full overflow-y-auto no-scrollbar pb-24 pt-12">
+            
+            <!-- ================= PAGE 1: 首页 (HOME) ================= -->
+            <div id="page-home" class="px-5 space-y-5 animate-fade-in">
+                
+                <!-- 1. 天气看板 (Weather) -->
+                <div class="flex justify-between items-end pt-2">
+                    <div>
+                        <div class="flex items-center gap-1 text-slate-500 text-xs">
+                            <i class="fas fa-map-marker-alt"></i> 杭州市 · 西湖区
+                        </div>
+                        <div class="text-3xl font-light text-slate-800 mt-1">26°<span class="text-sm text-slate-500 ml-2">多云</span></div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-slate-400">AQI <span class="text-green-500 font-bold">35 优</span></div>
+                        <div class="text-xs text-slate-400">PM2.5 <span class="text-slate-600">12</span></div>
+                        <div class="text-xs text-slate-400">湿度 <span class="text-slate-600">65%</span></div>
+                    </div>
+                </div>
+
+                <!-- 2. 房产信息卡片 (Property Card) -->
+                <div class="glass-card-active rounded-2xl p-4 flex justify-between items-center">
+                    <div>
+                        <div class="text-[10px] text-sky-600 font-bold tracking-wider uppercase">Current Residence</div>
+                        <div class="text-lg font-bold text-slate-800">西湖一号院</div>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-sky-500">
+                        <i class="fas fa-home"></i>
+                    </div>
+                </div>
+
+                <!-- 3. 全局模式切换 (Global System Mode) -->
+                <div class="glass-panel rounded-xl p-1.5 flex text-xs font-medium text-slate-500">
+                    <button class="flex-1 py-2 rounded-lg bg-white shadow-sm text-sky-600 flex items-center justify-center gap-1">
+                        <i class="fas fa-snowflake"></i> 制冷
+                    </button>
+                    <button class="flex-1 py-2 rounded-lg hover:bg-white/50 flex items-center justify-center gap-1">
+                        <i class="fas fa-sun"></i> 制热
+                    </button>
+                    <button class="flex-1 py-2 rounded-lg hover:bg-white/50 flex items-center justify-center gap-1">
+                        <i class="fas fa-wind"></i> 通风
+                    </button>
+                </div>
+
+                <!-- 4. 室内环境指数 (Indoor Index) -->
+                <div class="glass-panel rounded-2xl p-5 flex items-center justify-between">
+                    <div class="text-center">
+                        <div class="text-xs text-slate-400 mb-1">室内温度</div>
+                        <div class="text-2xl font-light text-slate-800">24.5<span class="text-sm">°C</span></div>
+                    </div>
+                    <div class="w-[1px] h-8 bg-slate-200"></div>
+                    <div class="text-center">
+                        <div class="text-xs text-slate-400 mb-1">室内湿度</div>
+                        <div class="text-2xl font-light text-slate-800">48<span class="text-sm">%</span></div>
+                    </div>
+                    <div class="w-[1px] h-8 bg-slate-200"></div>
+                    <div class="text-center">
+                        <div class="text-xs text-slate-400 mb-1">CO2</div>
+                        <div class="text-2xl font-light text-green-600">420</div>
+                    </div>
+                </div>
+
+                <!-- 5. 场景模式 (Scenario Modes) -->
+                <div>
+                    <h3 class="text-xs font-bold text-slate-400 mb-3 uppercase">智能场景</h3>
+                    <div class="grid grid-cols-4 gap-3">
+                        <div class="glass-panel rounded-xl py-3 flex flex-col items-center gap-1 active:scale-95 transition">
+                            <i class="fas fa-couch text-sky-500 text-lg"></i>
+                            <span class="text-[10px] text-slate-600">会客</span>
+                        </div>
+                        <div class="glass-panel rounded-xl py-3 flex flex-col items-center gap-1 active:scale-95 transition">
+                            <i class="fas fa-door-open text-slate-400 text-lg"></i>
+                            <span class="text-[10px] text-slate-600">离家</span>
+                        </div>
+                        <div class="glass-panel rounded-xl py-3 flex flex-col items-center gap-1 active:scale-95 transition">
+                            <i class="fas fa-moon text-slate-400 text-lg"></i>
+                            <span class="text-[10px] text-slate-600">睡眠</span>
+                        </div>
+                        <div class="glass-panel rounded-xl py-3 flex flex-col items-center gap-1 active:scale-95 transition">
+                            <i class="fas fa-leaf text-green-500 text-lg"></i>
+                            <span class="text-[10px] text-slate-600">ECO</span>
+                        </div>
+                    </div>
+                    <!-- 度假模式单独一行，带交互暗示 -->
+                    <div onclick="alert('模拟弹窗：请设置返程时间，系统将自动计算预冷预热启动时间。')" class="mt-3 glass-panel rounded-xl p-3 flex justify-between items-center cursor-pointer active:bg-white/80">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center"><i class="fas fa-plane"></i></div>
+                            <div>
+                                <div class="text-sm font-medium text-slate-700">度假模式</div>
+                                <div class="text-[10px] text-slate-400">点击设置返程预冷</div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-xs text-slate-300"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= PAGE 2: 冷暖 (CLIMATE) ================= -->
+            <div id="page-climate" class="px-5 space-y-5 hidden animate-fade-in">
+                
+                <!-- 顶部三级切换 (Segmented Control) -->
+                <div class="glass-panel rounded-lg p-1 flex text-xs font-medium text-slate-500">
+                    <button onclick="switchClimateView('global')" id="btn-global" class="flex-1 py-1.5 rounded bg-white shadow-sm text-sky-600 transition">首页(全屋)</button>
+                    <button onclick="switchClimateView('floor')" id="btn-floor" class="flex-1 py-1.5 rounded hover:bg-white/50 transition">楼层</button>
+                    <button onclick="switchClimateView('zone')" id="btn-zone" class="flex-1 py-1.5 rounded hover:bg-white/50 transition">区域</button>
+                </div>
+
+                <!-- 1. 首页-全屋控制 (Global View) -->
+                <div id="view-global" class="space-y-4">
+                    <div class="glass-card-active rounded-[30px] p-8 text-center relative overflow-hidden">
+                        <div class="text-sm text-slate-500 mb-2">全屋平均温度</div>
+                        <div class="text-6xl font-thin text-slate-800 tracking-tighter">24.5<span class="text-2xl font-normal">°</span></div>
+                        <div class="mt-6">
+                            <input type="range" min="16" max="30" value="24" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                        <div class="flex justify-between mt-2 text-xs text-slate-400">
+                            <span>16°C</span>
+                            <span>30°C</span>
+                        </div>
+                    </div>
+                    <div class="glass-panel rounded-xl p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-slate-600">全屋湿度设定</span>
+                            <span class="text-sm font-bold text-sky-600">45%</span>
+                        </div>
+                        <input type="range" min="30" max="70" value="45" class="w-full">
+                    </div>
+                </div>
+
+                <!-- 2. 楼层控制 (Floor View) -->
+                <div id="view-floor" class="space-y-3 hidden">
+                    <!-- B1 Floor -->
+                    <div class="glass-panel rounded-xl p-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="font-bold text-slate-700">B1 地下室</span>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                <input type="checkbox" name="toggle" id="toggle-b1" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                                <label for="toggle-b1" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer"></label>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-white/50 rounded-lg p-2 flex justify-between items-center">
+                                <span class="text-xs text-slate-500">温控器</span>
+                                <span class="text-xs text-green-500">开启</span>
+                            </div>
+                            <div class="bg-white/50 rounded-lg p-2 flex justify-between items-center">
+                                <span class="text-xs text-slate-500">新风面板</span>
+                                <span class="text-xs text-slate-400">关闭</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 1F Floor -->
+                    <div class="glass-card-active rounded-xl p-4 border-l-4 border-sky-500">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="font-bold text-slate-700">1F 一层 (主控)</span>
+                            <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                                <input type="checkbox" checked class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                                <label class="toggle-label block overflow-hidden h-5 rounded-full bg-sky-500 cursor-pointer"></label>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-white rounded-lg p-2 flex justify-between items-center shadow-sm">
+                                <span class="text-xs text-slate-500">温控器</span>
+                                <span class="text-xs text-sky-600">24°C</span>
+                            </div>
+                            <div class="bg-white rounded-lg p-2 flex justify-between items-center shadow-sm">
+                                <span class="text-xs text-slate-500">新风面板</span>
+                                <span class="text-xs text-sky-600">运行中</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. 区域控制 (Zone View - Detailed) -->
+                <div id="view-zone" class="space-y-4 hidden">
+                    <!-- Zone Selector -->
+                    <div class="flex overflow-x-auto gap-2 no-scrollbar pb-1">
+                        <button class="px-4 py-1.5 bg-sky-500 text-white text-xs rounded-full shadow-md whitespace-nowrap">客厅</button>
+                        <button class="px-4 py-1.5 bg-white text-slate-500 text-xs rounded-full whitespace-nowrap">主卧</button>
+                        <button class="px-4 py-1.5 bg-white text-slate-500 text-xs rounded-full whitespace-nowrap">儿童房</button>
+                    </div>
+
+                    <!-- Zone Main Switch & Temp -->
+                    <div class="glass-panel rounded-2xl p-5">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="font-bold text-slate-700">客厅设定</span>
+                            <div class="relative inline-block w-10 align-middle select-none">
+                                <input type="checkbox" checked class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                                <label class="toggle-label block overflow-hidden h-5 rounded-full bg-sky-500 cursor-pointer"></label>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="flex-1">
+                                <div class="text-xs text-slate-400 mb-2">温度设定</div>
+                                <input type="range" class="w-full" value="60">
+                            </div>
+                            <div class="text-3xl font-light text-slate-800">24.5°</div>
+                        </div>
+                    </div>
+
+                    <!-- Radiation Switches -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="glass-panel rounded-xl p-3 flex justify-between items-center">
+                            <span class="text-xs font-medium text-slate-600">顶面辐射</span>
+                            <i class="fas fa-toggle-on text-sky-500 text-xl"></i>
+                        </div>
+                        <div class="glass-panel rounded-xl p-3 flex justify-between items-center">
+                            <span class="text-xs font-medium text-slate-600">地面辐射</span>
+                            <i class="fas fa-toggle-on text-sky-500 text-xl"></i>
+                        </div>
+                    </div>
+
+                    <!-- Fresh Air Detailed Settings -->
+                    <div class="glass-panel rounded-2xl p-4 space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                            <span class="text-sm font-bold text-slate-600"><i class="fas fa-wind text-sky-400 mr-2"></i>新风设定</span>
+                            <span class="text-xs bg-sky-100 text-sky-600 px-2 py-0.5 rounded">制冷模式</span>
+                        </div>
+                        
+                        <!-- CO2 Threshold -->
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-500 mb-1">
+                                <span>CO2 阈值启动</span>
+                                <span>800 ppm</span>
+                            </div>
+                            <input type="range" class="w-full h-1 bg-slate-200 rounded-lg appearance-none">
+                        </div>
+
+                        <!-- Humidity Control -->
+                        <div>
+                            <div class="flex justify-between text-xs text-slate-500 mb-1">
+                                <span>湿度控制</span>
+                                <span>45%</span>
+                            </div>
+                            <input type="range" class="w-full h-1 bg-slate-200 rounded-lg appearance-none">
+                        </div>
+
+                        <!-- Fan Speed -->
+                        <div class="flex justify-between items-center pt-2">
+                            <span class="text-xs text-slate-500">风速</span>
+                            <div class="flex gap-1">
+                                <button class="w-8 h-6 text-xs rounded bg-slate-100 text-slate-400">低</button>
+                                <button class="w-8 h-6 text-xs rounded bg-sky-500 text-white shadow-sm">中</button>
+                                <button class="w-8 h-6 text-xs rounded bg-slate-100 text-slate-400">高</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= PAGE 3: 水系统 (WATER) ================= -->
+            <div id="page-water" class="px-5 space-y-5 hidden animate-fade-in">
+                
+                <!-- 1. 热水循环控制 -->
+                <div class="glass-card-active rounded-2xl p-5">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <span class="font-bold text-slate-700">热水循环</span>
+                        <span class="ml-auto text-xs text-orange-500 font-medium">当前水温 55°C</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <button class="py-2.5 rounded-xl bg-white text-xs font-medium text-slate-600 border border-slate-100">全天循环</button>
+                        <button class="py-2.5 rounded-xl bg-white text-xs font-medium text-slate-600 border border-slate-100">定时循环</button>
+                        <button class="py-2.5 rounded-xl bg-orange-500 text-xs font-medium text-white shadow-lg shadow-orange-200">临时循环</button>
+                        <button class="py-2.5 rounded-xl bg-white text-xs font-medium text-slate-400 border border-slate-100">关闭循环</button>
+                    </div>
+
+                    <!-- 临时循环设定 -->
+                    <div class="bg-white/60 rounded-lg p-3 flex justify-between items-center">
+                        <span class="text-xs text-slate-500">临时运行时长</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-bold text-orange-500">30 min</span>
+                            <i class="fas fa-chevron-right text-[10px] text-slate-300"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. 热力杀菌 -->
+                <div class="glass-panel rounded-xl p-4 flex justify-between items-center">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center"><i class="fas fa-shield-virus"></i></div>
+                        <div>
+                            <div class="text-sm font-medium text-slate-700">热力杀菌</div>
+                            <div class="text-[10px] text-slate-400">预约: 每周五 02:00</div>
+                        </div>
+                    </div>
+                    <button class="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs text-slate-500">修改</button>
+                </div>
+
+                <!-- 3. 净水滤芯 -->
+                <div class="glass-panel rounded-2xl p-5 space-y-4">
+                    <h3 class="text-sm font-bold text-slate-700">全屋净水滤芯</h3>
+                    
+                    <!-- Pre-filter -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-600">前置过滤器</span>
+                            <span class="text-sky-600">正常</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full w-[90%] bg-sky-500 rounded-full"></div>
+                        </div>
+                    </div>
+                    <!-- Central -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-600">中央净水机</span>
+                            <span class="text-sky-600">正常</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full w-[75%] bg-sky-500 rounded-full"></div>
+                        </div>
+                    </div>
+                    <!-- End -->
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-slate-600">末端直饮</span>
+                            <span class="text-red-500 font-bold">需更换</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full w-[10%] bg-red-500 rounded-full"></div>
+                        </div>
+                        <button class="mt-2 w-full py-1.5 bg-slate-800 text-white text-xs rounded-lg">预约更换</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= PAGE 4: 我的 (PROFILE) ================= -->
+            <div id="page-profile" class="px-5 space-y-5 hidden animate-fade-in">
+                <!-- User Info -->
+                <div class="flex items-center gap-4 pt-4">
+                    <div class="w-14 h-14 rounded-full bg-slate-300"></div>
+                    <div>
+                        <div class="text-lg font-bold text-slate-800">张先生</div>
+                        <div class="text-xs text-slate-500">西湖一号院 · 业主</div>
+                    </div>
+                    <div class="ml-auto relative">
+                        <i class="far fa-bell text-xl text-slate-600"></i>
+                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </div>
+                </div>
+
+                <!-- Project Overview -->
+                <div class="glass-panel rounded-2xl p-5">
+                    <h3 class="text-sm font-bold text-slate-700 mb-2">项目概述</h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        西湖一号院五恒系统 V20 采用最先进的辐射空调技术，集成了地源热泵与毛细管网系统，为您提供恒温、恒湿、恒氧、恒洁、恒静的极致居住体验。
+                    </p>
+                </div>
+
+                <!-- Maintenance -->
+                <div class="glass-card-active rounded-2xl p-5">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-sm font-bold text-slate-700">预约保养</h3>
+                        <span class="text-[10px] text-slate-400">上次保养: 2023.10.15</span>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <select class="w-full p-2 text-xs bg-white border border-slate-200 rounded-lg text-slate-600 outline-none">
+                            <option>选择保养项目...</option>
+                            <option>全屋滤网更换</option>
+                            <option>水系统管道清洗</option>
+                            <option>主机检修</option>
+                        </select>
+                        <button class="w-full py-2 bg-sky-500 text-white text-xs font-medium rounded-lg shadow-md shadow-sky-200">
+                            快速预约
+                        </button>
+                    </div>
+                </div>
+
+                <!-- About -->
+                <div class="glass-panel rounded-xl p-4 flex justify-between items-center">
+                    <span class="text-sm text-slate-600">关于新宜能</span>
+                    <i class="fas fa-chevron-right text-xs text-slate-300"></i>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="absolute bottom-0 left-0 w-full h-[85px] glass-nav flex justify-around items-start pt-3 z-50">
+            <button onclick="switchTab('home')" class="nav-btn group flex flex-col items-center gap-1 w-16" data-target="home">
+                <i class="fas fa-home text-xl text-sky-500 transition-colors"></i>
+                <span class="text-[10px] font-medium text-sky-500 transition-colors">首页</span>
+            </button>
+            <button onclick="switchTab('climate')" class="nav-btn group flex flex-col items-center gap-1 w-16" data-target="climate">
+                <i class="fas fa-th-large text-xl text-slate-400 group-hover:text-sky-400 transition-colors"></i>
+                <span class="text-[10px] font-medium text-slate-400 group-hover:text-sky-400 transition-colors">冷暖</span>
+            </button>
+            <button onclick="switchTab('water')" class="nav-btn group flex flex-col items-center gap-1 w-16" data-target="water">
+                <i class="fas fa-tint text-xl text-slate-400 group-hover:text-sky-400 transition-colors"></i>
+                <span class="text-[10px] font-medium text-slate-400 group-hover:text-sky-400 transition-colors">水系统</span>
+            </button>
+            <button onclick="switchTab('profile')" class="nav-btn group flex flex-col items-center gap-1 w-16" data-target="profile">
+                <i class="fas fa-user text-xl text-slate-400 group-hover:text-sky-400 transition-colors"></i>
+                <span class="text-[10px] font-medium text-slate-400 group-hover:text-sky-400 transition-colors">我的</span>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('[id^="page-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('page-' + tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                const icon = btn.querySelector('i');
+                const text = btn.querySelector('span');
+                if(btn.dataset.target === tabId) {
+                    icon.className = icon.className.replace('text-slate-400', 'text-sky-500');
+                    text.className = text.className.replace('text-slate-400', 'text-sky-500');
+                } else {
+                    icon.className = icon.className.replace('text-sky-500', 'text-slate-400');
+                    text.className = text.className.replace('text-sky-500', 'text-slate-400');
+                }
+            });
+        }
+
+        // Climate View Switching Logic
+        function switchClimateView(viewId) {
+            document.querySelectorAll('[id^="view-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-' + viewId).classList.remove('hidden');
+
+            // Reset buttons
+            ['global', 'floor', 'zone'].forEach(id => {
+                const btn = document.getElementById('btn-' + id);
+                if (id === viewId) {
+                    btn.className = "flex-1 py-1.5 rounded bg-white shadow-sm text-sky-600 transition";
+                } else {
+                    btn.className = "flex-1 py-1.5 rounded hover:bg-white/50 transition";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
+							<script>
+                            	
+							</script>
+                        </body>
+                        </html>
+                    

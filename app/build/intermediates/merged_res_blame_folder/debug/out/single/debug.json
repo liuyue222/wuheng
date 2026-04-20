@@ -1,0 +1,110 @@
+[
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_ic_water.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/ic_water.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_ic_profile.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/ic_profile.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_ic_scene_meeting.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/ic_scene_meeting.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_ic_scene_vacation.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/ic_scene_vacation.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.wuheng.smart.app-main-60:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_ic_switch_on.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/ic_switch_on.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_ic_location.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/ic_location.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_ic_wind.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/ic_wind.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_ic_scene_away.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/ic_scene_away.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/xml_data_extraction_rules.xml.flat",
+        "source": "com.wuheng.smart.app-main-60:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_liebiao_unchecked.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/liebiao_unchecked.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_liebiao.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/liebiao.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/xml_backup_rules.xml.flat",
+        "source": "com.wuheng.smart.app-main-60:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_home2_unchecked.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/home2_unchecked.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/xml_network_security_config.xml.flat",
+        "source": "com.wuheng.smart.app-main-60:/xml/network_security_config.xml"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_home2.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/home2.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "com.wuheng.smart.app-main-60:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_home_background.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/home_background.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_ic_snowflake.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/ic_snowflake.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_ic_scene_sleep.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/ic_scene_sleep.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_ic_profile_selected.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/ic_profile_selected.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_ic_water_selected.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/ic_water_selected.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_ic_sun.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/ic_sun.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_ic_scene_eco.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/ic_scene_eco.png"
+    },
+    {
+        "merged": "com.wuheng.smart.app-merged_res-58:/drawable_jiantou.png.flat",
+        "source": "com.wuheng.smart.app-main-60:/drawable/jiantou.png"
+    }
+]

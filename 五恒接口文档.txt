@@ -1,0 +1,733 @@
+# 五恒智能控制系统 APP API 接口文档（最终版）
+
+## 📋 文档信息
+
+- **版本**: v1.0
+- **更新日期**: 2026-04-20
+- **Base URL**: `http://116.62.51.112/wuheng_iot/index.php`
+- **接口测试地址**: `http://116.62.51.112/wuheng_iot/index.php/home/test/run`
+- **接口列表地址**: `http://116.62.51.112/wuheng_iot/index.php/home/test/apiList`
+
+---
+
+## 🔐 认证方式
+
+所有需要认证的接口都必须在请求头中携带 Token：
+
+```
+Authorization: Bearer {token}
+```
+
+**测试 Token**: `token001`
+
+---
+
+## 📊 响应格式
+
+### 成功响应
+```json
+{
+    "code": 200,
+    "msg": "success",
+    "data": {}
+}
+```
+
+### 错误响应
+```json
+{
+    "code": 400,
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+### 状态码说明
+| 状态码 | 说明 |
+|--------|------|
+| 200 | 请求成功 |
+| 400 | 请求参数错误 |
+| 401 | 未授权/Token无效 |
+| 500 | 服务器内部错误 |
+
+---
+
+## 👤 一、用户模块
+
+### 1. 用户登录
+- **URL**: `/home/user/login`
+- **Method**: POST
+- **认证**: 否
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| username | string | 是 | 用户名或手机号 |
+| password | string | 是 | 密码 |
+
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "登录成功",
+    "data": {
+        "user_id": 1,
+        "user_id_no": "USER202604190001",
+        "user_name": "张三",
+        "user_tel": "13800138001",
+        "user_token": "token001",
+        "user_type": 1,
+        "house_id": 1,
+        "status": 1
+    }
+}
+```
+
+### 2. 用户注册
+- **URL**: `/home/user/register`
+- **Method**: POST
+- **认证**: 否
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| username | string | 是 | 用户名 |
+| password | string | 是 | 密码（至少6位） |
+| mobile | string | 是 | 手机号 |
+| realname | string | 否 | 真实姓名 |
+| email | string | 否 | 邮箱 |
+
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "注册成功",
+    "data": {
+        "user_id": 6,
+        "user_token": "xxxxxxxxxxxxxxxx"
+    }
+}
+```
+
+### 3. 用户登出
+- **URL**: `/home/user/logout`
+- **Method**: POST
+- **认证**: 是
+- **参数**: 无
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "登出成功",
+    "data": null
+}
+```
+
+### 4. 获取用户信息
+- **URL**: `/home/user/getUserInfo`
+- **Method**: GET
+- **认证**: 是
+- **参数**: 无
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "success",
+    "data": {
+        "user_id": 1,
+        "user_id_no": "USER202604190001",
+        "user_name": "张三",
+        "user_tel": "13800138001",
+        "user_type": 1,
+        "house_id": 1,
+        "status": 1
+    }
+}
+```
+
+### 5. 更新用户信息
+- **URL**: `/home/user/updateUserInfo`
+- **Method**: POST
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| realname | string | 否 | 真实姓名 |
+| email | string | 否 | 邮箱 |
+| avatar | string | 否 | 头像URL |
+
+### 6. 修改密码
+- **URL**: `/home/user/changePassword`
+- **Method**: POST
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| old_password | string | 是 | 旧密码 |
+| new_password | string | 是 | 新密码（至少6位） |
+
+### 7. 绑定房屋
+- **URL**: `/home/user/bindHouse`
+- **Method**: POST
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| house_id | int | 是 | 房屋ID |
+| bind_code | string | 否 | 绑定码 |
+
+### 8. 获取我的房屋列表
+- **URL**: `/home/user/getMyHouses`
+- **Method**: GET
+- **认证**: 是
+- **参数**: 无
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "success",
+    "data": [
+        {
+            "house_id": 1,
+            "house_name": "阳光花园别墅",
+            "address": "浙江省杭州市西湖区文三路123号",
+            "bind_type": "owner",
+            "bind_time": 1745059200
+        }
+    ]
+}
+```
+
+---
+
+## 🏠 二、房屋模块
+
+### 1. 获取房屋信息
+- **URL**: `/home/house/getHouseInfo`
+- **Method**: GET
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| house_id | int | 是 | 房屋ID |
+
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "success",
+    "data": {
+        "house_id": 1,
+        "house_id_no": "HOUSE202604190001",
+        "house_name": "阳光花园别墅",
+        "owner_name": "张三",
+        "owner_phone": "13800138001",
+        "address": "浙江省杭州市西湖区文三路123号",
+        "floor_count": 3,
+        "area_total": "280.00",
+        "system_type": "辐射空调系统",
+        "room_count": 5,
+        "device_count": 6,
+        "online_count": 5
+    }
+}
+```
+
+### 2. 获取楼层列表
+- **URL**: `/home/house/getFloorList`
+- **Method**: GET
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| house_id | int | 是 | 房屋ID |
+
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "success",
+    "data": [
+        {
+            "floor_id": 1,
+            "floor_id_no": "FLOOR202604190001",
+            "floor_name": "地下一层",
+            "floor_level": -1,
+            "area": "80.00",
+            "room_count": 0
+        },
+        {
+            "floor_id": 2,
+            "floor_id_no": "FLOOR202604190002",
+            "floor_name": "一层",
+            "floor_level": 1,
+            "area": "100.00",
+            "room_count": 3
+        }
+    ]
+}
+```
+
+### 3. 获取房间列表
+- **URL**: `/home/house/getRoomList`
+- **Method**: GET
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| house_id | int | 是 | 房屋ID |
+| floor_id | int | 否 | 楼层ID（可选） |
+
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "success",
+    "data": [
+        {
+            "room_id": 1,
+            "room_id_no": "ROOM202604190001",
+            "room_name": "客厅",
+            "room_type": "living",
+            "area": "45.00",
+            "device_count": 2
+        }
+    ]
+}
+```
+
+---
+
+## 🔌 三、设备模块
+
+### 1. 获取设备列表
+- **URL**: `/home/device/getDeviceList`
+- **Method**: GET
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| house_id | int | 是 | 房屋ID |
+| room_id | int | 否 | 房间ID（可选） |
+
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "success",
+    "data": [
+        {
+            "device_id": 1,
+            "device_id_no": "DEV202604190001",
+            "device_name": "客厅温控器",
+            "device_type": "thermostat",
+            "device_model": "TH-2025A",
+            "online_status": 1,
+            "run_status": "running",
+            "room_name": "客厅"
+        }
+    ]
+}
+```
+
+### 2. 获取设备详情
+- **URL**: `/home/device/getDeviceInfo`
+- **Method**: GET
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| device_id | int | 是 | 设备ID |
+
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "success",
+    "data": {
+        "device_id": 1,
+        "device_id_no": "DEV202604190001",
+        "device_name": "客厅温控器",
+        "device_type": "thermostat",
+        "device_model": "TH-2025A",
+        "online_status": 1,
+        "run_status": "running",
+        "room_name": "客厅"
+    }
+}
+```
+
+### 3. 获取设备实时数据
+- **URL**: `/home/device/getDeviceData`
+- **Method**: GET
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| device_id | int | 是 | 设备ID |
+
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "success",
+    "data": {
+        "data_id": 1,
+        "device_id": 1,
+        "temperature": "24.50",
+        "humidity": "45.00",
+        "co2": 420,
+        "pm25": 35,
+        "voc": 150,
+        "fan_speed": 1,
+        "valve_open": 1,
+        "power": 1,
+        "report_time": 1745059200
+    }
+}
+```
+
+### 4. 控制设备
+- **URL**: `/home/device/controlDevice`
+- **Method**: POST
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| device_id | int | 是 | 设备ID |
+| command | string | 是 | 命令: on/off/temp_up/temp_down/set_temp |
+| value | string | 否 | 控制值 |
+
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "控制命令已下发",
+    "data": {
+        "command": "on",
+        "value": "",
+        "device_id": 1
+    }
+}
+```
+
+---
+
+## 🎬 四、场景模块
+
+### 1. 获取场景列表
+- **URL**: `/home/scene/getSceneList`
+- **Method**: GET
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| house_id | int | 是 | 房屋ID |
+
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "success",
+    "data": [
+        {
+            "scene_id": 1,
+            "scene_id_no": "SCENE202604190001",
+            "scene_name": "回家模式",
+            "scene_type": "guest",
+            "temp_set": "24.00",
+            "humidity_set": "45.00",
+            "fan_speed": 1,
+            "ceiling_radiation": 1,
+            "floor_radiation": 1,
+            "fresh_air": 1
+        }
+    ]
+}
+```
+
+### 2. 应用场景
+- **URL**: `/home/scene/applyScene`
+- **Method**: POST
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| scene_id | int | 是 | 场景ID |
+| house_id | int | 是 | 房屋ID |
+
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "场景已应用",
+    "data": {
+        "scene_id": 1,
+        "scene_name": "回家模式",
+        "temp_set": "24.00",
+        "humidity_set": "45.00"
+    }
+}
+```
+
+### 3. 保存自定义场景
+- **URL**: `/home/scene/saveScene`
+- **Method**: POST
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| house_id | int | 是 | 房屋ID |
+| scene_name | string | 是 | 场景名称 |
+| temp_set | decimal | 否 | 温度设置（默认24） |
+| humidity_set | decimal | 否 | 湿度设置（默认45） |
+| co2_threshold | int | 否 | CO2阈值（默认800） |
+| fan_speed | int | 否 | 风速（默认1） |
+| ceiling_radiation | int | 否 | 顶面辐射（默认1） |
+| floor_radiation | int | 否 | 地面辐射（默认1） |
+| fresh_air | int | 否 | 新风（默认1） |
+
+---
+
+## ⚙️ 五、系统模块
+
+### 1. 获取系统状态
+- **URL**: `/home/system/getSystemStatus`
+- **Method**: GET
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| house_id | int | 是 | 房屋ID |
+
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "success",
+    "data": {
+        "system_status": {
+            "system_mode": "cooling",
+            "global_temp_set": "24.00",
+            "global_humidity_set": "45.00",
+            "avg_indoor_temp": "24.50",
+            "avg_indoor_humidity": "45.20",
+            "system_run_status": "running"
+        },
+        "house_info": {...},
+        "device_count": 6,
+        "online_count": 5
+    }
+}
+```
+
+### 2. 设置系统模式
+- **URL**: `/home/system/setSystemMode`
+- **Method**: POST
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| house_id | int | 是 | 房屋ID |
+| mode | string | 是 | 模式: cooling/heating/ventilation/auto |
+
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "模式设置成功",
+    "data": {
+        "mode": "cooling"
+    }
+}
+```
+
+### 3. 设置全局温度
+- **URL**: `/home/system/setGlobalTemp`
+- **Method**: POST
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| house_id | int | 是 | 房屋ID |
+| temp | decimal | 是 | 温度值（16-30） |
+
+### 4. 设置全局湿度
+- **URL**: `/home/system/setGlobalHumidity`
+- **Method**: POST
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| house_id | int | 是 | 房屋ID |
+| humidity | decimal | 是 | 湿度值（30-70） |
+
+---
+
+## 💧 六、水系统模块
+
+### 1. 获取热水循环状态
+- **URL**: `/home/water/getHeaterStatus`
+- **Method**: GET
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| house_id | int | 是 | 房屋ID |
+
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "success",
+    "data": {
+        "current_temp": "55.00",
+        "target_temp": "55.00",
+        "circulation_mode": "all_day",
+        "circulation_status": 1,
+        "sterilization_enable": 1,
+        "sterilization_time": "02:00:00"
+    }
+}
+```
+
+### 2. 设置循环模式
+- **URL**: `/home/water/setCirculationMode`
+- **Method**: POST
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| house_id | int | 是 | 房屋ID |
+| mode | string | 是 | 模式: all_day/timer/temp/off |
+| duration | int | 否 | 临时循环时长（分钟，默认30） |
+
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "循环模式设置成功",
+    "data": {
+        "mode": "all_day"
+    }
+}
+```
+
+### 3. 获取滤芯状态
+- **URL**: `/home/water/getFilterStatus`
+- **Method**: GET
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| house_id | int | 是 | 房屋ID |
+
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "success",
+    "data": [
+        {
+            "filter_id": 1,
+            "filter_name": "前置过滤器",
+            "filter_type": "pre",
+            "life_percent": 15,
+            "status": 2
+        }
+    ]
+}
+```
+
+### 4. 预约滤芯更换
+- **URL**: `/home/water/bookFilterReplace`
+- **Method**: POST
+- **认证**: 是
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| house_id | int | 是 | 房屋ID |
+| filter_id | int | 是 | 滤芯ID |
+| contact_name | string | 否 | 联系人姓名 |
+| contact_phone | string | 否 | 联系人电话 |
+| appointment_date | date | 否 | 预约日期 |
+
+---
+
+## 🧪 测试数据
+
+### 测试账号
+| 账号 | 密码 | 说明 |
+|------|------|------|
+| admin | 123456 | 后台管理员 |
+
+### 测试Token
+- `token001` - 用户ID: 1, 房屋ID: 1
+- `token002` - 用户ID: 2, 房屋ID: 2
+- `token003` - 用户ID: 3, 房屋ID: 3
+- `token004` - 用户ID: 4, 房屋ID: 4
+- `token005` - 用户ID: 5, 房屋ID: 5
+
+### 测试房屋ID
+- 1: 阳光花园别墅
+- 2: 绿城江南里
+- 3: 西溪诚园
+- 4: 钱塘帝景
+- 5: 未来科技城公寓
+
+---
+
+## 📱 接口统计
+
+| 模块 | 接口数量 | 测试状态 |
+|------|---------|---------|
+| 用户模块 | 8个 | ✅ 通过 |
+| 房屋模块 | 3个 | ✅ 通过 |
+| 设备模块 | 4个 | ✅ 通过 |
+| 场景模块 | 3个 | ✅ 通过 |
+| 系统模块 | 4个 | ✅ 通过 |
+| 水系统模块 | 4个 | ✅ 通过 |
+| **总计** | **26个** | **✅ 100%** |
+
+---
+
+## 🔧 常见问题
+
+### 1. HTTP Error: 0
+**原因**: 请求超时或服务器未响应
+**解决**: 检查网络连接，稍后重试
+
+### 2. HTTP Error: 500
+**原因**: 服务器内部错误
+**解决**: 检查参数是否正确，联系管理员
+
+### 3. 401 Unauthorized
+**原因**: Token无效或已过期
+**解决**: 重新登录获取新Token
+
+---
+
+**文档生成时间**: 2026-04-20  
+**系统版本**: v2.0  
+**技术支持**: 五恒智能控制系统开发团队
