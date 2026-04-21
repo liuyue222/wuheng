@@ -85,7 +85,7 @@ private fun VacationModeContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(180.dp),
+                    .height(200.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 // 年
@@ -196,6 +196,7 @@ private fun VacationModeContent(
 
 /**
  * 滚轮选择器 - 手势滚动
+ * 中间选中项黑色加粗，上下未选中项灰色，距离越远字体越小
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -206,12 +207,10 @@ private fun WheelPicker(
     suffix: String,
     modifier: Modifier = Modifier
 ) {
-    // 在列表前后添加空白项，确保可以滚动到第一项和最后一项
-    val items = listOf(-1) + range + listOf(-1)
     val listState = rememberLazyListState()
-    val currentIndex = range.indexOf(value).coerceAtLeast(0) + 1 // +1 因为前面加了一个空白项
+    val currentIndex = range.indexOf(value).coerceAtLeast(0)
 
-    // 同步滚动位置
+    // 同步滚动位置到当前值
     LaunchedEffect(Unit) {
         listState.scrollToItem(currentIndex)
     }
@@ -220,10 +219,8 @@ private fun WheelPicker(
     LaunchedEffect(listState.isScrollInProgress) {
         if (!listState.isScrollInProgress) {
             val index = listState.firstVisibleItemIndex
-            // 跳过空白项
-            val actualIndex = index - 1
-            if (actualIndex in range.indices) {
-                onValueChange(range[actualIndex])
+            if (index in range.indices) {
+                onValueChange(range[index])
             }
         }
     }
@@ -238,24 +235,31 @@ private fun WheelPicker(
             state = listState,
             flingBehavior = rememberSnapFlingBehavior(lazyListState = listState),
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(vertical = 80.dp) // 上下留白，确保第一项和最后一项可以居中
         ) {
-            items(items.size) { index ->
-                val itemValue = items[index]
-                // 空白项
-                if (itemValue == -1) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(40.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        // 空白占位
-                    }
-                    return@items
+            items(range.size) { index ->
+                val itemValue = range[index]
+                val isSelected = itemValue == value
+
+                // 计算与选中项的距离
+                val distanceFromCenter = kotlin.math.abs(index - currentIndex)
+
+                // 根据距离计算字体大小和颜色
+                val fontSize = when {
+                    isSelected -> 18.sp
+                    distanceFromCenter == 1 -> 14.sp
+                    distanceFromCenter >= 2 -> 12.sp
+                    else -> 14.sp
                 }
 
-                val isSelected = itemValue == value
+                val textColor = when {
+                    isSelected -> TextPrimaryLight  // 选中：黑色
+                    distanceFromCenter == 1 -> TextTertiaryLight.copy(alpha = 0.7f)  // 相邻：深灰
+                    else -> TextTertiaryLight.copy(alpha = 0.4f)  // 更远：浅灰
+                }
+
+                val fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
 
                 Box(
                     modifier = Modifier
@@ -265,10 +269,11 @@ private fun WheelPicker(
                 ) {
                     Text(
                         text = String.format("%02d%s", itemValue, suffix),
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                        color = if (isSelected) TextPrimaryLight else TextTertiaryLight.copy(alpha = 0.5f),
-                        fontSize = if (isSelected) 16.sp else 14.sp
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontSize = fontSize,
+                            fontWeight = fontWeight
+                        ),
+                        color = textColor
                     )
                 }
             }

@@ -199,16 +199,14 @@ fun HomeScreen(
 
 /**
  * 检查模式切换是否需要二次确认
+ * 任何模式切换都需要确认，因为涉及全屋水系统
  */
 private fun needsModeConfirmation(fromMode: ClimateMode, toMode: ClimateMode): Boolean {
-    return when {
-        // 制冷和制热之间切换需要确认
-        (fromMode == ClimateMode.COOLING && toMode == ClimateMode.HEATING) ||
-                (fromMode == ClimateMode.HEATING && toMode == ClimateMode.COOLING) -> true
-        // 切换到通风模式需要确认
-        toMode == ClimateMode.VENTILATION && fromMode != ClimateMode.VENTILATION -> true
-        else -> false
-    }
+    // 相同模式不需要确认
+    if (fromMode == toMode) return false
+
+    // 任何不同模式之间的切换都需要确认
+    return true
 }
 
 /**
@@ -262,22 +260,38 @@ private suspend fun updateLocationAndWeather(
     viewModel: HomeViewModel
 ) {
     try {
-        val (address, location) = locationManager.getFormattedLocation()
-        viewModel.updateLocation(address)
+        // 先显示定位中
+        viewModel.updateLocation("定位中...")
 
-        // 获取天气 - 暂时模拟雨天
-        location?.let {
-            // TODO: 接入真实天气API，暂时模拟雨天
-            viewModel.updateWeather(
-                temperature = 22,
-                weather = "雨",
-                aqi = 45,
-                pm25 = 18,
-                humidity = 85
-            )
+        // 获取位置
+        val (address, location) = locationManager.getFormattedLocation()
+
+        // 如果定位成功，更新位置，否则使用默认地址
+        if (address != "定位失败" && address != "未知位置") {
+            viewModel.updateLocation(address)
+        } else {
+            // 定位失败时使用默认地址
+            viewModel.updateLocation("杭州市 · 余杭区")
         }
+
+        // 强制模拟雨天
+        viewModel.updateWeather(
+            temperature = 22,
+            weather = "雨",
+            aqi = 45,
+            pm25 = 18,
+            humidity = 85
+        )
     } catch (e: Exception) {
-        viewModel.updateLocation("定位失败")
+        // 异常时使用默认地址
+        viewModel.updateLocation("杭州市 · 余杭区")
+        viewModel.updateWeather(
+            temperature = 22,
+            weather = "雨",
+            aqi = 45,
+            pm25 = 18,
+            humidity = 85
+        )
     }
 }
 

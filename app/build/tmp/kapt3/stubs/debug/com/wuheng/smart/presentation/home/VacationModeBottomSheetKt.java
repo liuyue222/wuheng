@@ -29,6 +29,7 @@ public final class VacationModeBottomSheetKt {
     
     /**
      * 滚轮选择器 - 手势滚动
+     * 中间选中项黑色加粗，上下未选中项灰色，距离越远字体越小
      */
     @androidx.compose.runtime.Composable()
     @kotlin.OptIn(markerClass = {androidx.compose.foundation.ExperimentalFoundationApi.class})

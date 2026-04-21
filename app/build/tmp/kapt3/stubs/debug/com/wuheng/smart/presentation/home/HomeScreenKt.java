@@ -33,6 +33,7 @@ public final class HomeScreenKt {
     
     /**
      * 检查模式切换是否需要二次确认
+     * 任何模式切换都需要确认，因为涉及全屋水系统
      */
     private static final boolean needsModeConfirmation(com.wuheng.smart.presentation.home.ClimateMode fromMode, com.wuheng.smart.presentation.home.ClimateMode toMode) {
         return false;
