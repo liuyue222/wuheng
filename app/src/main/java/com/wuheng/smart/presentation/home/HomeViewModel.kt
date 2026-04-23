@@ -9,6 +9,7 @@ import com.wuheng.smart.presentation.base.BaseViewModel
 import com.wuheng.smart.presentation.base.UiDataState
 import com.wuheng.smart.presentation.base.createUiStateFlow
 import com.wuheng.smart.presentation.home.components.DeviceCardUiState
+import com.wuheng.smart.presentation.home.components.DeviceType
 import com.wuheng.smart.presentation.home.components.WeatherModeSelectorUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -134,10 +135,102 @@ class HomeViewModel @Inject constructor(
     private val _deviceClickEvent = MutableSharedFlow<String>()
     val deviceClickEvent: SharedFlow<String> = _deviceClickEvent.asSharedFlow()
 
+    // ==================== 自动刷新 ====================
+
+    private var autoRefreshJob: kotlinx.coroutines.Job? = null
+    private val AUTO_REFRESH_INTERVAL = 30000L // 30秒自动刷新
+
     // ==================== 初始化 ====================
 
     init {
         loadInitialData()
+        startAutoRefresh()
+    }
+
+    /**
+     * 启动自动刷新
+     */
+    private fun startAutoRefresh() {
+        autoRefreshJob?.cancel()
+        autoRefreshJob = viewModelScope.launch {
+            while (true) {
+                kotlinx.coroutines.delay(AUTO_REFRESH_INTERVAL)
+                val houseId = tokenManager.getCurrentHouseId()
+                if (houseId.isNotEmpty()) {
+                    // 静默刷新设备列表和系统状态（不显示加载状态）
+                    refreshDeviceListSilently(houseId)
+                    refreshSystemStatusSilently(houseId)
+                }
+            }
+        }
+    }
+
+    /**
+     * 停止自动刷新
+     */
+    fun stopAutoRefresh() {
+        autoRefreshJob?.cancel()
+        autoRefreshJob = null
+    }
+
+    /**
+     * 静默刷新设备列表（不显示加载状态）
+     */
+    private fun refreshDeviceListSilently(houseId: String) {
+        viewModelScope.launch {
+            homeRepository.getDeviceList(houseId.toInt()).collectLatest { result ->
+                when (result) {
+                    is ApiResult.Success -> {
+                        _deviceListState.value = UiDataState.Success(result.data)
+                    }
+                    is ApiResult.Error -> {
+                        // 静默刷新失败不显示错误
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    /**
+     * 静默刷新系统状态（不显示加载状态）
+     */
+    private fun refreshSystemStatusSilently(houseId: String) {
+        viewModelScope.launch {
+            homeRepository.getSystemStatus(houseId.toInt()).collectLatest { result ->
+                when (result) {
+                    is ApiResult.Success -> {
+                        _systemStatusState.value = UiDataState.Success(result.data)
+                        // 更新 UI State
+                        val systemStatus = result.data.systemStatus
+                        _uiState.value = _uiState.value.copy(
+                            indoorTemp = systemStatus?.avgIndoorTemp ?: "--",
+                            indoorHumidity = systemStatus?.avgIndoorHumidity ?: "--",
+                            co2 = systemStatus?.avgCo2?.toIntOrNull() ?: 0,
+                            currentMode = when(systemStatus?.systemMode) {
+                                "cooling" -> ClimateMode.COOLING
+                                "heating" -> ClimateMode.HEATING
+                                "ventilation" -> ClimateMode.VENTILATION
+                                else -> ClimateMode.COOLING
+                            },
+                            outdoorTemp = systemStatus?.outdoorTemp?.toIntOrNull() ?: 0,
+                            outdoorHumidity = systemStatus?.outdoorHumidity?.toIntOrNull() ?: 0,
+                            aqi = systemStatus?.outdoorAqi?.toIntOrNull() ?: 0,
+                            pm25 = systemStatus?.outdoorPm25?.toIntOrNull() ?: 0
+                        )
+                    }
+                    is ApiResult.Error -> {
+                        // 静默刷新失败不显示错误
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        stopAutoRefresh()
     }
 
     /**
@@ -558,29 +651,50 @@ class HomeViewModel @Inject constructor(
     
     /**
      * 选择场景
+     * 优化: 使用更细粒度的状态更新，避免整个UIState重建导致的重组
      */
     fun onSceneSelected(sceneType: SceneType) {
-        // 更新UI状态
-        val updatedScenes = _uiState.value.scenes.map {
-            it.copy(isSelected = it.type == sceneType)
+        val currentState = _uiState.value
+        
+        // 优化1: 检查是否点击了已选中的场景，避免不必要的更新
+        if (currentState.scenes.find { it.type == sceneType }?.isSelected == true) {
+            return
         }
-        _uiState.value = _uiState.value.copy(scenes = updatedScenes)
 
-        // 从场景列表状态中获取对应的sceneId
+        // 优化2: 使用不可变列表转换，确保Compose能正确识别状态变化
+        val updatedScenes = currentState.scenes.map { scene ->
+            // 只有状态发生变化的场景才创建新对象
+            val newSelected = scene.type == sceneType
+            if (scene.isSelected != newSelected) {
+                scene.copy(isSelected = newSelected)
+            } else {
+                scene
+            }
+        }
+
+        // 优化3: 只有scenes真正变化时才更新StateFlow
+        if (updatedScenes !== currentState.scenes) {
+            _uiState.value = currentState.copy(scenes = updatedScenes)
+        }
+
+        // 异步调用API，不阻塞UI更新
         val houseId = tokenManager.getCurrentHouseId()
         if (houseId.isNotEmpty()) {
-            val sceneList = (_sceneListState.value as? UiDataState.Success)?.data
-            val sceneInfo = sceneList?.find { scene ->
-                when (sceneType) {
-                    SceneType.MEETING -> scene.sceneName.contains("会客") || scene.sceneName.contains(" Meeting")
-                    SceneType.AWAY -> scene.sceneName.contains("离家") || scene.sceneName.contains("Away")
-                    SceneType.SLEEP -> scene.sceneName.contains("睡眠") || scene.sceneName.contains("Sleep")
-                    SceneType.GUARD -> scene.sceneName.contains("值守") || scene.sceneName.contains("Guard")
-                    else -> false
+            viewModelScope.launch {
+                val sceneList = (_sceneListState.value as? UiDataState.Success)?.data
+                val sceneInfo = sceneList?.find { scene ->
+                    when (sceneType) {
+                        SceneType.MEETING -> scene.sceneName.contains("会客") || scene.sceneName.contains(" Meeting")
+                        SceneType.AWAY -> scene.sceneName.contains("离家") || scene.sceneName.contains("Away")
+                        SceneType.SLEEP -> scene.sceneName.contains("睡眠") || scene.sceneName.contains("Sleep")
+                        SceneType.GUARD -> scene.sceneName.contains("值守") || scene.sceneName.contains("Guard")
+                        else -> false
+                    }
+                }
+                sceneInfo?.sceneId?.let { sceneId ->
+                    applyScene(sceneId, houseId)
                 }
             }
-            val sceneId = sceneInfo?.sceneId ?: return
-            applyScene(sceneId, houseId)
         }
     }
 

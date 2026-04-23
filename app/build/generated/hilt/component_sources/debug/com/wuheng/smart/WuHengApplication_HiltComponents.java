@@ -1,7 +1,9 @@
 package com.wuheng.smart;
 
 import com.wuheng.smart.data.network.NetworkModule;
+import com.wuheng.smart.di.ImageModule;
 import com.wuheng.smart.di.RepositoryModule;
+import com.wuheng.smart.initializer.LazyHiltEntryPoint;
 import com.wuheng.smart.presentation.about.AboutViewModel_HiltModules;
 import com.wuheng.smart.presentation.climate.ClimateViewModel_HiltModules;
 import com.wuheng.smart.presentation.consumables.ConsumablesViewModel_HiltModules;
@@ -10,8 +12,10 @@ import com.wuheng.smart.presentation.floorzone.FloorZoneViewModel_HiltModules;
 import com.wuheng.smart.presentation.forgotpassword.ForgotPasswordViewModel_HiltModules;
 import com.wuheng.smart.presentation.home.HomeViewModel_HiltModules;
 import com.wuheng.smart.presentation.login.LoginViewModel_HiltModules;
+import com.wuheng.smart.presentation.notification.NotificationViewModel_HiltModules;
 import com.wuheng.smart.presentation.profile.ProfileViewModel_HiltModules;
 import com.wuheng.smart.presentation.register.RegisterViewModel_HiltModules;
+import com.wuheng.smart.presentation.settings.SettingViewModel_HiltModules;
 import com.wuheng.smart.presentation.water.WaterViewModel_HiltModules;
 import dagger.Binds;
 import dagger.Component;
@@ -138,6 +142,7 @@ public final class WuHengApplication_HiltComponents {
       modules = {
           ApplicationContextModule.class,
           HiltWrapper_FragmentGetContextFix_FragmentGetContextFixModule.class,
+          ImageModule.class,
           NetworkModule.class,
           RepositoryModule.class,
           ActivityRetainedCBuilderModule.class,
@@ -146,6 +151,7 @@ public final class WuHengApplication_HiltComponents {
   )
   @Singleton
   public abstract static class SingletonC implements WuHengApplication_GeneratedInjector,
+      LazyHiltEntryPoint,
       FragmentGetContextFix.FragmentGetContextFixEntryPoint,
       HiltWrapper_ActivityRetainedComponentManager_ActivityRetainedComponentBuilderEntryPoint,
       ServiceComponentManager.ServiceComponentBuilderEntryPoint,
@@ -174,8 +180,10 @@ public final class WuHengApplication_HiltComponents {
           HomeViewModel_HiltModules.KeyModule.class,
           LoginViewModel_HiltModules.KeyModule.class,
           MainViewModel_HiltModules.KeyModule.class,
+          NotificationViewModel_HiltModules.KeyModule.class,
           ProfileViewModel_HiltModules.KeyModule.class,
           RegisterViewModel_HiltModules.KeyModule.class,
+          SettingViewModel_HiltModules.KeyModule.class,
           WaterViewModel_HiltModules.KeyModule.class,
           ActivityCBuilderModule.class,
           ViewModelCBuilderModule.class
@@ -224,8 +232,10 @@ public final class WuHengApplication_HiltComponents {
           HomeViewModel_HiltModules.BindsModule.class,
           LoginViewModel_HiltModules.BindsModule.class,
           MainViewModel_HiltModules.BindsModule.class,
+          NotificationViewModel_HiltModules.BindsModule.class,
           ProfileViewModel_HiltModules.BindsModule.class,
           RegisterViewModel_HiltModules.BindsModule.class,
+          SettingViewModel_HiltModules.BindsModule.class,
           WaterViewModel_HiltModules.BindsModule.class
       }
   )

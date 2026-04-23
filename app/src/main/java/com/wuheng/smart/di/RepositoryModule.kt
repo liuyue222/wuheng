@@ -78,4 +78,16 @@ object RepositoryModule {
     ): UserRepository {
         return UserRepositoryImpl(apiService, tokenManager, useMock)
     }
+
+    /**
+     * 提供DeviceRepository实例
+     */
+    @Provides
+    @Singleton
+    fun provideDeviceRepository(
+        apiService: ApiService,
+        @Named("useMock") useMock: Boolean
+    ): DeviceRepository {
+        return DeviceRepositoryImpl(apiService, useMock)
+    }
 }

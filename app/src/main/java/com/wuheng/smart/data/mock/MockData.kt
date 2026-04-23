@@ -95,7 +95,7 @@ object MockData {
             id = "dev_001",
             name = "客厅空调",
             type = DeviceType.CLIMATE,
-            status = DeviceStatus.ON,
+            status = DeviceRunningStatus.ON,
             roomName = "客厅",
             isOnline = true
         ),
@@ -103,7 +103,7 @@ object MockData {
             id = "dev_002",
             name = "主卧空调",
             type = DeviceType.CLIMATE,
-            status = DeviceStatus.ON,
+            status = DeviceRunningStatus.ON,
             roomName = "主卧",
             isOnline = true
         ),
@@ -111,7 +111,7 @@ object MockData {
             id = "dev_003",
             name = "热水器",
             type = DeviceType.WATER,
-            status = DeviceStatus.ON,
+            status = DeviceRunningStatus.ON,
             roomName = "设备间",
             isOnline = true
         ),
@@ -119,7 +119,7 @@ object MockData {
             id = "dev_004",
             name = "客厅主灯",
             type = DeviceType.LIGHT,
-            status = DeviceStatus.ON,
+            status = DeviceRunningStatus.ON,
             roomName = "客厅",
             isOnline = true
         ),
@@ -127,7 +127,7 @@ object MockData {
             id = "dev_005",
             name = "客厅窗帘",
             type = DeviceType.CURTAIN,
-            status = DeviceStatus.STANDBY,
+            status = DeviceRunningStatus.STANDBY,
             roomName = "客厅",
             isOnline = true
         ),
@@ -135,7 +135,7 @@ object MockData {
             id = "dev_006",
             name = "智能门锁",
             type = DeviceType.SECURITY,
-            status = DeviceStatus.ON,
+            status = DeviceRunningStatus.ON,
             roomName = "玄关",
             isOnline = true
         ),
@@ -143,7 +143,7 @@ object MockData {
             id = "dev_007",
             name = "儿童房空调",
             type = DeviceType.CLIMATE,
-            status = DeviceStatus.OFF,
+            status = DeviceRunningStatus.OFF,
             roomName = "儿童房",
             isOnline = true
         ),
@@ -151,7 +151,7 @@ object MockData {
             id = "dev_008",
             name = "书房空调",
             type = DeviceType.CLIMATE,
-            status = DeviceStatus.ON,
+            status = DeviceRunningStatus.ON,
             roomName = "书房",
             isOnline = false
         )

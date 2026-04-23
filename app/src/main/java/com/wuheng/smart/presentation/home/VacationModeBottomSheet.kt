@@ -91,7 +91,14 @@ private fun VacationModeContent(
                 // 年
                 WheelPicker(
                     value = selectedYear,
-                    onValueChange = { selectedYear = it },
+                    onValueChange = { 
+                        selectedYear = it
+                        // 年份变化时检查日期有效性
+                        val maxDay = getDaysInMonth(selectedYear, selectedMonth)
+                        if (selectedDay > maxDay) {
+                            selectedDay = maxDay
+                        }
+                    },
                     range = (calendar.get(Calendar.YEAR)..(calendar.get(Calendar.YEAR) + 2)).toList(),
                     suffix = "年",
                     modifier = Modifier.weight(1.5f)
@@ -100,16 +107,23 @@ private fun VacationModeContent(
                 // 月
                 WheelPicker(
                     value = selectedMonth,
-                    onValueChange = { selectedMonth = it },
+                    onValueChange = { 
+                        selectedMonth = it
+                        // 月份变化时检查日期有效性（如2月只有28/29天）
+                        val maxDay = getDaysInMonth(selectedYear, selectedMonth)
+                        if (selectedDay > maxDay) {
+                            selectedDay = maxDay
+                        }
+                    },
                     range = (1..12).toList(),
                     suffix = "月",
                     modifier = Modifier.weight(1f)
                 )
 
-                // 日
+                // 日 - 动态根据年月计算最大天数
                 val maxDay = getDaysInMonth(selectedYear, selectedMonth)
                 WheelPicker(
-                    value = selectedDay,
+                    value = selectedDay.coerceIn(1, maxDay),
                     onValueChange = { selectedDay = it },
                     range = (1..maxDay).toList(),
                     suffix = "日",
@@ -125,11 +139,11 @@ private fun VacationModeContent(
                     modifier = Modifier.weight(1f)
                 )
 
-                // 分
+                // 分 - 按5分钟间隔
                 WheelPicker(
                     value = selectedMinute,
                     onValueChange = { selectedMinute = it },
-                    range = (0..59).toList(),
+                    range = (0..11).map { it * 5 },
                     suffix = "分",
                     modifier = Modifier.weight(1f)
                 )
@@ -137,10 +151,24 @@ private fun VacationModeContent(
 
             Spacer(modifier = Modifier.height(spacing_lg))
 
-            // 预计启动时间提示
+            // 返程时间和预计启动时间
             val returnDateTime = String.format(
                 "%04d-%02d-%02d %02d:%02d",
                 selectedYear, selectedMonth, selectedDay, selectedHour, selectedMinute
+            )
+            
+            // 计算预计启动时间（返程前2小时）
+            val startCal = Calendar.getInstance().apply {
+                set(selectedYear, selectedMonth - 1, selectedDay, selectedHour, selectedMinute)
+                add(Calendar.HOUR_OF_DAY, -2)
+            }
+            val startTimeStr = String.format(
+                "%04d-%02d-%02d %02d:%02d",
+                startCal.get(Calendar.YEAR),
+                startCal.get(Calendar.MONTH) + 1,
+                startCal.get(Calendar.DAY_OF_MONTH),
+                startCal.get(Calendar.HOUR_OF_DAY),
+                startCal.get(Calendar.MINUTE)
             )
 
             Card(
@@ -150,14 +178,15 @@ private fun VacationModeContent(
             ) {
                 Column(modifier = Modifier.padding(spacing_md)) {
                     Text(
-                        text = "预计启动时间",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = TextTertiaryLight
+                        text = "返程时间: $returnDateTime",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextPrimaryLight,
+                        fontWeight = FontWeight.Medium
                     )
                     Spacer(modifier = Modifier.height(spacing_xs))
                     Text(
-                        text = "系统将根据热惰性计算，提前启动",
-                        style = MaterialTheme.typography.bodyMedium,
+                        text = "预计启动: $startTimeStr (提前2小时预冷/预热)",
+                        style = MaterialTheme.typography.bodySmall,
                         color = PrimaryBlue,
                         fontWeight = FontWeight.Medium
                     )
@@ -180,7 +209,25 @@ private fun VacationModeContent(
                 }
 
                 Button(
-                    onClick = { onConfirm(returnDateTime) },
+                    onClick = { 
+                        // 计算预计启动时间（返程前2小时）
+                        val returnCal = Calendar.getInstance().apply {
+                            set(selectedYear, selectedMonth - 1, selectedDay, selectedHour, selectedMinute)
+                        }
+                        val startCal = returnCal.clone() as Calendar
+                        startCal.add(Calendar.HOUR_OF_DAY, -2)
+                        
+                        val startTimeStr = String.format(
+                            "%04d-%02d-%02d %02d:%02d",
+                            startCal.get(Calendar.YEAR),
+                            startCal.get(Calendar.MONTH) + 1,
+                            startCal.get(Calendar.DAY_OF_MONTH),
+                            startCal.get(Calendar.HOUR_OF_DAY),
+                            startCal.get(Calendar.MINUTE)
+                        )
+                        
+                        onConfirm(returnDateTime)
+                    },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)

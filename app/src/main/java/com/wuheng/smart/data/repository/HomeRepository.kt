@@ -3,6 +3,7 @@ package com.wuheng.smart.data.repository
 import com.wuheng.smart.data.model.*
 import com.wuheng.smart.data.network.ApiResult
 import com.wuheng.smart.data.network.ApiService
+import com.wuheng.smart.data.network.RetryConfig
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,21 +30,21 @@ interface HomeRepository {
     suspend fun getHouseInfo(houseId: Int): Flow<ApiResult<HouseInfo>>
 
     /**
-     * 获取楼层列表
+     * 获取楼层信息
      *
      * @param houseId 房屋ID
      * @return 楼层列表
      */
-    suspend fun getFloorList(houseId: Int): Flow<ApiResult<List<FloorInfo>>>
+    suspend fun getFloorInfo(houseId: Int): Flow<ApiResult<List<FloorInfo>>>
 
     /**
-     * 获取房间列表
+     * 获取房间信息
      *
      * @param houseId 房屋ID
      * @param floorId 楼层ID（可选，不传则返回所有房间）
      * @return 房间列表
      */
-    suspend fun getRoomList(houseId: Int, floorId: Int? = null): Flow<ApiResult<List<RoomInfo>>>
+    suspend fun getRoomInfo(houseId: Int, floorId: Int? = null): Flow<ApiResult<List<RoomInfo>>>
 
     // ==================== 新版API - 设备模块 (4个接口) ====================
 
@@ -62,15 +63,15 @@ interface HomeRepository {
      * @param deviceId 设备ID
      * @return 设备详细信息
      */
-    suspend fun getDeviceInfo(deviceId: Int): Flow<ApiResult<DeviceInfo>>
+    suspend fun getDeviceDetail(deviceId: Int): Flow<ApiResult<DeviceInfo>>
 
     /**
-     * 获取设备实时数据
+     * 获取设备状态
      *
      * @param deviceId 设备ID
-     * @return 设备实时数据（温度、湿度、CO2等）
+     * @return 设备状态（温度、湿度、CO2等）
      */
-    suspend fun getDeviceData(deviceId: Int): Flow<ApiResult<DeviceData>>
+    suspend fun getDeviceStatus(deviceId: Int): Flow<ApiResult<DeviceStatus>>
 
     /**
      * 控制设备
@@ -142,6 +143,22 @@ interface HomeRepository {
      * @param humidity 湿度值（30-70）
      */
     suspend fun setGlobalHumidity(houseId: Int, humidity: String): Flow<ApiResult<Unit>>
+
+    /**
+     * 获取系统参数
+     *
+     * @param houseId 房屋ID
+     * @return 系统参数（温度、湿度、CO2阈值等设置）
+     */
+    suspend fun getSystemParams(houseId: Int): Flow<ApiResult<SystemParams>>
+
+    /**
+     * 设置系统参数
+     *
+     * @param request 设置系统参数请求
+     * @return 设置响应，包含更新的参数列表
+     */
+    suspend fun setSystemParams(request: SetSystemParamsRequest): Flow<ApiResult<SetSystemParamsResponse>>
 }
 
 /**
@@ -156,7 +173,15 @@ class HomeRepositoryImpl @Inject constructor(
     private val useMock: Boolean = false
 ) : BaseRepository(), HomeRepository {
 
-    // ==================== 新版API实现 - 房屋模块 ====================
+    // ==================== 新版API实现 - 房屋模块 (带重试机制) ====================
+
+    /**
+     * 房屋模块使用默认重试配置
+     * - 最大重试3次
+     * - 初始延迟1秒，指数退避
+     * - 网络错误、超时、服务器错误都会重试
+     */
+    private val houseRetryConfig = RetryConfig.DEFAULT
 
     override suspend fun getHouseInfo(houseId: Int): Flow<ApiResult<HouseInfo>> = apiFlow(
         operation = "getHouseInfo",
@@ -180,12 +205,15 @@ class HomeRepositoryImpl @Inject constructor(
             )
             ApiResult.Success(mockHouse)
         } else {
-            apiCall { apiService.getHouseInfo(houseId) }
+            apiCallWithRetry(
+                config = houseRetryConfig,
+                operation = "getHouseInfo"
+            ) { apiService.getHouseInfo(houseId) }
         }
     }
 
-    override suspend fun getFloorList(houseId: Int): Flow<ApiResult<List<FloorInfo>>> = apiFlow(
-        operation = "getFloorList",
+    override suspend fun getFloorInfo(houseId: Int): Flow<ApiResult<List<FloorInfo>>> = apiFlow(
+        operation = "getFloorInfo",
         params = "houseId=$houseId"
     ) {
         if (useMock) {
@@ -197,12 +225,15 @@ class HomeRepositoryImpl @Inject constructor(
             )
             ApiResult.Success(mockFloors)
         } else {
-            apiCall { apiService.getFloorList(houseId) }
+            apiCallWithRetry(
+                config = houseRetryConfig,
+                operation = "getFloorInfo"
+            ) { apiService.getFloorInfo(houseId) }
         }
     }
 
-    override suspend fun getRoomList(houseId: Int, floorId: Int?): Flow<ApiResult<List<RoomInfo>>> = apiFlow(
-        operation = "getRoomList",
+    override suspend fun getRoomInfo(houseId: Int, floorId: Int?): Flow<ApiResult<List<RoomInfo>>> = apiFlow(
+        operation = "getRoomInfo",
         params = "houseId=$houseId, floorId=$floorId"
     ) {
         if (useMock) {
@@ -216,7 +247,10 @@ class HomeRepositoryImpl @Inject constructor(
             )
             ApiResult.Success(mockRooms)
         } else {
-            apiCall { apiService.getRoomList(houseId, floorId) }
+            apiCallWithRetry(
+                config = houseRetryConfig,
+                operation = "getRoomInfo"
+            ) { apiService.getRoomInfo(houseId, floorId) }
         }
     }
 
@@ -242,8 +276,8 @@ class HomeRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getDeviceInfo(deviceId: Int): Flow<ApiResult<DeviceInfo>> = apiFlow(
-        operation = "getDeviceInfo",
+    override suspend fun getDeviceDetail(deviceId: Int): Flow<ApiResult<DeviceInfo>> = apiFlow(
+        operation = "getDeviceDetail",
         params = "deviceId=$deviceId"
     ) {
         if (useMock) {
@@ -260,19 +294,21 @@ class HomeRepositoryImpl @Inject constructor(
             )
             ApiResult.Success(mockDevice)
         } else {
-            apiCall { apiService.getDeviceInfo(deviceId) }
+            apiCall { apiService.getDeviceDetail(deviceId) }
         }
     }
 
-    override suspend fun getDeviceData(deviceId: Int): Flow<ApiResult<DeviceData>> = apiFlow(
-        operation = "getDeviceData",
+    override suspend fun getDeviceStatus(deviceId: Int): Flow<ApiResult<DeviceStatus>> = apiFlow(
+        operation = "getDeviceStatus",
         params = "deviceId=$deviceId"
     ) {
         if (useMock) {
             kotlinx.coroutines.delay(300)
-            val mockData = DeviceData(
-                dataId = 1,
+            val mockStatus = DeviceStatus(
                 deviceId = deviceId,
+                onlineStatus = 1,
+                runStatus = "running",
+                power = 1,
                 temperature = "24.50",
                 humidity = "45.00",
                 co2 = 420,
@@ -280,12 +316,11 @@ class HomeRepositoryImpl @Inject constructor(
                 voc = 150,
                 fanSpeed = 1,
                 valveOpen = 1,
-                power = 1,
                 reportTime = System.currentTimeMillis() / 1000
             )
-            ApiResult.Success(mockData)
+            ApiResult.Success(mockStatus)
         } else {
-            apiCall { apiService.getDeviceData(deviceId) }
+            apiCall { apiService.getDeviceStatus(deviceId) }
         }
     }
 
@@ -310,11 +345,17 @@ class HomeRepositoryImpl @Inject constructor(
         }
     }
 
-    // ==================== 新版API实现 - 场景模块 ====================
+    // ==================== 新版API实现 - 场景模块 (带重试机制) ====================
 
-    override suspend fun getSceneList(houseId: Int): Flow<ApiResult<List<SceneInfo>>> = apiFlow(
+    /**
+     * 获取场景列表
+     * 使用带重试机制的API调用，在网络错误时自动重试3次
+     */
+    override suspend fun getSceneList(houseId: Int): Flow<ApiResult<List<SceneInfo>>> = apiFlowWithRetry(
         operation = "getSceneList",
-        params = "houseId=$houseId"
+        params = "houseId=$houseId",
+        maxRetries = 3,
+        initialDelay = 1000L
     ) {
         if (useMock) {
             kotlinx.coroutines.delay(300)
@@ -326,13 +367,19 @@ class HomeRepositoryImpl @Inject constructor(
             )
             ApiResult.Success(mockScenes)
         } else {
-            apiCall { apiService.getSceneList(houseId) }
+            apiCallWithRetry(maxRetries = 3) { apiService.getSceneList(houseId) }
         }
     }
 
-    override suspend fun applyScene(sceneId: Int, houseId: Int): Flow<ApiResult<ApplySceneResponse>> = apiFlow(
+    /**
+     * 应用场景
+     * 使用带重试机制的API调用，确保场景切换命令可靠送达
+     */
+    override suspend fun applyScene(sceneId: Int, houseId: Int): Flow<ApiResult<ApplySceneResponse>> = apiFlowWithRetry(
         operation = "applyScene",
-        params = "sceneId=$sceneId, houseId=$houseId"
+        params = "sceneId=$sceneId, houseId=$houseId",
+        maxRetries = 3,
+        initialDelay = 800L
     ) {
         if (useMock) {
             kotlinx.coroutines.delay(500)
@@ -344,19 +391,25 @@ class HomeRepositoryImpl @Inject constructor(
             )
             ApiResult.Success(mockResponse)
         } else {
-            apiCall { apiService.applyScene(ApplySceneRequest(sceneId, houseId)) }
+            apiCallWithRetry(maxRetries = 3) { apiService.applyScene(ApplySceneRequest(sceneId, houseId)) }
         }
     }
 
-    override suspend fun saveScene(request: SaveSceneRequest): Flow<ApiResult<Unit>> = apiFlow(
+    /**
+     * 保存自定义场景
+     * 使用带重试机制的API调用，确保场景配置保存成功
+     */
+    override suspend fun saveScene(request: SaveSceneRequest): Flow<ApiResult<Unit>> = apiFlowWithRetry(
         operation = "saveScene",
-        params = "houseId=${request.houseId}, name=${request.sceneName}"
+        params = "houseId=${request.houseId}, name=${request.sceneName}",
+        maxRetries = 3,
+        initialDelay = 1000L
     ) {
         if (useMock) {
             kotlinx.coroutines.delay(500)
             ApiResult.Success(Unit)
         } else {
-            apiCall { apiService.saveScene(request) }
+            apiCallWithRetry(maxRetries = 3) { apiService.saveScene(request) }
         }
     }
 
@@ -383,7 +436,8 @@ class HomeRepositoryImpl @Inject constructor(
             )
             ApiResult.Success(mockStatus)
         } else {
-            apiCall { apiService.getSystemStatus(houseId) }
+            // 使用带重试机制的API调用
+            apiCallWithRetry(maxRetries = 3) { apiService.getSystemStatus(houseId) }
         }
     }
 
@@ -395,6 +449,7 @@ class HomeRepositoryImpl @Inject constructor(
             kotlinx.coroutines.delay(500)
             ApiResult.Success(SetSystemModeResponse(mode))
         } else {
+            // 设置操作使用普通调用（不重试，避免重复设置）
             apiCall { apiService.setSystemMode(SetSystemModeRequest(houseId, mode)) }
         }
     }
@@ -420,6 +475,61 @@ class HomeRepositoryImpl @Inject constructor(
             ApiResult.Success(Unit)
         } else {
             apiCall { apiService.setGlobalHumidity(SetGlobalHumidityRequest(houseId, humidity)) }
+        }
+    }
+
+    // ==================== 新版API实现 - 系统参数模块 ====================
+
+    override suspend fun getSystemParams(houseId: Int): Flow<ApiResult<SystemParams>> = apiFlow(
+        operation = "getSystemParams",
+        params = "houseId=$houseId"
+    ) {
+        if (useMock) {
+            kotlinx.coroutines.delay(300)
+            val mockParams = SystemParams(
+                houseId = houseId,
+                systemMode = "cooling",
+                globalTempSet = "24.00",
+                globalHumiditySet = "45.00",
+                tempMin = "16",
+                tempMax = "30",
+                humidityMin = "30",
+                humidityMax = "70",
+                co2Threshold = 800,
+                fanSpeedDefault = 1,
+                vacationMode = 0,
+                vacationStartTime = null,
+                vacationEndTime = null
+            )
+            ApiResult.Success(mockParams)
+        } else {
+            // 使用带重试机制的API调用
+            apiCallWithRetry(maxRetries = 3) { apiService.getSystemParams(houseId) }
+        }
+    }
+
+    override suspend fun setSystemParams(request: SetSystemParamsRequest): Flow<ApiResult<SetSystemParamsResponse>> = apiFlow(
+        operation = "setSystemParams",
+        params = "houseId=${request.houseId}, params=${request.toString().take(100)}"
+    ) {
+        if (useMock) {
+            kotlinx.coroutines.delay(500)
+            val updatedParams = mutableListOf<String>()
+            if (request.globalTempSet != null) updatedParams.add("global_temp_set")
+            if (request.globalHumiditySet != null) updatedParams.add("global_humidity_set")
+            if (request.co2Threshold != null) updatedParams.add("co2_threshold")
+            if (request.fanSpeed != null) updatedParams.add("fan_speed")
+            if (request.vacationMode != null) updatedParams.add("vacation_mode")
+            
+            val mockResponse = SetSystemParamsResponse(
+                houseId = request.houseId,
+                updatedParams = updatedParams,
+                updateTime = System.currentTimeMillis() / 1000
+            )
+            ApiResult.Success(mockResponse)
+        } else {
+            // 设置操作使用普通调用（不重试，避免重复设置）
+            apiCall { apiService.setSystemParams(request) }
         }
     }
 }

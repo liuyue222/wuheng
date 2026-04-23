@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- 基础颜色 -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -7,4 +8,15 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- 启动页颜色 -->
+    <color name="splash_background">#FFF5F5F5</color>
+    <color name="splash_icon_background">#FF2196F3</color>
+    <color name="splash_background_night">#FF121212</color>
+    <color name="splash_icon_background_night">#FF1976D2</color>
+
+    <!-- 品牌色 -->
+    <color name="brand_primary">#FF2196F3</color>
+    <color name="brand_primary_dark">#FF1976D2</color>
+    <color name="brand_secondary">#FF03DAC5</color>
 </resources>

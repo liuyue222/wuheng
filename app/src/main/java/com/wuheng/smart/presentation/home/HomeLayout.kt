@@ -1,5 +1,8 @@
 package com.wuheng.smart.presentation.home
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,6 +16,10 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,11 +51,24 @@ fun HomeLayout(
     val isWide = maxWidth >= 720.dp
     val horizontalPadding = if (isWide) page_margin_horizontal_wide else page_margin_horizontal
 
-    val mainScenes = uiState.scenes.filter { scene ->
-        scene.type in listOf(SceneType.MEETING, SceneType.AWAY, SceneType.SLEEP, SceneType.GUARD)
-    }.take(4)
+    // 优化1: 使用derivedStateOf缓存场景列表，只在scenes引用变化时重新计算
+    // 使用key来稳定场景列表的标识，避免不必要的重组
+    val mainScenes by remember(uiState.scenes) {
+        derivedStateOf {
+            uiState.scenes.filter { scene ->
+                scene.type in listOf(SceneType.MEETING, SceneType.AWAY, SceneType.SLEEP, SceneType.GUARD)
+            }.take(4)
+        }
+    }
 
-    // 使用天气背景
+    // 优化2: 缓存场景选中状态，避免整个列表因单个场景状态变化而重组
+    val selectedSceneType by remember(uiState.scenes) {
+        derivedStateOf {
+            uiState.scenes.find { it.isSelected }?.type
+        }
+    }
+
+    // 优化3: 将WeatherBackground移到LazyColumn外部，避免天气变化导致整个列表重组
     WeatherBackground(weather = uiState.weather) {
         LazyColumn(
             modifier = modifier
@@ -60,68 +80,71 @@ fun HomeLayout(
                 bottom = page_bottom_safe_area
             )
         ) {
-        item {
-            WeatherHeader(
-                location = uiState.location,
-                outdoorTemp = uiState.outdoorTemp,
-                weather = uiState.weather,
-                aqi = uiState.aqi,
-                pm25 = uiState.pm25,
-                humidity = uiState.outdoorHumidity
-            )
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(spacing_lg))
-            ResidenceCard(
-                residenceName = uiState.residenceName,
-                onClick = onResidenceClick
-            )
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(spacing_lg))
-            ModeSelector(
-                selectedMode = uiState.currentMode,
-                onModeSelected = onModeSelected
-            )
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(spacing_lg))
-            EnvironmentDataCard(
-                indoorTemp = uiState.indoorTemp,
-                indoorHumidity = uiState.indoorHumidity,
-                co2 = uiState.co2,
-                pm25 = uiState.pm25,
-                tovc = uiState.tovc
-            )
-        }
-
-        if (mainScenes.isNotEmpty()) {
-            item {
-                Spacer(modifier = Modifier.height(spacing_lg))
-                SceneSection(
-                    scenes = mainScenes,
-                    onSceneSelected = onSceneSelected
+            // 优化4: 为每个item添加稳定的key，帮助Compose识别哪些项需要重组
+            item(key = "weather_header") {
+                WeatherHeader(
+                    location = uiState.location,
+                    outdoorTemp = uiState.outdoorTemp,
+                    weather = uiState.weather,
+                    aqi = uiState.aqi,
+                    pm25 = uiState.pm25,
+                    humidity = uiState.outdoorHumidity
                 )
             }
-        }
 
-        if (vacationModeEnabled) {
-            item {
+            item(key = "residence_card") {
                 Spacer(modifier = Modifier.height(spacing_lg))
-                VacationModeCard(
-                    onClick = onVacationModeClick,
-                    startTime = vacationStartTime
+                ResidenceCard(
+                    residenceName = uiState.residenceName,
+                    onClick = onResidenceClick
                 )
             }
-        }
 
-        item {
-            Spacer(modifier = Modifier.height(spacing_xl))
+            item(key = "mode_selector") {
+                Spacer(modifier = Modifier.height(spacing_lg))
+                ModeSelector(
+                    selectedMode = uiState.currentMode,
+                    onModeSelected = onModeSelected
+                )
+            }
+
+            item(key = "environment_card") {
+                Spacer(modifier = Modifier.height(spacing_lg))
+                EnvironmentDataCard(
+                    indoorTemp = uiState.indoorTemp,
+                    indoorHumidity = uiState.indoorHumidity,
+                    co2 = uiState.co2,
+                    pm25 = uiState.pm25,
+                    tovc = uiState.tovc
+                )
+            }
+
+            // 优化5: 场景列表使用稳定key，并传递selectedSceneType而非整个scenes列表
+            if (mainScenes.isNotEmpty()) {
+                item(key = "scene_section") {
+                    Spacer(modifier = Modifier.height(spacing_lg))
+                    SceneSection(
+                        scenes = mainScenes,
+                        selectedSceneType = selectedSceneType,
+                        onSceneSelected = onSceneSelected
+                    )
+                }
+            }
+
+            if (vacationModeEnabled) {
+                item(key = "vacation_card") {
+                    Spacer(modifier = Modifier.height(spacing_lg))
+                    VacationModeCard(
+                        onClick = onVacationModeClick,
+                        startTime = vacationStartTime
+                    )
+                }
+            }
+
+            item(key = "bottom_spacer") {
+                Spacer(modifier = Modifier.height(spacing_xl))
+            }
         }
-    }
     }
 }
 
@@ -144,13 +167,13 @@ private fun WeatherHeader(
                 Image(
                     painter = painterResource(id = R.drawable.ic_location),
                     contentDescription = null,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(spacing_xs))
                 Text(
                     text = location.ifEmpty { "定位中..." },
                     style = MaterialTheme.typography.bodyMedium,
-                    color = TextPrimaryLight,
+                    color = TextSecondaryLight,
                     fontSize = 14.sp
                 )
             }
@@ -161,11 +184,14 @@ private fun WeatherHeader(
                 Text(
                     text = if (outdoorTemp > 0) "$outdoorTemp" else "--",
                     style = OutdoorTempStyle,
-                    color = TextPrimaryLight
+                    color = TextPrimaryLight,
+                    fontSize = 48.sp,
+                    fontWeight = FontWeight.Normal
                 )
                 Text(
                     text = "°",
                     style = UnitLargeTextStyle,
+                    fontSize = 24.sp,
                     modifier = Modifier.padding(top = 4.dp)
                 )
                 Spacer(modifier = Modifier.width(spacing_sm))
@@ -173,7 +199,8 @@ private fun WeatherHeader(
                     text = weather,
                     style = MaterialTheme.typography.bodyLarge,
                     color = TextSecondaryLight,
-                    modifier = Modifier.padding(top = 8.dp)
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(top = 16.dp)
                 )
             }
         }
@@ -194,7 +221,7 @@ private fun WeatherHeader(
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                     color = getAqiColor(aqi),
-                    fontSize = 18.sp
+                    fontSize = 16.sp
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
@@ -205,7 +232,7 @@ private fun WeatherHeader(
                 )
             }
 
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             Text(
                 text = "PM2.5 $pm25",
@@ -233,27 +260,27 @@ private fun ResidenceCard(
         modifier = Modifier
             .fillMaxWidth()
             .shadow(
-                elevation = 12.dp,
-                shape = CardLargeShape,
-                spotColor = PrimaryBlue.copy(alpha = 0.15f),
+                elevation = 8.dp,
+                shape = RoundedCornerShape(20.dp),
+                spotColor = PrimaryBlue.copy(alpha = 0.12f),
                 ambientColor = PrimaryBlue.copy(alpha = 0.05f)
             )
-            .clip(CardLargeShape)
+            .clip(RoundedCornerShape(20.dp))
             .background(
                 Brush.linearGradient(
                     colors = listOf(
-                        Color(0xFFF5FAFF),
-                        Color(0xFFE8F4FD)
+                        Color(0xFFF8FBFF),
+                        Color(0xFFEEF6FC)
                     )
                 )
             )
             .border(
                 width = 1.dp,
                 color = Color.White.copy(alpha = 0.8f),
-                shape = CardLargeShape
+                shape = RoundedCornerShape(20.dp)
             )
             .clickable(onClick = onClick)
-            .padding(card_padding_large)
+            .padding(20.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -280,11 +307,11 @@ private fun ResidenceCard(
 
             Box(
                 modifier = Modifier
-                    .size(44.dp)
+                    .size(48.dp)
                     .shadow(
                         elevation = 4.dp,
                         shape = CircleShape,
-                        spotColor = PrimaryBlue.copy(alpha = 0.3f)
+                        spotColor = PrimaryBlue.copy(alpha = 0.25f)
                     )
                     .clip(CircleShape)
                     .background(PrimaryBlue),
@@ -310,13 +337,13 @@ private fun ModeSelector(
         modifier = Modifier
             .fillMaxWidth()
             .shadow(
-                elevation = 4.dp,
-                shape = RoundedCornerShape(24.dp),
-                spotColor = Color.Black.copy(alpha = 0.08f)
+                elevation = 2.dp,
+                shape = RoundedCornerShape(28.dp),
+                spotColor = Color.Black.copy(alpha = 0.06f)
             )
-            .clip(RoundedCornerShape(24.dp))
+            .clip(RoundedCornerShape(28.dp))
             .background(Color.White)
-            .padding(6.dp)
+            .padding(4.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -358,14 +385,14 @@ private fun ModeTab(
     Box(
         modifier = modifier
             .shadow(
-                elevation = if (selected) 6.dp else 0.dp,
-                shape = RoundedCornerShape(18.dp),
-                spotColor = if (selected) PrimaryBlue.copy(alpha = 0.25f) else Color.Transparent
+                elevation = if (selected) 4.dp else 0.dp,
+                shape = RoundedCornerShape(24.dp),
+                spotColor = if (selected) PrimaryBlue.copy(alpha = 0.2f) else Color.Transparent
             )
-            .clip(RoundedCornerShape(18.dp))
+            .clip(RoundedCornerShape(24.dp))
             .background(if (selected) Color.White else Color.Transparent)
             .clickable(onClick = onClick)
-            .padding(horizontal = 8.dp, vertical = 10.dp),
+            .padding(horizontal = 8.dp, vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(
@@ -384,7 +411,7 @@ private fun ModeTab(
                 style = MaterialTheme.typography.bodySmall,
                 color = if (selected) PrimaryBlue else TextSecondaryLight,
                 fontWeight = if (selected) FontWeight.Medium else FontWeight.Normal,
-                fontSize = 12.sp
+                fontSize = 13.sp
             )
         }
     }
@@ -398,12 +425,20 @@ private fun EnvironmentDataCard(
     pm25: Int,
     tovc: String
 ) {
-    WuHengCard(
-        modifier = Modifier.fillMaxWidth()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 2.dp,
+                shape = RoundedCornerShape(16.dp),
+                spotColor = Color.Black.copy(alpha = 0.06f)
+            )
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.White)
+            .padding(16.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(card_padding_default)
-        ) {
+        Column {
+            // 第一行：室内温度、室内湿度、CO2
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -442,10 +477,19 @@ private fun EnvironmentDataCard(
                 )
             }
 
-            Spacer(modifier = Modifier.height(spacing_md))
-            WuHengDivider()
-            Spacer(modifier = Modifier.height(spacing_md))
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            // 分隔线
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(DividerLight)
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
 
+            // 第二行：PM2.5、TOVC
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -469,6 +513,57 @@ private fun EnvironmentDataCard(
                     unit = "mg/m³",
                     modifier = Modifier.weight(1f)
                 )
+                // 占位，保持三列布局
+                Box(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(50.dp)
+                        .background(Color.Transparent)
+                        .align(Alignment.CenterVertically)
+                )
+                Box(modifier = Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+@Composable
+private fun EnvironmentDataItem(
+    label: String,
+    value: String,
+    unit: String,
+    modifier: Modifier = Modifier,
+    valueColor: Color = TextPrimaryLight
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = TextSecondaryLight,
+            fontSize = 13.sp
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Row(
+            verticalAlignment = Alignment.Bottom
+        ) {
+            Text(
+                text = value,
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Normal,
+                color = valueColor,
+                fontSize = 28.sp
+            )
+            if (unit.isNotEmpty()) {
+                Text(
+                    text = unit,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondaryLight,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
             }
         }
     }
@@ -477,6 +572,7 @@ private fun EnvironmentDataCard(
 @Composable
 private fun SceneSection(
     scenes: List<SceneItem>,
+    selectedSceneType: SceneType?,
     onSceneSelected: (SceneType) -> Unit
 ) {
     Column {
@@ -484,20 +580,25 @@ private fun SceneSection(
             text = "智能场景",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
-            color = TextPrimaryLight
+            color = PrimaryBlue,
+            fontSize = 16.sp
         )
-        Spacer(modifier = Modifier.height(spacing_md))
+        Spacer(modifier = Modifier.height(12.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             scenes.forEach { scene ->
-                SceneButton(
-                    scene = scene,
-                    onClick = { onSceneSelected(scene.type) },
-                    modifier = Modifier.weight(1f)
-                )
+                // 使用key为每个场景按钮提供稳定标识
+                key(scene.type) {
+                    SceneButton(
+                        scene = scene,
+                        isSelected = scene.type == selectedSceneType,
+                        onClick = { onSceneSelected(scene.type) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         }
     }
@@ -506,49 +607,82 @@ private fun SceneSection(
 @Composable
 private fun SceneButton(
     scene: SceneItem,
+    isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor = when (scene.type) {
-        SceneType.MEETING -> SceneMeeting
-        SceneType.AWAY -> SceneAway
-        SceneType.SLEEP -> SceneSleep
-        SceneType.GUARD -> SceneGuard
-        else -> PrimaryBlue
+    // 优化: 使用remember缓存颜色和图标资源，避免每次重组时重新计算
+    val backgroundColor by remember(scene.type) {
+        derivedStateOf {
+            when (scene.type) {
+                SceneType.MEETING -> SceneMeeting
+                SceneType.AWAY -> SceneAway
+                SceneType.SLEEP -> SceneSleep
+                SceneType.GUARD -> SceneGuard
+                else -> PrimaryBlue
+            }
+        }
     }
 
-    val iconRes = when (scene.type) {
-        SceneType.MEETING -> R.drawable.ic_scene_meeting
-        SceneType.AWAY -> R.drawable.ic_scene_away
-        SceneType.SLEEP -> R.drawable.ic_scene_sleep
-        SceneType.GUARD -> R.drawable.ic_scene_eco
-        else -> R.drawable.ic_scene_meeting
+    val iconRes by remember(scene.type) {
+        derivedStateOf {
+            when (scene.type) {
+                SceneType.MEETING -> R.drawable.ic_scene_meeting
+                SceneType.AWAY -> R.drawable.ic_scene_away
+                SceneType.SLEEP -> R.drawable.ic_scene_sleep
+                SceneType.GUARD -> R.drawable.ic_scene_eco
+                else -> R.drawable.ic_scene_meeting
+            }
+        }
     }
+
+    // 优化: 使用animateColorAsState平滑过渡选中状态变化
+    val animatedBackgroundColor by animateColorAsState(
+        targetValue = if (isSelected) backgroundColor else Color.White,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "sceneBackground"
+    )
+
+    val animatedContentColor by animateColorAsState(
+        targetValue = if (isSelected) Color.White else TextPrimaryLight,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "sceneContent"
+    )
+
+    val shadowColor by animateColorAsState(
+        targetValue = if (isSelected) backgroundColor.copy(alpha = 0.3f) else Color.Black.copy(alpha = 0.08f),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioNoBouncy),
+        label = "sceneShadow"
+    )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .shadow(
-                elevation = 3.dp,
-                shape = SceneButtonShape,
-                spotColor = if (scene.isSelected) backgroundColor.copy(alpha = 0.4f) else Color.Black.copy(alpha = 0.1f)
+                elevation = if (isSelected) 4.dp else 2.dp,
+                shape = RoundedCornerShape(16.dp),
+                spotColor = shadowColor
             )
-            .clip(SceneButtonShape)
-            .background(if (scene.isSelected) backgroundColor else Color.White)
+            .clip(RoundedCornerShape(16.dp))
+            .background(animatedBackgroundColor)
             .clickable(onClick = onClick)
-            .padding(vertical = 12.dp, horizontal = 8.dp)
+            .padding(vertical = 16.dp, horizontal = 8.dp)
     ) {
         Image(
             painter = painterResource(id = iconRes),
             contentDescription = scene.name,
-            modifier = Modifier.size(32.dp)
+            modifier = Modifier.size(32.dp),
+            // 优化: 使用colorFilter来动态改变图标颜色
+            colorFilter = if (isSelected) {
+                androidx.compose.ui.graphics.ColorFilter.tint(Color.White)
+            } else null
         )
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = scene.name,
             style = MaterialTheme.typography.bodySmall,
-            color = if (scene.isSelected) Color.White else TextPrimaryLight,
-            fontSize = 11.sp,
+            color = animatedContentColor,
+            fontSize = 12.sp,
             fontWeight = FontWeight.Medium
         )
     }
@@ -559,15 +693,21 @@ private fun VacationModeCard(
     onClick: () -> Unit,
     startTime: String? = null
 ) {
-    WuHengCard(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
+            .shadow(
+                elevation = 2.dp,
+                shape = RoundedCornerShape(16.dp),
+                spotColor = Color.Black.copy(alpha = 0.06f)
+            )
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.White)
             .clickable(onClick = onClick)
+            .padding(16.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(card_padding_default),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
@@ -576,27 +716,29 @@ private fun VacationModeCard(
                 modifier = Modifier.size(48.dp)
             )
 
-            Spacer(modifier = Modifier.width(spacing_md))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "度假模式",
+                    text = "预冷\\预热",
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Medium,
-                    color = TextPrimaryLight
+                    color = TextPrimaryLight,
+                    fontSize = 16.sp
                 )
-                Spacer(modifier = Modifier.height(spacing_xs))
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = startTime?.let { "预计启动时间：$it" } ?: "点击设置返程时间",
+                    text = startTime?.let { "预计启动时间：$it" } ?: "点击设置预冷\\预热",
                     style = MaterialTheme.typography.bodySmall,
-                    color = TextTertiaryLight
+                    color = TextTertiaryLight,
+                    fontSize = 12.sp
                 )
             }
 
             Icon(
                 imageVector = Icons.Filled.KeyboardArrowRight,
                 contentDescription = null,
-                modifier = Modifier.size(icon_size_default),
+                modifier = Modifier.size(20.dp),
                 tint = TextTertiaryLight
             )
         }

@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,11 +45,15 @@ fun ConsumablesScreen(
     onNavigateBack: () -> Unit = {}
 ) {
     val consumablesState by viewModel.consumablesState.collectAsStateWithLifecycle()
+    val bookingState by viewModel.bookingState.collectAsStateWithLifecycle()
 
     ConsumablesContent(
         consumablesState = consumablesState,
+        bookingState = bookingState,
         onNavigateBack = onNavigateBack,
-        onRefresh = { viewModel.refresh() }
+        onRefresh = { viewModel.refresh() },
+        onBookReplacement = { item -> viewModel.bookFilterReplacement(item.id.toString()) },
+        onResetBookingState = { viewModel.resetBookingState() }
     )
 }
 
@@ -59,9 +64,31 @@ fun ConsumablesScreen(
 @Composable
 fun ConsumablesContent(
     consumablesState: UiDataState<List<ConsumableItem>>,
+    bookingState: UiDataState<Unit> = UiDataState.Idle,
     onNavigateBack: () -> Unit = {},
-    onRefresh: () -> Unit = {}
+    onRefresh: () -> Unit = {},
+    onBookReplacement: (ConsumableItem) -> Unit = {},
+    onResetBookingState: () -> Unit = {}
 ) {
+    var selectedItem by remember { mutableStateOf<ConsumableItem?>(null) }
+    var showDetailDialog by remember { mutableStateOf(false) }
+    var showBookingConfirmDialog by remember { mutableStateOf(false) }
+
+    // 处理预约结果
+    LaunchedEffect(bookingState) {
+        when (bookingState) {
+            is UiDataState.Success -> {
+                showBookingConfirmDialog = false
+                selectedItem = null
+                onResetBookingState()
+            }
+            is UiDataState.Error -> {
+                onResetBookingState()
+            }
+            else -> {}
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -91,7 +118,7 @@ fun ConsumablesContent(
         containerColor = BackgroundLight
     ) { paddingValues ->
         when (consumablesState) {
-            is UiDataState.Idle, is UiDataState.Loading -> {
+            is UiDataState.Idle, is UiDataState.Loading, is UiDataState.LoadingWithData -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -101,7 +128,7 @@ fun ConsumablesContent(
                     CircularProgressIndicator(color = PrimaryBlue)
                 }
             }
-            is UiDataState.Error -> {
+            is UiDataState.Error, is UiDataState.ErrorWithData -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -134,15 +161,51 @@ fun ConsumablesContent(
                 ) {
                     item { Spacer(modifier = Modifier.height(spacing_sm)) }
 
+                    // 统计卡片
+                    item {
+                        ConsumablesSummaryCard(consumables = consumables)
+                    }
+
+                    item { Spacer(modifier = Modifier.height(spacing_md)) }
+
+                    // 耗材列表
                     items(consumables.size) { index ->
                         val item = consumables[index]
-                        ConsumableItemCard(item = item)
+                        ConsumableItemCard(
+                            item = item,
+                            onClick = {
+                                selectedItem = item
+                                showDetailDialog = true
+                            }
+                        )
                     }
 
                     item { Spacer(modifier = Modifier.height(spacing_lg)) }
                 }
             }
         }
+    }
+
+    // 详情弹窗
+    if (showDetailDialog && selectedItem != null) {
+        ConsumableDetailDialog(
+            item = selectedItem!!,
+            onDismiss = { showDetailDialog = false },
+            onBookReplacement = {
+                showDetailDialog = false
+                showBookingConfirmDialog = true
+            }
+        )
+    }
+
+    // 预约确认弹窗
+    if (showBookingConfirmDialog && selectedItem != null) {
+        BookingConfirmDialog(
+            item = selectedItem!!,
+            bookingState = bookingState,
+            onDismiss = { showBookingConfirmDialog = false },
+            onConfirm = { onBookReplacement(selectedItem!!) }
+        )
     }
 }
 
@@ -157,8 +220,214 @@ data class ConsumableItem(
     val id: Int,
     val name: String,
     val percentage: Int,
-    val status: ConsumableStatus
+    val status: ConsumableStatus,
+    val installDate: String = "2024-01-15",  // 安装日期
+    val estimatedLife: Int = 365,            // 预计寿命（天）
+    val description: String = ""             // 滤芯描述
 )
+
+/**
+ * 耗材统计卡片
+ */
+@Composable
+private fun ConsumablesSummaryCard(consumables: List<ConsumableItem>) {
+    val normalCount = consumables.count { it.status == ConsumableStatus.NORMAL }
+    val warningCount = consumables.count { it.status == ConsumableStatus.WARNING }
+    val criticalCount = consumables.count { it.status == ConsumableStatus.CRITICAL }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = PrimaryBlue.copy(alpha = 0.1f)),
+        shape = RoundedCornerShape(corner_md)
+    ) {
+        Column(
+            modifier = Modifier.padding(card_padding_large)
+        ) {
+            Text(
+                text = "耗材状态概览",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = TextPrimaryLight
+            )
+
+            Spacer(modifier = Modifier.height(spacing_md))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                SummaryItem(count = normalCount, label = "正常", color = SuccessGreen)
+                SummaryItem(count = warningCount, label = "需更换", color = WarningYellow)
+                SummaryItem(count = criticalCount, label = "急需更换", color = ErrorRed)
+            }
+        }
+    }
+}
+
+@Composable
+private fun SummaryItem(count: Int, label: String, color: Color) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = count.toString(),
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            color = color
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = TextSecondaryLight
+        )
+    }
+}
+
+/**
+ * 耗材详情弹窗
+ */
+@Composable
+private fun ConsumableDetailDialog(
+    item: ConsumableItem,
+    onDismiss: () -> Unit,
+    onBookReplacement: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = item.name,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(spacing_md)) {
+                // 进度条
+                LinearProgressIndicator(
+                    progress = item.percentage / 100f,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = when (item.status) {
+                        ConsumableStatus.NORMAL -> SuccessGreen
+                        ConsumableStatus.WARNING -> WarningYellow
+                        ConsumableStatus.CRITICAL -> ErrorRed
+                    }
+                )
+
+                // 信息行
+                DetailInfoRow(label = "剩余寿命", value = "${item.percentage}%")
+                DetailInfoRow(label = "安装日期", value = item.installDate)
+                DetailInfoRow(label = "预计寿命", value = "${item.estimatedLife}天")
+
+                // 状态提示
+                val tipText = when (item.status) {
+                    ConsumableStatus.NORMAL -> "滤芯状态良好，请继续保持"
+                    ConsumableStatus.WARNING -> "滤芯寿命即将到期，建议预约更换"
+                    ConsumableStatus.CRITICAL -> "滤芯急需更换，请立即预约"
+                }
+                Text(
+                    text = tipText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = when (item.status) {
+                        ConsumableStatus.NORMAL -> SuccessGreen
+                        ConsumableStatus.WARNING -> WarningYellow
+                        ConsumableStatus.CRITICAL -> ErrorRed
+                    },
+                    modifier = Modifier.padding(top = spacing_sm)
+                )
+            }
+        },
+        confirmButton = {
+            if (item.status != ConsumableStatus.NORMAL) {
+                Button(
+                    onClick = onBookReplacement,
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
+                ) {
+                    Text("预约更换")
+                }
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("关闭")
+            }
+        }
+    )
+}
+
+@Composable
+private fun DetailInfoRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = label, color = TextSecondaryLight)
+        Text(text = value, fontWeight = FontWeight.Medium)
+    }
+}
+
+/**
+ * 预约确认弹窗
+ */
+@Composable
+private fun BookingConfirmDialog(
+    item: ConsumableItem,
+    bookingState: UiDataState<Unit>,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "确认预约",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(spacing_sm)) {
+                Text("您即将预约更换以下滤芯：")
+                Text(
+                    text = item.name,
+                    fontWeight = FontWeight.SemiBold,
+                    color = PrimaryBlue
+                )
+                Text(
+                    text = "我们的服务人员将在24小时内与您联系确认上门时间。",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondaryLight
+                )
+
+                if (bookingState is UiDataState.Loading) {
+                    Spacer(modifier = Modifier.height(spacing_md))
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                }
+
+                if (bookingState is UiDataState.Error) {
+                    Spacer(modifier = Modifier.height(spacing_md))
+                    Text(
+                        text = "预约失败，请稍后重试",
+                        color = ErrorRed,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                enabled = bookingState !is UiDataState.Loading,
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
+            ) {
+                Text("确认预约")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("取消")
+            }
+        }
+    )
+}
 
 /**
  * 耗材列表项卡片 - 像素级还原设计图

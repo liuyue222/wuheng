@@ -32,6 +32,13 @@ class ProfileViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
+    // ==================== Booking State ====================
+
+    private val _bookingState = MutableStateFlow<com.wuheng.smart.presentation.base.UiDataState<Unit>>(
+        com.wuheng.smart.presentation.base.UiDataState.Idle
+    )
+    val bookingState: StateFlow<com.wuheng.smart.presentation.base.UiDataState<Unit>> = _bookingState.asStateFlow()
+
     // ==================== 初始化 ====================
 
     init {
@@ -122,11 +129,47 @@ class ProfileViewModel @Inject constructor(
     // ==================== UI交互方法 ====================
 
     /**
-     * 预约服务
+     * 选择服务类型
      */
-    fun onBookService() {
-        // 实现预约服务逻辑
-        Timber.d("用户点击预约服务")
+    fun selectServiceType(type: ServiceType) {
+        _uiState.value = _uiState.value.copy(selectedServiceType = type)
+        Timber.d("选择服务类型: ${type.displayName}")
+    }
+
+    /**
+     * 确认预约
+     */
+    fun confirmBooking() {
+        val serviceType = _uiState.value.selectedServiceType
+        if (serviceType == null) {
+            Timber.w("未选择服务类型，无法预约")
+            return
+        }
+
+        viewModelScope.launch {
+            _bookingState.value = com.wuheng.smart.presentation.base.UiDataState.Loading
+            Timber.d("开始预约服务: ${serviceType.displayName}")
+
+            // TODO: 调用API提交预约请求
+            // 模拟网络请求
+            kotlinx.coroutines.delay(1500)
+
+            // 模拟成功
+            _bookingState.value = com.wuheng.smart.presentation.base.UiDataState.Success(Unit)
+            Timber.d("预约成功")
+
+            // 更新上次保养日期
+            val currentDate = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+                .format(java.util.Date())
+            _uiState.value = _uiState.value.copy(lastServiceDate = currentDate)
+        }
+    }
+
+    /**
+     * 重置预约状态
+     */
+    fun resetBookingState() {
+        _bookingState.value = com.wuheng.smart.presentation.base.UiDataState.Idle
     }
 
     /**
@@ -148,7 +191,8 @@ data class ProfileUiState(
     val residenceName: String = "",
     val role: String = "",
     val hasNotification: Boolean = false,
-    val projectDescription: String = "",
-    val lastServiceDate: String = "",
-    val version: String = ""
+    val projectDescription: String = "五恒智能控制系统采用先进的辐射空调技术，为您提供恒温、恒湿、恒氧、恒洁、恒静的舒适居住环境。",
+    val lastServiceDate: String = "2024-03-15",
+    val version: String = "1.0.0",
+    val selectedServiceType: ServiceType? = null
 )

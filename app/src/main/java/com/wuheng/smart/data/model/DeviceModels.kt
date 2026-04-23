@@ -27,7 +27,7 @@ data class DeviceInfo(
 )
 
 /**
- * 设备实时数据
+ * 设备实时数据 (旧版，保留兼容)
  */
 data class DeviceData(
     @SerializedName("data_id")
@@ -52,6 +52,36 @@ data class DeviceData(
     val power: Int,
     @SerializedName("report_time")
     val reportTime: Long
+)
+
+/**
+ * 设备状态 (getDeviceStatus接口返回)
+ */
+data class DeviceStatus(
+    @SerializedName("device_id")
+    val deviceId: Int,
+    @SerializedName("online_status")
+    val onlineStatus: Int,
+    @SerializedName("run_status")
+    val runStatus: String,
+    @SerializedName("power")
+    val power: Int,
+    @SerializedName("temperature")
+    val temperature: String? = null,
+    @SerializedName("humidity")
+    val humidity: String? = null,
+    @SerializedName("co2")
+    val co2: Int? = null,
+    @SerializedName("pm25")
+    val pm25: Int? = null,
+    @SerializedName("voc")
+    val voc: Int? = null,
+    @SerializedName("fan_speed")
+    val fanSpeed: Int? = null,
+    @SerializedName("valve_open")
+    val valveOpen: Int? = null,
+    @SerializedName("report_time")
+    val reportTime: Long? = null
 )
 
 /**

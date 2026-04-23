@@ -16,9 +16,31 @@ typealias UiState<T> = StateFlow<UiDataState<T>>
 
 sealed class UiDataState<out T> {
     object Loading : UiDataState<Nothing>()
+    data class LoadingWithData<T>(val data: T) : UiDataState<T>()
     data class Success<T>(val data: T) : UiDataState<T>()
     data class Error(val exception: AppException) : UiDataState<Nothing>()
+    data class ErrorWithData<T>(val exception: AppException, val data: T) : UiDataState<T>()
     object Idle : UiDataState<Nothing>()
+
+    /**
+     * 获取当前状态中的数据（如果有）
+     */
+    fun getDataOrNull(): T? = when (this) {
+        is Success -> data
+        is LoadingWithData -> data
+        is ErrorWithData -> data
+        else -> null
+    }
+
+    /**
+     * 检查是否为加载状态（包括带数据的加载）
+     */
+    fun isLoading(): Boolean = this is Loading || this is LoadingWithData
+
+    /**
+     * 检查是否为错误状态（包括带数据的错误）
+     */
+    fun isError(): Boolean = this is Error || this is ErrorWithData
 }
 
 /**
@@ -150,8 +172,10 @@ inline fun <T> UiState<T>.handleUiState(
 ) {
     when (val state = this.value) {
         is UiDataState.Loading -> onLoading()
+        is UiDataState.LoadingWithData -> onLoading()
         is UiDataState.Success -> onSuccess(state.data)
         is UiDataState.Error -> onError(state.exception)
+        is UiDataState.ErrorWithData -> onError(state.exception)
         is UiDataState.Idle -> onIdle()
     }
 }

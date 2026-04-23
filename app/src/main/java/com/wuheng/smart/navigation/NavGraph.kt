@@ -7,254 +7,48 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.wuheng.smart.presentation.about.AboutScreen
-import com.wuheng.smart.presentation.climate.ClimateScreen
-import com.wuheng.smart.presentation.consumables.ConsumablesScreen
 import com.wuheng.smart.presentation.device.DeviceDetailScreen
 import com.wuheng.smart.presentation.floorzone.FloorZoneScreen
-import com.wuheng.smart.presentation.forgotpassword.ForgotPasswordScreen
 import com.wuheng.smart.presentation.home.HomeScreen
 import com.wuheng.smart.presentation.login.LoginScreen
+import com.wuheng.smart.presentation.notification.NotificationScreen
 import com.wuheng.smart.presentation.profile.ProfileScreen
-import com.wuheng.smart.presentation.register.RegisterScreen
-import com.wuheng.smart.presentation.water.WaterScreen
+import com.wuheng.smart.presentation.settings.SettingScreen
+import com.wuheng.smart.presentation.splash.SplashScreen
 
 /**
  * 应用导航图
  *
  * 定义所有页面路由和导航逻辑
- * 使用 Jetpack Navigation Compose 实现
  */
 @Composable
-fun WuHengNavGraph(
+fun NavGraph(
     navController: NavHostController,
-    modifier: Modifier = Modifier,
-    startDestination: String = NavigationRoutes.HOME
+    startDestination: String = NavigationRoutes.LOGIN,
+    modifier: Modifier = Modifier
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = modifier
     ) {
-        // ==================== 主Tab页面 ====================
-
-        // 首页
-        composable(NavigationRoutes.HOME) {
-            HomeScreen(
-                onNavigateToResidence = {
-                    // TODO: 导航到住宅详情页面
-                }
-            )
-        }
-
-        // 冷暖系统页面
-        composable(NavigationRoutes.CLIMATE) {
-            ClimateScreen(
-                onNavigateToFloorDetail = { floorId ->
-                    navController.navigate(NavigationRoutes.floorZone(floorId.toIntOrNull()))
-                }
-            )
-        }
-
-        // 水系统页面
-        composable(NavigationRoutes.WATER) {
-            WaterScreen()
-        }
-
-        // 个人中心页面
-        composable(NavigationRoutes.PROFILE) {
-            ProfileScreen(
-                onNavigateToNotifications = {
-                    // TODO: 导航到通知页面
+        // ==================== 启动页 ====================
+        composable("splash") {
+            SplashScreen(
+                onNavigateToLogin = {
+                    navController.navigate(NavigationRoutes.LOGIN) {
+                        popUpTo("splash") { inclusive = true }
+                    }
                 },
-                onNavigateToServiceSelect = {
-                    // TODO: 导航到服务选择页面
-                },
-                onNavigateToConsumables = {
-                    navController.navigate(NavigationRoutes.CONSUMABLES)
-                },
-                onNavigateToAbout = {
-                    navController.navigate(NavigationRoutes.ABOUT)
-                },
-                onNavigateToPrivacy = {
-                    // TODO: 导航到隐私政策页面
+                onNavigateToHome = {
+                    navController.navigate(NavigationRoutes.HOME) {
+                        popUpTo("splash") { inclusive = true }
+                    }
                 }
             )
         }
 
-        // ==================== 首页子页面 ====================
-
-        // 设备详情页
-        composable(
-            route = NavigationRoutes.DEVICE_DETAIL,
-            arguments = listOf(
-                navArgument("deviceId") {
-                    type = NavType.StringType
-                }
-            )
-        ) { backStackEntry ->
-            val deviceId = backStackEntry.arguments?.getString("deviceId") ?: ""
-            DeviceDetailScreen(
-                deviceId = deviceId,
-                onNavigateBack = {
-                    navController.popBackStack()
-                },
-                onNavigateToEdit = { id ->
-                    // TODO: 导航到设备编辑页面
-                }
-            )
-        }
-
-        // 服务详情页
-        composable(
-            route = NavigationRoutes.SERVICE_DETAIL,
-            arguments = listOf(
-                navArgument("serviceType") {
-                    type = NavType.StringType
-                }
-            )
-        ) { backStackEntry ->
-            val serviceType = backStackEntry.arguments?.getString("serviceType") ?: ""
-            // TODO: 创建 ServiceDetailScreen
-            // ServiceDetailScreen(
-            //     serviceType = serviceType,
-            //     onNavigateBack = { navController.popBackStack() }
-            // )
-        }
-
-        // 场景编辑页
-        composable(
-            route = NavigationRoutes.SCENE_EDIT,
-            arguments = listOf(
-                navArgument("sceneId") {
-                    type = NavType.StringType
-                }
-            )
-        ) { backStackEntry ->
-            val sceneId = backStackEntry.arguments?.getString("sceneId") ?: ""
-            // TODO: 创建 SceneEditScreen
-            // SceneEditScreen(
-            //     sceneId = sceneId,
-            //     onNavigateBack = { navController.popBackStack() }
-            // )
-        }
-
-        // 环境数据详情页
-        composable(NavigationRoutes.ENVIRONMENT_DETAIL) {
-            // TODO: 创建 EnvironmentDetailScreen
-            // EnvironmentDetailScreen(
-            //     onNavigateBack = { navController.popBackStack() }
-            // )
-        }
-
-        // ==================== 冷暖系统子页面 ====================
-
-        // 楼层区域页面
-        composable(
-            route = NavigationRoutes.FLOOR_ZONE,
-            arguments = listOf(
-                navArgument("floorId") {
-                    type = NavType.IntType
-                    defaultValue = -1
-                }
-            )
-        ) { backStackEntry ->
-            val floorId = backStackEntry.arguments?.getInt("floorId")
-            FloorZoneScreen(
-                floorId = if (floorId != null && floorId >= 0) floorId else null,
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
-
-        // 区域详情页
-        composable(
-            route = NavigationRoutes.CLIMATE_ZONE_DETAIL,
-            arguments = listOf(
-                navArgument("zoneId") {
-                    type = NavType.StringType
-                }
-            )
-        ) { backStackEntry ->
-            val zoneId = backStackEntry.arguments?.getString("zoneId") ?: ""
-            // TODO: 创建 ZoneDetailScreen
-            // ZoneDetailScreen(
-            //     zoneId = zoneId,
-            //     onNavigateBack = { navController.popBackStack() }
-            // )
-        }
-
-        // ==================== 水系统子页面 ====================
-
-        // 水系统设备详情页
-        composable(
-            route = NavigationRoutes.WATER_DEVICE_DETAIL,
-            arguments = listOf(
-                navArgument("deviceId") {
-                    type = NavType.StringType
-                }
-            )
-        ) { backStackEntry ->
-            val deviceId = backStackEntry.arguments?.getString("deviceId") ?: ""
-            // TODO: 创建 WaterDeviceDetailScreen
-            // WaterDeviceDetailScreen(
-            //     deviceId = deviceId,
-            //     onNavigateBack = { navController.popBackStack() }
-            // )
-        }
-
-        // ==================== 个人中心子页面 ====================
-
-        // 耗材使用进度页面
-        composable(NavigationRoutes.CONSUMABLES) {
-            ConsumablesScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
-
-        // 关于新宜能页面
-        composable(NavigationRoutes.ABOUT) {
-            AboutScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                },
-                onFunctionIntroClick = {
-                    // TODO: 导航到功能介绍页面
-                },
-                onUserAgreementClick = {
-                    // TODO: 导航到用户协议页面
-                },
-                onPrivacyPolicyClick = {
-                    // TODO: 导航到隐私政策页面
-                },
-                onContactUsClick = {
-                    // TODO: 导航到联系我们页面
-                }
-            )
-        }
-
-        // 个人设置页面
-        composable(NavigationRoutes.PROFILE_SETTINGS) {
-            // TODO: 创建 SettingsScreen
-            // SettingsScreen(
-            //     onNavigateBack = { navController.popBackStack() }
-            // )
-        }
-
-        // 编辑个人资料页面
-        composable(NavigationRoutes.PROFILE_EDIT) {
-            // TODO: 创建 EditProfileScreen
-            // EditProfileScreen(
-            //     onNavigateBack = { navController.popBackStack() }
-            // )
-        }
-
-        // ==================== 认证页面 ====================
-
-        // 登录页面
+        // ==================== 认证模块 ====================
         composable(NavigationRoutes.LOGIN) {
             LoginScreen(
                 onNavigateToHome = {
@@ -271,23 +65,187 @@ fun WuHengNavGraph(
             )
         }
 
-        // 注册页面
         composable(NavigationRoutes.REGISTER) {
-            RegisterScreen(
-                onNavigateToLogin = { navController.popBackStack() },
-                onNavigateToHome = {
-                    navController.navigate(NavigationRoutes.HOME) {
-                        popUpTo(NavigationRoutes.LOGIN) { inclusive = true }
+            // TODO: 注册页面
+        }
+
+        composable(NavigationRoutes.FORGOT_PASSWORD) {
+            // TODO: 忘记密码页面
+        }
+
+        // ==================== 首页模块 ====================
+        composable(NavigationRoutes.HOME) {
+            HomeScreen(
+                onNavigateToResidence = {
+                    // 导航到房产选择页面
+                },
+                onNavigateToHouseList = {
+                    // 导航到房屋列表
+                }
+            )
+        }
+
+        // ==================== 楼层区域模块 ====================
+        composable(
+            route = NavigationRoutes.FLOOR_ZONE_WITH_ARG,
+            arguments = listOf(
+                navArgument("floorId") {
+                    type = NavType.IntType
+                    defaultValue = -1
+                }
+            )
+        ) { backStackEntry ->
+            val floorId = backStackEntry.arguments?.getInt("floorId")?.takeIf { it != -1 }
+            FloorZoneScreen(
+                floorId = floorId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToDeviceDetail = { deviceId ->
+                    navController.navigate(NavigationRoutes.deviceDetail(deviceId))
+                }
+            )
+        }
+
+        // 无参数的楼层区域页面
+        composable(NavigationRoutes.FLOOR_ZONE) {
+            FloorZoneScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToDeviceDetail = { deviceId ->
+                    navController.navigate(NavigationRoutes.deviceDetail(deviceId))
+                }
+            )
+        }
+
+        // ==================== 设备模块 ====================
+        composable(
+            route = NavigationRoutes.DEVICE_DETAIL_WITH_ARG,
+            arguments = listOf(
+                navArgument("deviceId") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val deviceId = backStackEntry.arguments?.getString("deviceId") ?: ""
+            DeviceDetailScreen(
+                deviceId = deviceId,
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToEdit = { id ->
+                    navController.navigate(NavigationRoutes.deviceEdit(id))
+                }
+            )
+        }
+
+        composable(
+            route = NavigationRoutes.DEVICE_EDIT_WITH_ARG,
+            arguments = listOf(
+                navArgument("deviceId") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val deviceId = backStackEntry.arguments?.getString("deviceId") ?: ""
+            // TODO: 设备编辑页面
+        }
+
+        // ==================== 通知模块 ====================
+        composable(NavigationRoutes.NOTIFICATION) {
+            NotificationScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToNotificationDetail = { notificationId ->
+                    navController.navigate(NavigationRoutes.notificationDetail(notificationId))
+                }
+            )
+        }
+
+        composable(
+            route = NavigationRoutes.NOTIFICATION_DETAIL_WITH_ARG,
+            arguments = listOf(
+                navArgument("notificationId") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val notificationId = backStackEntry.arguments?.getString("notificationId") ?: ""
+            // TODO: 通知详情页面
+        }
+
+        // ==================== 个人中心模块 ====================
+        composable(NavigationRoutes.PROFILE) {
+            ProfileScreen(
+                onNavigateToNotifications = {
+                    navController.navigate(NavigationRoutes.NOTIFICATION)
+                },
+                onNavigateToConsumables = {
+                    // TODO: 导航到耗材管理
+                },
+                onNavigateToAbout = {
+                    navController.navigate(NavigationRoutes.ABOUT)
+                },
+                onNavigateToPrivacy = {
+                    navController.navigate(NavigationRoutes.PRIVACY_POLICY)
+                }
+            )
+        }
+
+        // ==================== 设置模块 ====================
+        composable(NavigationRoutes.SETTINGS) {
+            SettingScreen(
+                onNavigateBack = {
+                    navController.popBackStack()
+                },
+                onNavigateToProfile = {
+                    navController.navigate(NavigationRoutes.PROFILE)
+                },
+                onNavigateToPrivacyPolicy = {
+                    navController.navigate(NavigationRoutes.PRIVACY_POLICY)
+                },
+                onNavigateToUserAgreement = {
+                    navController.navigate(NavigationRoutes.USER_AGREEMENT)
+                },
+                onNavigateToFeedback = {
+                    navController.navigate(NavigationRoutes.FEEDBACK)
+                },
+                onNavigateToAbout = {
+                    navController.navigate(NavigationRoutes.ABOUT)
+                },
+                onLogout = {
+                    navController.navigate(NavigationRoutes.LOGIN) {
+                        popUpTo(NavigationRoutes.HOME) { inclusive = true }
                     }
                 }
             )
         }
 
-        // 忘记密码页面
-        composable(NavigationRoutes.FORGOT_PASSWORD) {
-            ForgotPasswordScreen(
-                onNavigateToLogin = { navController.popBackStack() }
-            )
+        composable(NavigationRoutes.PRIVACY_POLICY) {
+            // TODO: 隐私政策页面
+        }
+
+        composable(NavigationRoutes.USER_AGREEMENT) {
+            // TODO: 用户协议页面
+        }
+
+        composable(NavigationRoutes.FEEDBACK) {
+            // TODO: 意见反馈页面
+        }
+
+        composable(NavigationRoutes.ABOUT) {
+            // TODO: 关于我们页面
+        }
+
+        // ==================== 帮助模块 ====================
+        composable(NavigationRoutes.HELP) {
+            // TODO: 帮助页面
+        }
+
+        composable(NavigationRoutes.FAQ) {
+            // TODO: FAQ页面
         }
     }
 }
@@ -295,62 +253,18 @@ fun WuHengNavGraph(
 /**
  * 导航扩展函数
  */
-object NavigationActions {
+fun NavHostController.navigateToDeviceDetail(deviceId: String) {
+    navigate(NavigationRoutes.deviceDetail(deviceId))
+}
 
-    /**
-     * 导航到首页
-     */
-    fun NavHostController.navigateToHome() {
-        navigate(NavigationRoutes.HOME) {
-            popUpTo(graph.startDestinationId) {
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
-        }
-    }
+fun NavHostController.navigateToFloorZone(floorId: Int? = null) {
+    navigate(NavigationRoutes.floorZone(floorId))
+}
 
-    /**
-     * 导航到设备详情
-     */
-    fun NavHostController.navigateToDeviceDetail(deviceId: String) {
-        navigate(NavigationRoutes.deviceDetail(deviceId))
-    }
+fun NavHostController.navigateToNotification() {
+    navigate(NavigationRoutes.NOTIFICATION)
+}
 
-    /**
-     * 导航到楼层区域
-     */
-    fun NavHostController.navigateToFloorZone(floorId: Int? = null) {
-        navigate(NavigationRoutes.floorZone(floorId))
-    }
-
-    /**
-     * 导航到耗材进度页面
-     */
-    fun NavHostController.navigateToConsumables() {
-        navigate(NavigationRoutes.CONSUMABLES)
-    }
-
-    /**
-     * 导航到关于页面
-     */
-    fun NavHostController.navigateToAbout() {
-        navigate(NavigationRoutes.ABOUT)
-    }
-
-    /**
-     * 导航到登录页面（清除回退栈）
-     */
-    fun NavHostController.navigateToLogin() {
-        navigate(NavigationRoutes.LOGIN) {
-            popUpTo(0) { inclusive = true }
-        }
-    }
-
-    /**
-     * 返回上一页
-     */
-    fun NavHostController.goBack() {
-        popBackStack()
-    }
+fun NavHostController.navigateToSettings() {
+    navigate(NavigationRoutes.SETTINGS)
 }

@@ -20,11 +20,13 @@ import com.wuheng.smart.data.repository.ClimateRepository;
 import com.wuheng.smart.data.repository.HomeRepository;
 import com.wuheng.smart.data.repository.UserRepository;
 import com.wuheng.smart.data.repository.WaterRepository;
+import com.wuheng.smart.di.ImageModule;
 import com.wuheng.smart.di.RepositoryModule;
 import com.wuheng.smart.di.RepositoryModule_ProvideClimateRepositoryFactory;
 import com.wuheng.smart.di.RepositoryModule_ProvideHomeRepositoryFactory;
 import com.wuheng.smart.di.RepositoryModule_ProvideUserRepositoryFactory;
 import com.wuheng.smart.di.RepositoryModule_ProvideWaterRepositoryFactory;
+import com.wuheng.smart.initializer.LazyHiltComponents;
 import com.wuheng.smart.presentation.about.AboutViewModel;
 import com.wuheng.smart.presentation.about.AboutViewModel_HiltModules_KeyModule_ProvideFactory;
 import com.wuheng.smart.presentation.climate.ClimateViewModel;
@@ -41,10 +43,14 @@ import com.wuheng.smart.presentation.home.HomeViewModel;
 import com.wuheng.smart.presentation.home.HomeViewModel_HiltModules_KeyModule_ProvideFactory;
 import com.wuheng.smart.presentation.login.LoginViewModel;
 import com.wuheng.smart.presentation.login.LoginViewModel_HiltModules_KeyModule_ProvideFactory;
+import com.wuheng.smart.presentation.notification.NotificationViewModel;
+import com.wuheng.smart.presentation.notification.NotificationViewModel_HiltModules_KeyModule_ProvideFactory;
 import com.wuheng.smart.presentation.profile.ProfileViewModel;
 import com.wuheng.smart.presentation.profile.ProfileViewModel_HiltModules_KeyModule_ProvideFactory;
 import com.wuheng.smart.presentation.register.RegisterViewModel;
 import com.wuheng.smart.presentation.register.RegisterViewModel_HiltModules_KeyModule_ProvideFactory;
+import com.wuheng.smart.presentation.settings.SettingViewModel;
+import com.wuheng.smart.presentation.settings.SettingViewModel_HiltModules_KeyModule_ProvideFactory;
 import com.wuheng.smart.presentation.water.WaterViewModel;
 import com.wuheng.smart.presentation.water.WaterViewModel_HiltModules_KeyModule_ProvideFactory;
 import dagger.hilt.android.ActivityRetainedLifecycle;
@@ -111,6 +117,15 @@ public final class DaggerWuHengApplication_HiltComponents_SingletonC {
     public Builder hiltWrapper_FragmentGetContextFix_FragmentGetContextFixModule(
         HiltWrapper_FragmentGetContextFix_FragmentGetContextFixModule hiltWrapper_FragmentGetContextFix_FragmentGetContextFixModule) {
       Preconditions.checkNotNull(hiltWrapper_FragmentGetContextFix_FragmentGetContextFixModule);
+      return this;
+    }
+
+    /**
+     * @deprecated This module is declared, but an instance is not used in the component. This method is a no-op. For more, see https://dagger.dev/unused-modules.
+     */
+    @Deprecated
+    public Builder imageModule(ImageModule imageModule) {
+      Preconditions.checkNotNull(imageModule);
       return this;
     }
 
@@ -423,7 +438,7 @@ public final class DaggerWuHengApplication_HiltComponents_SingletonC {
 
     @Override
     public Set<String> getViewModelKeys() {
-      return SetBuilder.<String>newSetBuilder(12).add(AboutViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(ClimateViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(ConsumablesViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(DeviceDetailViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(FloorZoneViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(ForgotPasswordViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(HomeViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(LoginViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(MainViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(ProfileViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(RegisterViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(WaterViewModel_HiltModules_KeyModule_ProvideFactory.provide()).build();
+      return SetBuilder.<String>newSetBuilder(14).add(AboutViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(ClimateViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(ConsumablesViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(DeviceDetailViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(FloorZoneViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(ForgotPasswordViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(HomeViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(LoginViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(MainViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(NotificationViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(ProfileViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(RegisterViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(SettingViewModel_HiltModules_KeyModule_ProvideFactory.provide()).add(WaterViewModel_HiltModules_KeyModule_ProvideFactory.provide()).build();
     }
 
     @Override
@@ -467,9 +482,13 @@ public final class DaggerWuHengApplication_HiltComponents_SingletonC {
 
     private Provider<MainViewModel> mainViewModelProvider;
 
+    private Provider<NotificationViewModel> notificationViewModelProvider;
+
     private Provider<ProfileViewModel> profileViewModelProvider;
 
     private Provider<RegisterViewModel> registerViewModelProvider;
+
+    private Provider<SettingViewModel> settingViewModelProvider;
 
     private Provider<WaterViewModel> waterViewModelProvider;
 
@@ -495,14 +514,16 @@ public final class DaggerWuHengApplication_HiltComponents_SingletonC {
       this.homeViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 6);
       this.loginViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 7);
       this.mainViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 8);
-      this.profileViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 9);
-      this.registerViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 10);
-      this.waterViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 11);
+      this.notificationViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 9);
+      this.profileViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 10);
+      this.registerViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 11);
+      this.settingViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 12);
+      this.waterViewModelProvider = new SwitchingProvider<>(singletonCImpl, activityRetainedCImpl, viewModelCImpl, 13);
     }
 
     @Override
     public Map<String, Provider<ViewModel>> getHiltViewModelMap() {
-      return MapBuilder.<String, Provider<ViewModel>>newMapBuilder(12).put("com.wuheng.smart.presentation.about.AboutViewModel", ((Provider) aboutViewModelProvider)).put("com.wuheng.smart.presentation.climate.ClimateViewModel", ((Provider) climateViewModelProvider)).put("com.wuheng.smart.presentation.consumables.ConsumablesViewModel", ((Provider) consumablesViewModelProvider)).put("com.wuheng.smart.presentation.device.DeviceDetailViewModel", ((Provider) deviceDetailViewModelProvider)).put("com.wuheng.smart.presentation.floorzone.FloorZoneViewModel", ((Provider) floorZoneViewModelProvider)).put("com.wuheng.smart.presentation.forgotpassword.ForgotPasswordViewModel", ((Provider) forgotPasswordViewModelProvider)).put("com.wuheng.smart.presentation.home.HomeViewModel", ((Provider) homeViewModelProvider)).put("com.wuheng.smart.presentation.login.LoginViewModel", ((Provider) loginViewModelProvider)).put("com.wuheng.smart.MainViewModel", ((Provider) mainViewModelProvider)).put("com.wuheng.smart.presentation.profile.ProfileViewModel", ((Provider) profileViewModelProvider)).put("com.wuheng.smart.presentation.register.RegisterViewModel", ((Provider) registerViewModelProvider)).put("com.wuheng.smart.presentation.water.WaterViewModel", ((Provider) waterViewModelProvider)).build();
+      return MapBuilder.<String, Provider<ViewModel>>newMapBuilder(14).put("com.wuheng.smart.presentation.about.AboutViewModel", ((Provider) aboutViewModelProvider)).put("com.wuheng.smart.presentation.climate.ClimateViewModel", ((Provider) climateViewModelProvider)).put("com.wuheng.smart.presentation.consumables.ConsumablesViewModel", ((Provider) consumablesViewModelProvider)).put("com.wuheng.smart.presentation.device.DeviceDetailViewModel", ((Provider) deviceDetailViewModelProvider)).put("com.wuheng.smart.presentation.floorzone.FloorZoneViewModel", ((Provider) floorZoneViewModelProvider)).put("com.wuheng.smart.presentation.forgotpassword.ForgotPasswordViewModel", ((Provider) forgotPasswordViewModelProvider)).put("com.wuheng.smart.presentation.home.HomeViewModel", ((Provider) homeViewModelProvider)).put("com.wuheng.smart.presentation.login.LoginViewModel", ((Provider) loginViewModelProvider)).put("com.wuheng.smart.MainViewModel", ((Provider) mainViewModelProvider)).put("com.wuheng.smart.presentation.notification.NotificationViewModel", ((Provider) notificationViewModelProvider)).put("com.wuheng.smart.presentation.profile.ProfileViewModel", ((Provider) profileViewModelProvider)).put("com.wuheng.smart.presentation.register.RegisterViewModel", ((Provider) registerViewModelProvider)).put("com.wuheng.smart.presentation.settings.SettingViewModel", ((Provider) settingViewModelProvider)).put("com.wuheng.smart.presentation.water.WaterViewModel", ((Provider) waterViewModelProvider)).build();
     }
 
     private static final class SwitchingProvider<T> implements Provider<T> {
@@ -539,7 +560,7 @@ public final class DaggerWuHengApplication_HiltComponents_SingletonC {
           return (T) new DeviceDetailViewModel(singletonCImpl.provideHomeRepositoryProvider.get());
 
           case 4: // com.wuheng.smart.presentation.floorzone.FloorZoneViewModel 
-          return (T) new FloorZoneViewModel(singletonCImpl.provideHomeRepositoryProvider.get(), singletonCImpl.provideTokenManagerProvider.get());
+          return (T) new FloorZoneViewModel(singletonCImpl.provideHomeRepositoryProvider.get());
 
           case 5: // com.wuheng.smart.presentation.forgotpassword.ForgotPasswordViewModel 
           return (T) new ForgotPasswordViewModel();
@@ -553,13 +574,19 @@ public final class DaggerWuHengApplication_HiltComponents_SingletonC {
           case 8: // com.wuheng.smart.MainViewModel 
           return (T) new MainViewModel(singletonCImpl.provideTokenManagerProvider.get());
 
-          case 9: // com.wuheng.smart.presentation.profile.ProfileViewModel 
+          case 9: // com.wuheng.smart.presentation.notification.NotificationViewModel 
+          return (T) new NotificationViewModel();
+
+          case 10: // com.wuheng.smart.presentation.profile.ProfileViewModel 
           return (T) new ProfileViewModel(singletonCImpl.provideTokenManagerProvider.get(), singletonCImpl.provideUserRepositoryProvider.get());
 
-          case 10: // com.wuheng.smart.presentation.register.RegisterViewModel 
+          case 11: // com.wuheng.smart.presentation.register.RegisterViewModel 
           return (T) new RegisterViewModel(singletonCImpl.provideUserRepositoryProvider.get());
 
-          case 11: // com.wuheng.smart.presentation.water.WaterViewModel 
+          case 12: // com.wuheng.smart.presentation.settings.SettingViewModel 
+          return (T) new SettingViewModel(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
+
+          case 13: // com.wuheng.smart.presentation.water.WaterViewModel 
           return (T) new WaterViewModel(singletonCImpl.provideWaterRepositoryProvider.get(), singletonCImpl.provideTokenManagerProvider.get());
 
           default: throw new AssertionError(id);
@@ -641,6 +668,8 @@ public final class DaggerWuHengApplication_HiltComponents_SingletonC {
 
     private final SingletonCImpl singletonCImpl = this;
 
+    private Provider<LazyHiltComponents> lazyHiltComponentsProvider;
+
     private Provider<HttpLoggingInterceptor> provideHttpLoggingInterceptorProvider;
 
     private Provider<TokenManager> provideTokenManagerProvider;
@@ -671,21 +700,27 @@ public final class DaggerWuHengApplication_HiltComponents_SingletonC {
 
     @SuppressWarnings("unchecked")
     private void initialize(final ApplicationContextModule applicationContextModuleParam) {
-      this.provideHttpLoggingInterceptorProvider = DoubleCheck.provider(new SwitchingProvider<HttpLoggingInterceptor>(singletonCImpl, 4));
-      this.provideTokenManagerProvider = DoubleCheck.provider(new SwitchingProvider<TokenManager>(singletonCImpl, 6));
-      this.provideAuthInterceptorProvider = DoubleCheck.provider(new SwitchingProvider<AuthInterceptor>(singletonCImpl, 5));
-      this.provideOkHttpClientProvider = DoubleCheck.provider(new SwitchingProvider<OkHttpClient>(singletonCImpl, 3));
-      this.provideRetrofitProvider = DoubleCheck.provider(new SwitchingProvider<Retrofit>(singletonCImpl, 2));
-      this.provideApiServiceProvider = DoubleCheck.provider(new SwitchingProvider<ApiService>(singletonCImpl, 1));
-      this.provideUseMockProvider = DoubleCheck.provider(new SwitchingProvider<Boolean>(singletonCImpl, 7));
-      this.provideClimateRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<ClimateRepository>(singletonCImpl, 0));
-      this.provideWaterRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<WaterRepository>(singletonCImpl, 8));
-      this.provideHomeRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<HomeRepository>(singletonCImpl, 9));
-      this.provideUserRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<UserRepository>(singletonCImpl, 10));
+      this.lazyHiltComponentsProvider = DoubleCheck.provider(new SwitchingProvider<LazyHiltComponents>(singletonCImpl, 0));
+      this.provideHttpLoggingInterceptorProvider = DoubleCheck.provider(new SwitchingProvider<HttpLoggingInterceptor>(singletonCImpl, 5));
+      this.provideTokenManagerProvider = DoubleCheck.provider(new SwitchingProvider<TokenManager>(singletonCImpl, 7));
+      this.provideAuthInterceptorProvider = DoubleCheck.provider(new SwitchingProvider<AuthInterceptor>(singletonCImpl, 6));
+      this.provideOkHttpClientProvider = DoubleCheck.provider(new SwitchingProvider<OkHttpClient>(singletonCImpl, 4));
+      this.provideRetrofitProvider = DoubleCheck.provider(new SwitchingProvider<Retrofit>(singletonCImpl, 3));
+      this.provideApiServiceProvider = DoubleCheck.provider(new SwitchingProvider<ApiService>(singletonCImpl, 2));
+      this.provideUseMockProvider = DoubleCheck.provider(new SwitchingProvider<Boolean>(singletonCImpl, 8));
+      this.provideClimateRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<ClimateRepository>(singletonCImpl, 1));
+      this.provideWaterRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<WaterRepository>(singletonCImpl, 9));
+      this.provideHomeRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<HomeRepository>(singletonCImpl, 10));
+      this.provideUserRepositoryProvider = DoubleCheck.provider(new SwitchingProvider<UserRepository>(singletonCImpl, 11));
     }
 
     @Override
     public void injectWuHengApplication(WuHengApplication arg0) {
+    }
+
+    @Override
+    public LazyHiltComponents getLazyHiltComponents() {
+      return lazyHiltComponentsProvider.get();
     }
 
     @Override
@@ -717,37 +752,40 @@ public final class DaggerWuHengApplication_HiltComponents_SingletonC {
       @Override
       public T get() {
         switch (id) {
-          case 0: // com.wuheng.smart.data.repository.ClimateRepository 
+          case 0: // com.wuheng.smart.initializer.LazyHiltComponents 
+          return (T) new LazyHiltComponents();
+
+          case 1: // com.wuheng.smart.data.repository.ClimateRepository 
           return (T) RepositoryModule_ProvideClimateRepositoryFactory.provideClimateRepository(singletonCImpl.provideApiServiceProvider.get(), singletonCImpl.provideUseMockProvider.get());
 
-          case 1: // com.wuheng.smart.data.network.ApiService 
+          case 2: // com.wuheng.smart.data.network.ApiService 
           return (T) NetworkModule_ProvideApiServiceFactory.provideApiService(singletonCImpl.provideRetrofitProvider.get());
 
-          case 2: // retrofit2.Retrofit 
+          case 3: // retrofit2.Retrofit 
           return (T) NetworkModule_ProvideRetrofitFactory.provideRetrofit(singletonCImpl.provideOkHttpClientProvider.get());
 
-          case 3: // okhttp3.OkHttpClient 
+          case 4: // okhttp3.OkHttpClient 
           return (T) NetworkModule_ProvideOkHttpClientFactory.provideOkHttpClient(singletonCImpl.provideHttpLoggingInterceptorProvider.get(), singletonCImpl.provideAuthInterceptorProvider.get());
 
-          case 4: // okhttp3.logging.HttpLoggingInterceptor 
+          case 5: // okhttp3.logging.HttpLoggingInterceptor 
           return (T) NetworkModule_ProvideHttpLoggingInterceptorFactory.provideHttpLoggingInterceptor();
 
-          case 5: // com.wuheng.smart.data.network.AuthInterceptor 
+          case 6: // com.wuheng.smart.data.network.AuthInterceptor 
           return (T) NetworkModule_ProvideAuthInterceptorFactory.provideAuthInterceptor(singletonCImpl.provideTokenManagerProvider.get());
 
-          case 6: // com.wuheng.smart.data.network.TokenManager 
+          case 7: // com.wuheng.smart.data.network.TokenManager 
           return (T) NetworkModule_ProvideTokenManagerFactory.provideTokenManager(ApplicationContextModule_ProvideContextFactory.provideContext(singletonCImpl.applicationContextModule));
 
-          case 7: // @javax.inject.Named("useMock") java.lang.Boolean 
+          case 8: // @javax.inject.Named("useMock") java.lang.Boolean 
           return (T) (Boolean) RepositoryModule.INSTANCE.provideUseMock();
 
-          case 8: // com.wuheng.smart.data.repository.WaterRepository 
+          case 9: // com.wuheng.smart.data.repository.WaterRepository 
           return (T) RepositoryModule_ProvideWaterRepositoryFactory.provideWaterRepository(singletonCImpl.provideApiServiceProvider.get(), singletonCImpl.provideUseMockProvider.get());
 
-          case 9: // com.wuheng.smart.data.repository.HomeRepository 
+          case 10: // com.wuheng.smart.data.repository.HomeRepository 
           return (T) RepositoryModule_ProvideHomeRepositoryFactory.provideHomeRepository(singletonCImpl.provideApiServiceProvider.get(), singletonCImpl.provideUseMockProvider.get());
 
-          case 10: // com.wuheng.smart.data.repository.UserRepository 
+          case 11: // com.wuheng.smart.data.repository.UserRepository 
           return (T) RepositoryModule_ProvideUserRepositoryFactory.provideUserRepository(singletonCImpl.provideApiServiceProvider.get(), singletonCImpl.provideTokenManagerProvider.get(), singletonCImpl.provideUseMockProvider.get());
 
           default: throw new AssertionError(id);

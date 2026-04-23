@@ -14,24 +14,26 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
  * 水系统 ViewModel（生产级实现）
  *
  * 职责：
- * 1. 管理水系统所有UI状态（热水循环、滤芯列表等）
+ * 1. 管理水系统所有UI状态（热水循环、净水状态、滤芯列表等）
  * 2. 处理用户交互事件（模式切换、时长设置、滤芯更换等）
  * 3. 协调Repository层数据获取与UI状态更新
  *
- * 使用新版API（水系统模块）：
- * - getHeaterStatus(houseId)
- * - setCirculationMode(houseId, mode, duration)
- * - getFilterStatus(houseId)
- * - bookFilterReplace(houseId, filterId, ...)
+ * 使用新版API（水系统模块4个接口）：
+ * - getHotWaterStatus(houseId)      -> GET /home/water/getHotWaterStatus
+ * - setCirculationMode(houseId, mode, duration) -> POST /home/water/setCirculationMode
+ * - getWaterPurifierStatus(houseId) -> GET /home/water/getWaterPurifierStatus
+ * - getFilterStatus(houseId)        -> GET /home/water/getFilterStatus
  *
  * UI组件映射：
  * - HotWaterCirculationCard: cycleModeState, currentTemp, temporaryDuration
+ * - WaterPurifierCard: waterPurifierStatusState (TDS, 水质等)
  * - FilterSystemCard: filterStatusState
  */
 @HiltViewModel
@@ -41,17 +43,23 @@ class WaterViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     // ==================== 新版统一UI State ====================
-    
+
     private val _uiState = MutableStateFlow(WaterUiState())
     val uiState: StateFlow<WaterUiState> = _uiState.asStateFlow()
-    
+
     // ==================== UI State 定义 ====================
 
     /**
-     * 热水循环状态（新版API）
+     * 热水循环状态（新版API: getHotWaterStatus）
      */
-    private val _heaterStatusState = createUiStateFlow<HeaterStatus>()
-    val heaterStatusState: StateFlow<UiDataState<HeaterStatus>> = _heaterStatusState.asStateFlow()
+    private val _hotWaterStatusState = createUiStateFlow<HotWaterStatusResponse>()
+    val hotWaterStatusState: StateFlow<UiDataState<HotWaterStatusResponse>> = _hotWaterStatusState.asStateFlow()
+
+    /**
+     * 净水状态（新版API: getWaterPurifierStatus）
+     */
+    private val _waterPurifierStatusState = createUiStateFlow<WaterPurifierStatusResponse>()
+    val waterPurifierStatusState: StateFlow<UiDataState<WaterPurifierStatusResponse>> = _waterPurifierStatusState.asStateFlow()
 
     /**
      * 当前选中的循环模式
@@ -72,7 +80,7 @@ class WaterViewModel @Inject constructor(
     val currentTempState: StateFlow<Float> = _currentTempState.asStateFlow()
 
     /**
-     * 滤芯状态列表（新版API）
+     * 滤芯状态列表（新版API: getFilterStatus）
      */
     private val _filterStatusState = createUiStateFlow<List<FilterStatusInfo>>()
     val filterStatusState: StateFlow<UiDataState<List<FilterStatusInfo>>> = _filterStatusState.asStateFlow()
@@ -83,6 +91,12 @@ class WaterViewModel @Inject constructor(
     private val _operationState = MutableStateFlow<UiDataState<Unit>>(UiDataState.Idle)
     val operationState: StateFlow<UiDataState<Unit>> = _operationState.asStateFlow()
 
+    /**
+     * 热力杀菌预约状态
+     */
+    private val _sterilizationState = MutableStateFlow<UiDataState<Unit>>(UiDataState.Idle)
+    val sterilizationState: StateFlow<UiDataState<Unit>> = _sterilizationState.asStateFlow()
+
     // ==================== 初始化 ====================
 
     init {
@@ -90,108 +104,182 @@ class WaterViewModel @Inject constructor(
     }
 
     private fun loadInitialData() {
-        // 使用新版API加载数据
         val houseId = tokenManager.getCurrentHouseId()
         if (houseId.isNotEmpty()) {
-            loadHeaterStatus(houseId)
+            loadHotWaterStatus(houseId)
+            loadWaterPurifierStatus(houseId)
             loadFilterStatus(houseId)
+        } else {
+            Timber.w("No house ID available, skipping water data load")
         }
     }
 
-    // ==================== 数据加载方法（新版API）====================
+    // ==================== 数据加载方法（新版API - 4个核心接口）====================
 
     /**
-     * 加载热水循环状态（新版API）
+     * 1. 加载热水循环状态（新版API: getHotWaterStatus）
      */
-    fun loadHeaterStatus(houseId: String) {
+    fun loadHotWaterStatus(houseId: String) {
         viewModelScope.launch {
-            _heaterStatusState.value = UiDataState.Loading
+            _hotWaterStatusState.value = UiDataState.Loading
             _uiState.value = _uiState.value.copy(isLoading = true)
-            waterRepository.getHeaterStatus(houseId.toInt()).collectLatest { result ->
-                when (result) {
-                    is ApiResult.Loading -> {
-                        _heaterStatusState.value = UiDataState.Loading
-                        _uiState.value = _uiState.value.copy(isLoading = true)
-                    }
-                    is ApiResult.Success -> {
-                        _heaterStatusState.value = UiDataState.Success(result.data)
-                        // 同步更新UI状态
-                        _currentTempState.value = result.data.currentTemp.toFloatOrNull() ?: 55f
-                        // 更新统一UI State
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            errorMessage = null,
-                            hotWaterMode = when (result.data.circulationMode) {
-                                "all_day" -> HotWaterMode.ALL_DAY
-                                "timer" -> HotWaterMode.TIMED
-                                "temp" -> HotWaterMode.TEMPORARY
-                                "off" -> HotWaterMode.OFF
-                                else -> HotWaterMode.OFF
-                            },
-                            currentTemp = result.data.currentTemp.toFloatOrNull()?.toInt() ?: 55
-                        )
-                    }
-                    is ApiResult.Error -> {
-                        _heaterStatusState.value = UiDataState.Error(result.exception)
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            errorMessage = result.exception.message
-                        )
+
+            try {
+                val houseIdInt = houseId.toIntOrNull()
+                if (houseIdInt == null) {
+                    _hotWaterStatusState.value = UiDataState.Error(
+                        com.wuheng.smart.data.network.AppException.BusinessError(-1, "无效的房屋ID")
+                    )
+                    return@launch
+                }
+
+                waterRepository.getHotWaterStatus(houseIdInt).collectLatest { result ->
+                    when (result) {
+                        is ApiResult.Loading -> {
+                            _hotWaterStatusState.value = UiDataState.Loading
+                            _uiState.value = _uiState.value.copy(isLoading = true)
+                        }
+                        is ApiResult.Success -> {
+                            _hotWaterStatusState.value = UiDataState.Success(result.data)
+                            // 同步更新UI状态
+                            _currentTempState.value = result.data.currentTemp.toFloatOrNull() ?: 55f
+                            // 更新统一UI State
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false,
+                                errorMessage = null,
+                                hotWaterMode = when (result.data.circulationMode) {
+                                    "all_day" -> HotWaterMode.ALL_DAY
+                                    "timer" -> HotWaterMode.TIMED
+                                    "temp" -> HotWaterMode.TEMPORARY
+                                    "off" -> HotWaterMode.OFF
+                                    else -> HotWaterMode.OFF
+                                },
+                                currentTemp = result.data.currentTemp.toFloatOrNull()?.toInt() ?: 55
+                            )
+                        }
+                        is ApiResult.Error -> {
+                            _hotWaterStatusState.value = UiDataState.Error(result.exception)
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false,
+                                errorMessage = result.exception.message
+                            )
+                        }
                     }
                 }
+            } catch (e: Exception) {
+                Timber.e(e, "Error loading hot water status")
+                _hotWaterStatusState.value = UiDataState.Error(
+                    com.wuheng.smart.data.network.AppException.UnknownError(e.message ?: "加载失败")
+                )
             }
         }
     }
 
     /**
-     * 加载滤芯状态（新版API）
+     * 2. 加载净水状态（新版API: getWaterPurifierStatus）
+     */
+    fun loadWaterPurifierStatus(houseId: String) {
+        viewModelScope.launch {
+            _waterPurifierStatusState.value = UiDataState.Loading
+
+            try {
+                val houseIdInt = houseId.toIntOrNull()
+                if (houseIdInt == null) {
+                    _waterPurifierStatusState.value = UiDataState.Error(
+                        com.wuheng.smart.data.network.AppException.BusinessError(-1, "无效的房屋ID")
+                    )
+                    return@launch
+                }
+
+                waterRepository.getWaterPurifierStatus(houseIdInt).collectLatest { result ->
+                    when (result) {
+                        is ApiResult.Loading -> {
+                            _waterPurifierStatusState.value = UiDataState.Loading
+                        }
+                        is ApiResult.Success -> {
+                            _waterPurifierStatusState.value = UiDataState.Success(result.data)
+                            Timber.d("Water purifier status loaded: TDS in=${result.data.tdsIn}, out=${result.data.tdsOut}")
+                        }
+                        is ApiResult.Error -> {
+                            _waterPurifierStatusState.value = UiDataState.Error(result.exception)
+                            Timber.e("Failed to load water purifier status: ${result.exception.message}")
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Error loading water purifier status")
+                _waterPurifierStatusState.value = UiDataState.Error(
+                    com.wuheng.smart.data.network.AppException.UnknownError(e.message ?: "加载失败")
+                )
+            }
+        }
+    }
+
+    /**
+     * 3. 加载滤芯状态（新版API: getFilterStatus）
      */
     fun loadFilterStatus(houseId: String) {
         viewModelScope.launch {
             _filterStatusState.value = UiDataState.Loading
             _uiState.value = _uiState.value.copy(isLoading = true)
-            waterRepository.getFilterStatus(houseId.toInt()).collectLatest { result ->
-                when (result) {
-                    is ApiResult.Loading -> {
-                        _filterStatusState.value = UiDataState.Loading
-                        _uiState.value = _uiState.value.copy(isLoading = true)
-                    }
-                    is ApiResult.Success -> {
-                        _filterStatusState.value = UiDataState.Success(result.data)
-                        // 更新统一UI State - 将FilterStatusInfo映射为FilterItem
-                        val filterItems = result.data.map { filterStatus ->
-                            FilterItem(
-                                name = filterStatus.filterName,
-                                progress = filterStatus.lifePercent / 100f,
-                                status = when {
-                                    filterStatus.lifePercent > 30 -> FilterStatus.NORMAL
-                                    filterStatus.lifePercent > 10 -> FilterStatus.WARNING
-                                    else -> FilterStatus.EXPIRED
-                                }
+
+            try {
+                val houseIdInt = houseId.toIntOrNull()
+                if (houseIdInt == null) {
+                    _filterStatusState.value = UiDataState.Error(
+                        com.wuheng.smart.data.network.AppException.BusinessError(-1, "无效的房屋ID")
+                    )
+                    return@launch
+                }
+
+                waterRepository.getFilterStatus(houseIdInt).collectLatest { result ->
+                    when (result) {
+                        is ApiResult.Loading -> {
+                            _filterStatusState.value = UiDataState.Loading
+                            _uiState.value = _uiState.value.copy(isLoading = true)
+                        }
+                        is ApiResult.Success -> {
+                            _filterStatusState.value = UiDataState.Success(result.data)
+                            // 更新统一UI State - 将FilterStatusInfo映射为FilterItem
+                            val filterItems = result.data.map { filterStatus ->
+                                FilterItem(
+                                    name = filterStatus.filterName,
+                                    progress = filterStatus.lifePercent / 100f,
+                                    status = when {
+                                        filterStatus.lifePercent > 30 -> FilterUiStatus.NORMAL
+                                        filterStatus.lifePercent > 10 -> FilterUiStatus.WARNING
+                                        else -> FilterUiStatus.EXPIRED
+                                    }
+                                )
+                            }
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false,
+                                errorMessage = null,
+                                filters = filterItems
                             )
                         }
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            errorMessage = null,
-                            filters = filterItems
-                        )
-                    }
-                    is ApiResult.Error -> {
-                        _filterStatusState.value = UiDataState.Error(result.exception)
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            errorMessage = result.exception.message
-                        )
+                        is ApiResult.Error -> {
+                            _filterStatusState.value = UiDataState.Error(result.exception)
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false,
+                                errorMessage = result.exception.message
+                            )
+                        }
                     }
                 }
+            } catch (e: Exception) {
+                Timber.e(e, "Error loading filter status")
+                _filterStatusState.value = UiDataState.Error(
+                    com.wuheng.smart.data.network.AppException.UnknownError(e.message ?: "加载失败")
+                )
             }
         }
     }
 
-    // ==================== 生活热水循环控制方法（新版API）====================
+    // ==================== 生活热水循环控制方法（新版API: setCirculationMode）====================
 
     /**
-     * 切换热水循环模式（新版API）
+     * 4. 切换热水循环模式（新版API: setCirculationMode）
      *
      * @param houseId 房屋ID
      * @param mode 目标模式 (ALL_DAY/TIMER/TEMP/OFF)
@@ -222,30 +310,47 @@ class WaterViewModel @Inject constructor(
         viewModelScope.launch {
             _operationState.value = UiDataState.Loading
             _uiState.value = _uiState.value.copy(isLoading = true)
-            waterRepository.setCirculationMode(houseId.toInt(), mode, duration).collectLatest { result ->
-                when (result) {
-                    is ApiResult.Loading -> {
-                        _operationState.value = UiDataState.Loading
-                        _uiState.value = _uiState.value.copy(isLoading = true)
-                    }
-                    is ApiResult.Success -> {
-                        _operationState.value = UiDataState.Success(Unit)
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            errorMessage = null
-                        )
-                        loadHeaterStatus(houseId)
-                    }
-                    is ApiResult.Error -> {
-                        _operationState.value = UiDataState.Error(result.exception)
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            errorMessage = result.exception.message
-                        )
-                        // 失败时回滚UI状态
-                        _cycleModeState.value = CycleMode.OFF
+
+            try {
+                val houseIdInt = houseId.toIntOrNull()
+                if (houseIdInt == null) {
+                    _operationState.value = UiDataState.Error(
+                        com.wuheng.smart.data.network.AppException.BusinessError(-1, "无效的房屋ID")
+                    )
+                    return@launch
+                }
+
+                waterRepository.setCirculationMode(houseIdInt, mode, duration).collectLatest { result ->
+                    when (result) {
+                        is ApiResult.Loading -> {
+                            _operationState.value = UiDataState.Loading
+                            _uiState.value = _uiState.value.copy(isLoading = true)
+                        }
+                        is ApiResult.Success -> {
+                            _operationState.value = UiDataState.Success(Unit)
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false,
+                                errorMessage = null
+                            )
+                            // 成功后刷新热水状态
+                            loadHotWaterStatus(houseId)
+                        }
+                        is ApiResult.Error -> {
+                            _operationState.value = UiDataState.Error(result.exception)
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false,
+                                errorMessage = result.exception.message
+                            )
+                            // 失败时回滚UI状态
+                            _cycleModeState.value = CycleMode.OFF
+                        }
                     }
                 }
+            } catch (e: Exception) {
+                Timber.e(e, "Error setting circulation mode")
+                _operationState.value = UiDataState.Error(
+                    com.wuheng.smart.data.network.AppException.UnknownError(e.message ?: "设置失败")
+                )
             }
         }
     }
@@ -266,10 +371,10 @@ class WaterViewModel @Inject constructor(
         }
     }
 
-    // ==================== 滤芯管理方法（新版API）====================
+    // ==================== 滤芯管理方法 ====================
 
     /**
-     * 预约滤芯更换服务（新版API）
+     * 预约滤芯更换服务
      *
      * @param houseId 房屋ID
      * @param filterId 滤芯ID
@@ -287,31 +392,49 @@ class WaterViewModel @Inject constructor(
         viewModelScope.launch {
             _operationState.value = UiDataState.Loading
             _uiState.value = _uiState.value.copy(isLoading = true)
-            waterRepository.bookFilterReplace(houseId.toInt(), filterId.toInt(), contactName, contactPhone, appointmentDate)
-                .collectLatest { result ->
-                    when (result) {
-                        is ApiResult.Loading -> {
-                            _operationState.value = UiDataState.Loading
-                            _uiState.value = _uiState.value.copy(isLoading = true)
-                        }
-                        is ApiResult.Success -> {
-                            _operationState.value = UiDataState.Success(Unit)
-                            _uiState.value = _uiState.value.copy(
-                                isLoading = false,
-                                errorMessage = null
-                            )
-                            // 刷新滤芯状态
-                            loadFilterStatus(houseId)
-                        }
-                        is ApiResult.Error -> {
-                            _operationState.value = UiDataState.Error(result.exception)
-                            _uiState.value = _uiState.value.copy(
-                                isLoading = false,
-                                errorMessage = result.exception.message
-                            )
+
+            try {
+                val houseIdInt = houseId.toIntOrNull()
+                val filterIdInt = filterId.toIntOrNull()
+
+                if (houseIdInt == null || filterIdInt == null) {
+                    _operationState.value = UiDataState.Error(
+                        com.wuheng.smart.data.network.AppException.BusinessError(-1, "无效的ID参数")
+                    )
+                    return@launch
+                }
+
+                waterRepository.bookFilterReplace(houseIdInt, filterIdInt, contactName, contactPhone, appointmentDate)
+                    .collectLatest { result ->
+                        when (result) {
+                            is ApiResult.Loading -> {
+                                _operationState.value = UiDataState.Loading
+                                _uiState.value = _uiState.value.copy(isLoading = true)
+                            }
+                            is ApiResult.Success -> {
+                                _operationState.value = UiDataState.Success(Unit)
+                                _uiState.value = _uiState.value.copy(
+                                    isLoading = false,
+                                    errorMessage = null
+                                )
+                                // 刷新滤芯状态
+                                loadFilterStatus(houseId)
+                            }
+                            is ApiResult.Error -> {
+                                _operationState.value = UiDataState.Error(result.exception)
+                                _uiState.value = _uiState.value.copy(
+                                    isLoading = false,
+                                    errorMessage = result.exception.message
+                                )
+                            }
                         }
                     }
-                }
+            } catch (e: Exception) {
+                Timber.e(e, "Error booking filter replacement")
+                _operationState.value = UiDataState.Error(
+                    com.wuheng.smart.data.network.AppException.UnknownError(e.message ?: "预约失败")
+                )
+            }
         }
     }
 
@@ -323,20 +446,21 @@ class WaterViewModel @Inject constructor(
     fun refresh() {
         val houseId = tokenManager.getCurrentHouseId()
         if (houseId.isNotEmpty()) {
-            loadHeaterStatus(houseId)
+            loadHotWaterStatus(houseId)
+            loadWaterPurifierStatus(houseId)
             loadFilterStatus(houseId)
         }
     }
-    
+
     /**
      * 刷新数据（供Layout调用）
      */
     fun refreshData() {
         refresh()
     }
-    
+
     // ==================== 新版UI交互方法 ====================
-    
+
     /**
      * 选择热水模式
      */
@@ -353,5 +477,39 @@ class WaterViewModel @Inject constructor(
             }
             setCirculationMode(houseId, circulationMode, _temporaryDurationState.value)
         }
+    }
+
+    /**
+     * 更新热力杀菌预约时间
+     */
+    fun updateSterilizationSchedule(dayOfWeek: Int, hour: Int, minute: Int) {
+        viewModelScope.launch {
+            _sterilizationState.value = UiDataState.Loading
+
+            // TODO: 调用API更新热力杀菌时间
+            // 模拟网络请求
+            kotlinx.coroutines.delay(1000)
+
+            // 更新UI状态
+            val daysOfWeek = listOf("周一", "周二", "周三", "周四", "周五", "周六", "周日")
+            val scheduleText = "每周${daysOfWeek[dayOfWeek - 1]} ${String.format("%02d:%02d", hour, minute)}"
+            _uiState.value = _uiState.value.copy(sterilizationSchedule = scheduleText)
+
+            _sterilizationState.value = UiDataState.Success(Unit)
+        }
+    }
+
+    /**
+     * 重置热力杀菌状态
+     */
+    fun resetSterilizationState() {
+        _sterilizationState.value = UiDataState.Idle
+    }
+
+    /**
+     * 重置操作状态
+     */
+    fun resetOperationState() {
+        _operationState.value = UiDataState.Idle
     }
 }

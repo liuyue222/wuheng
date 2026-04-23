@@ -3,7 +3,11 @@ package com.wuheng.smart.presentation.profile
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,24 +29,69 @@ import timber.log.Timber
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
     onNavigateToNotifications: () -> Unit = {},
-    onNavigateToServiceSelect: () -> Unit = {},
     onNavigateToConsumables: () -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
     onNavigateToPrivacy: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val bookingState by viewModel.bookingState.collectAsStateWithLifecycle()
+
+    // 弹窗状态
+    var showServiceTypeDialog by remember { mutableStateOf(false) }
+    var showBookingConfirmDialog by remember { mutableStateOf(false) }
+
+    // 处理预约结果
+    LaunchedEffect(bookingState) {
+        when (bookingState) {
+            is com.wuheng.smart.presentation.base.UiDataState.Success -> {
+                showBookingConfirmDialog = false
+                viewModel.resetBookingState()
+            }
+            else -> {}
+        }
+    }
 
     ProfileScreenContent(
         uiState = uiState,
+        bookingState = bookingState,
+        selectedServiceType = uiState.selectedServiceType,
         onNotificationClick = onNavigateToNotifications,
-        onServiceSelect = onNavigateToServiceSelect,
-        onBookService = { viewModel.onBookService() },
+        onServiceSelect = { showServiceTypeDialog = true },
+        onBookService = { showBookingConfirmDialog = true },
         onConsumablesClick = onNavigateToConsumables,
         onAboutClick = onNavigateToAbout,
         onPrivacyClick = onNavigateToPrivacy,
         onLogout = { performLogout() },
         onRefresh = { viewModel.refreshData() }
     )
+
+    // 服务类型选择弹窗
+    if (showServiceTypeDialog) {
+        ServiceTypeSelectorDialog(
+            selectedType = uiState.selectedServiceType,
+            onTypeSelected = { type ->
+                viewModel.selectServiceType(type)
+                showServiceTypeDialog = false
+            },
+            onDismiss = { showServiceTypeDialog = false }
+        )
+    }
+
+    // 预约确认弹窗
+    val selectedServiceType = uiState.selectedServiceType
+    if (showBookingConfirmDialog && selectedServiceType != null) {
+        ServiceBookingConfirmDialog(
+            serviceType = selectedServiceType,
+            bookingState = bookingState,
+            onConfirm = {
+                viewModel.confirmBooking()
+            },
+            onDismiss = {
+                showBookingConfirmDialog = false
+                viewModel.resetBookingState()
+            }
+        )
+    }
 }
 
 /**
@@ -62,6 +111,8 @@ private fun performLogout() {
 @Composable
 private fun ProfileScreenContent(
     uiState: ProfileUiState,
+    bookingState: com.wuheng.smart.presentation.base.UiDataState<Unit> = com.wuheng.smart.presentation.base.UiDataState.Idle,
+    selectedServiceType: ServiceType? = null,
     onNotificationClick: () -> Unit,
     onServiceSelect: () -> Unit,
     onBookService: () -> Unit,
@@ -85,6 +136,7 @@ private fun ProfileScreenContent(
             else -> {
                 ProfileLayout(
                     uiState = uiState,
+                    selectedServiceType = selectedServiceType,
                     onNotificationClick = onNotificationClick,
                     onServiceSelect = onServiceSelect,
                     onBookService = onBookService,

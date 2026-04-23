@@ -17,10 +17,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.wuheng.smart.presentation.components.*
 import com.wuheng.smart.presentation.theme.*
 
@@ -112,131 +114,173 @@ fun ClimateLayout(
 // ==================== 子组件 ====================
 
 /**
- * Tab选择器
+ * Tab选择器 - 像素级还原设计图
  */
 @Composable
 private fun ClimateTabSelector(
     selectedTab: ClimateTab,
     onTabSelected: (ClimateTab) -> Unit
 ) {
-    WuHengCard {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 2.dp,
+                shape = RoundedCornerShape(28.dp),
+                spotColor = Color.Black.copy(alpha = 0.06f)
+            )
+            .clip(RoundedCornerShape(28.dp))
+            .background(Color.White)
+            .padding(4.dp)
+    ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(spacing_sm),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             ClimateTabItem(
                 icon = Icons.Default.Home,
                 label = "全屋",
                 selected = selectedTab == ClimateTab.WHOLE_HOUSE,
-                onClick = { onTabSelected(ClimateTab.WHOLE_HOUSE) }
+                onClick = { onTabSelected(ClimateTab.WHOLE_HOUSE) },
+                modifier = Modifier.weight(1f)
             )
             ClimateTabItem(
                 icon = Icons.Default.List,
                 label = "楼层",
                 selected = selectedTab == ClimateTab.FLOOR,
-                onClick = { onTabSelected(ClimateTab.FLOOR) }
+                onClick = { onTabSelected(ClimateTab.FLOOR) },
+                modifier = Modifier.weight(1f)
             )
         }
     }
 }
 
 /**
- * Tab项
+ * Tab项 - 像素级还原设计图
  */
 @Composable
 private fun ClimateTabItem(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     label: String,
     selected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .clip(RoundedCornerShape(corner_sm))
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(24.dp))
+            .background(if (selected) PrimaryBlue else Color.Transparent)
             .clickable(onClick = onClick)
-            .padding(horizontal = spacing_lg, vertical = spacing_sm)
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            modifier = Modifier.size(icon_size_default),
-            tint = if (selected) PrimaryBlue else TextSecondaryLight
-        )
-        Spacer(modifier = Modifier.width(spacing_xs))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = if (selected) PrimaryBlue else TextSecondaryLight,
-            fontWeight = if (selected) FontWeight.Medium else FontWeight.Normal
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp),
+                tint = if (selected) Color.White else TextSecondaryLight
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                color = if (selected) Color.White else TextSecondaryLight,
+                fontWeight = if (selected) FontWeight.Medium else FontWeight.Normal,
+                fontSize = 14.sp
+            )
+        }
     }
 }
 
 /**
- * 温度设定卡片
+ * 温度设定卡片 - 像素级还原设计图
  */
 @Composable
 private fun TemperatureSettingCard(
     temperature: Float,
     onTemperatureChange: (Float) -> Unit
 ) {
-    WuHengCard(
-        modifier = Modifier.fillMaxWidth()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 2.dp,
+                shape = RoundedCornerShape(20.dp),
+                spotColor = Color.Black.copy(alpha = 0.06f)
+            )
+            .clip(RoundedCornerShape(20.dp))
+            .background(Color.White)
+            .padding(24.dp)
     ) {
         Column(
-            modifier = Modifier.padding(card_padding_large),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = "全屋温度设定",
                 style = MaterialTheme.typography.bodyMedium,
-                color = TextSecondaryLight
+                color = TextSecondaryLight,
+                fontSize = 14.sp
             )
 
-            Spacer(modifier = Modifier.height(spacing_md))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // 温度显示
+            // 温度显示 - 像素级还原
             Row(
                 verticalAlignment = Alignment.Top
             ) {
                 Text(
                     text = String.format("%.1f", temperature),
-                    style = TemperatureDisplayStyle,
-                    color = TextPrimaryLight
+                    style = MaterialTheme.typography.displayLarge,
+                    color = TextPrimaryLight,
+                    fontSize = 56.sp,
+                    fontWeight = FontWeight.Light
                 )
                 Text(
                     text = "°",
-                    style = UnitLargeTextStyle,
+                    style = MaterialTheme.typography.headlineLarge,
+                    color = TextSecondaryLight,
+                    fontSize = 32.sp,
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(spacing_lg))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // 滑块
-            Slider(
-                value = temperature,
-                onValueChange = onTemperatureChange,
-                valueRange = 16f..30f,
+            // 滑块 - 像素级还原设计图样式
+            Box(
                 modifier = Modifier.fillMaxWidth(),
-                colors = SliderDefaults.colors(
-                    thumbColor = Color.White,
-                    activeTrackColor = PrimaryBlue,
-                    inactiveTrackColor = SliderInactive
-                ),
-                thumb = {
-                    Box(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clip(CircleShape)
-                            .background(Color.White)
-                            .border(2.dp, PrimaryBlue, CircleShape)
-                    )
-                }
-            )
+                contentAlignment = Alignment.Center
+            ) {
+                Slider(
+                    value = temperature,
+                    onValueChange = onTemperatureChange,
+                    valueRange = 16f..30f,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = SliderDefaults.colors(
+                        thumbColor = Color.White,
+                        activeTrackColor = PrimaryBlue,
+                        inactiveTrackColor = Color(0xFFE8E8E8)
+                    ),
+                    thumb = {
+                        Box(
+                            modifier = Modifier
+                                .size(24.dp)
+                                .shadow(
+                                    elevation = 4.dp,
+                                    shape = CircleShape,
+                                    spotColor = Color.Black.copy(alpha = 0.15f)
+                                )
+                                .clip(CircleShape)
+                                .background(Color.White)
+                                .border(2.dp, PrimaryBlue, CircleShape)
+                        )
+                    }
+                )
+            }
 
             // 温度范围标签
             Row(
@@ -246,12 +290,14 @@ private fun TemperatureSettingCard(
                 Text(
                     text = "16°C",
                     style = MaterialTheme.typography.bodySmall,
-                    color = TextTertiaryLight
+                    color = TextTertiaryLight,
+                    fontSize = 12.sp
                 )
                 Text(
                     text = "30°C",
                     style = MaterialTheme.typography.bodySmall,
-                    color = TextTertiaryLight
+                    color = TextTertiaryLight,
+                    fontSize = 12.sp
                 )
             }
         }
@@ -259,19 +305,26 @@ private fun TemperatureSettingCard(
 }
 
 /**
- * 湿度设定卡片
+ * 湿度设定卡片 - 像素级还原设计图
  */
 @Composable
 private fun HumiditySettingCard(
     humidity: Float,
     onHumidityChange: (Float) -> Unit
 ) {
-    WuHengCard(
-        modifier = Modifier.fillMaxWidth()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 2.dp,
+                shape = RoundedCornerShape(16.dp),
+                spotColor = Color.Black.copy(alpha = 0.06f)
+            )
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.White)
+            .padding(16.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(card_padding_default)
-        ) {
+        Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -280,45 +333,57 @@ private fun HumiditySettingCard(
                 Text(
                     text = "全屋湿度设定",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = TextPrimaryLight
+                    color = TextPrimaryLight,
+                    fontSize = 14.sp
                 )
                 Text(
                     text = "${humidity.toInt()}%",
                     style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Medium,
-                    color = PrimaryBlue
+                    fontWeight = FontWeight.SemiBold,
+                    color = PrimaryBlue,
+                    fontSize = 16.sp
                 )
             }
 
-            Spacer(modifier = Modifier.height(spacing_md))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // 滑块
-            Slider(
-                value = humidity,
-                onValueChange = onHumidityChange,
-                valueRange = 30f..80f,
+            // 滑块 - 像素级还原
+            Box(
                 modifier = Modifier.fillMaxWidth(),
-                colors = SliderDefaults.colors(
-                    thumbColor = Color.White,
-                    activeTrackColor = PrimaryBlue,
-                    inactiveTrackColor = SliderInactive
-                ),
-                thumb = {
-                    Box(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clip(CircleShape)
-                            .background(Color.White)
-                            .border(2.dp, PrimaryBlue, CircleShape)
-                    )
-                }
-            )
+                contentAlignment = Alignment.Center
+            ) {
+                Slider(
+                    value = humidity,
+                    onValueChange = onHumidityChange,
+                    valueRange = 30f..80f,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = SliderDefaults.colors(
+                        thumbColor = Color.White,
+                        activeTrackColor = PrimaryBlue,
+                        inactiveTrackColor = Color(0xFFE8E8E8)
+                    ),
+                    thumb = {
+                        Box(
+                            modifier = Modifier
+                                .size(20.dp)
+                                .shadow(
+                                    elevation = 3.dp,
+                                    shape = CircleShape,
+                                    spotColor = Color.Black.copy(alpha = 0.15f)
+                                )
+                                .clip(CircleShape)
+                                .background(Color.White)
+                                .border(2.dp, PrimaryBlue, CircleShape)
+                        )
+                    }
+                )
+            }
         }
     }
 }
 
 /**
- * 楼层卡片
+ * 楼层卡片 - 像素级还原设计图
  */
 @Composable
 private fun FloorCard(
@@ -326,14 +391,20 @@ private fun FloorCard(
     onToggle: (String) -> Unit,
     onClick: (String) -> Unit
 ) {
-    WuHengCard(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
+            .shadow(
+                elevation = 2.dp,
+                shape = RoundedCornerShape(16.dp),
+                spotColor = Color.Black.copy(alpha = 0.06f)
+            )
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.White)
             .clickable { onClick(floor.id) }
+            .padding(16.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(card_padding_default)
-        ) {
+        Column {
             // 楼层标题行
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -344,7 +415,8 @@ private fun FloorCard(
                     text = floor.name + if (floor.isMainControl) " (主控)" else "",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextPrimaryLight
+                    color = TextPrimaryLight,
+                    fontSize = 16.sp
                 )
 
                 // 开关
@@ -353,19 +425,20 @@ private fun FloorCard(
                     onCheckedChange = { onToggle(floor.id) },
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = Color.White,
-                        checkedTrackColor = SwitchChecked,
+                        checkedTrackColor = PrimaryBlue,
                         uncheckedThumbColor = Color.White,
-                        uncheckedTrackColor = SwitchUnchecked
-                    )
+                        uncheckedTrackColor = Color(0xFFCCCCCC)
+                    ),
+                    modifier = Modifier.width(48.dp)
                 )
             }
 
             // 设备状态
             if (floor.devices.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(spacing_md))
+                Spacer(modifier = Modifier.height(12.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(spacing_lg)
+                    horizontalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
                     floor.devices.forEach { device ->
                         FloorDeviceItem(device = device)
@@ -387,14 +460,16 @@ private fun FloorDeviceItem(device: FloorDevice) {
         Text(
             text = device.name,
             style = MaterialTheme.typography.bodySmall,
-            color = TextSecondaryLight
+            color = TextSecondaryLight,
+            fontSize = 13.sp
         )
-        Spacer(modifier = Modifier.width(spacing_sm))
+        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = device.value ?: device.status,
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Medium,
-            color = if (device.status == "开启" || device.status == "运行中") PrimaryBlue else TextSecondaryLight
+            color = if (device.status == "开启" || device.status == "运行中") PrimaryBlue else TextSecondaryLight,
+            fontSize = 14.sp
         )
     }
 }

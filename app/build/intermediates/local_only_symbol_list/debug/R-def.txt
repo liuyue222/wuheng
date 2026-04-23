@@ -1,9 +1,16 @@
 R_DEF: Internal format may change without notice
 local
 color black
+color brand_primary
+color brand_primary_dark
+color brand_secondary
 color purple_200
 color purple_500
 color purple_700
+color splash_background
+color splash_background_night
+color splash_icon_background
+color splash_icon_background_night
 color teal_200
 color teal_700
 color white
@@ -21,12 +28,14 @@ drawable ic_scene_meeting
 drawable ic_scene_sleep
 drawable ic_scene_vacation
 drawable ic_snowflake
+drawable ic_splash
 drawable ic_sun
 drawable ic_switch_on
 drawable ic_water
 drawable ic_water_selected
 drawable ic_wind
 drawable jiantou
+drawable launch_background
 drawable liebiao
 drawable liebiao_unchecked
 mipmap ic_launcher
@@ -91,6 +100,8 @@ string water_outlet_temp
 string water_pressure
 string water_system
 style Theme.WuHeng
+style Theme.WuHeng.Starting
 xml backup_rules
 xml data_extraction_rules
+xml file_paths
 xml network_security_config

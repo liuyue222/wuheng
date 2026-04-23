@@ -12,6 +12,7 @@ attr argType
 attr buttonSize
 attr circleCrop
 attr colorScheme
+attr css
 attr data
 attr dataPattern
 attr destination
@@ -42,20 +43,28 @@ attr popExitAnim
 attr popUpTo
 attr popUpToInclusive
 attr popUpToSaveState
+attr postSplashScreenTheme
 attr queryPatterns
 attr restoreState
 attr route
 attr scopeUris
 attr shortcutMatchRequired
+attr splashScreenIconSize
 attr startDestination
+attr svg
 attr targetPackage
 attr ttcIndex
 attr uri
+attr windowSplashScreenAnimatedIcon
+attr windowSplashScreenAnimationDuration
+attr windowSplashScreenBackground
+attr windowSplashScreenIconBackgroundColor
 color androidx_core_ripple_material_light
 color androidx_core_secondary_text_default_material_light
 color black
-color call_notification_answer_color
-color call_notification_decline_color
+color brand_primary
+color brand_primary_dark
+color brand_secondary
 color common_google_signin_btn_text_dark
 color common_google_signin_btn_text_dark_default
 color common_google_signin_btn_text_dark_disabled
@@ -72,6 +81,10 @@ color notification_icon_bg_color
 color purple_200
 color purple_500
 color purple_700
+color splash_background
+color splash_background_night
+color splash_icon_background
+color splash_icon_background_night
 color teal_200
 color teal_700
 color vector_tint_color
@@ -99,6 +112,14 @@ dimen notification_small_icon_size_as_large
 dimen notification_subtext_size
 dimen notification_top_pad
 dimen notification_top_pad_large_text
+dimen splashscreen_icon_mask_size_no_background
+dimen splashscreen_icon_mask_size_with_background
+dimen splashscreen_icon_mask_stroke_no_background
+dimen splashscreen_icon_mask_stroke_with_background
+dimen splashscreen_icon_size
+dimen splashscreen_icon_size_no_background
+dimen splashscreen_icon_size_with_background
+drawable abc_vector_test
 drawable common_full_open_on_phone
 drawable common_google_signin_btn_icon_dark
 drawable common_google_signin_btn_icon_dark_focused
@@ -118,17 +139,13 @@ drawable common_google_signin_btn_text_light
 drawable common_google_signin_btn_text_light_focused
 drawable common_google_signin_btn_text_light_normal
 drawable common_google_signin_btn_text_light_normal_background
+drawable compat_splash_screen
+drawable compat_splash_screen_no_icon_background
 drawable googleg_disabled_color_18
 drawable googleg_standard_color_18
 drawable home2
 drawable home2_unchecked
 drawable home_background
-drawable ic_call_answer
-drawable ic_call_answer_low
-drawable ic_call_answer_video
-drawable ic_call_answer_video_low
-drawable ic_call_decline
-drawable ic_call_decline_low
 drawable ic_launcher_background
 drawable ic_launcher_foreground
 drawable ic_location
@@ -140,12 +157,15 @@ drawable ic_scene_meeting
 drawable ic_scene_sleep
 drawable ic_scene_vacation
 drawable ic_snowflake
+drawable ic_splash
 drawable ic_sun
 drawable ic_switch_on
 drawable ic_water
 drawable ic_water_selected
 drawable ic_wind
+drawable icon_background
 drawable jiantou
+drawable launch_background
 drawable liebiao
 drawable liebiao_unchecked
 drawable notification_action_background
@@ -205,6 +225,7 @@ id async
 id auto
 id blocking
 id chronometer
+id coil_request_manager
 id compose_view_saveable_id_tag
 id consume_window_insets_tag
 id dark
@@ -233,6 +254,7 @@ id report_drawn
 id right_icon
 id right_side
 id special_effects_controller_view_tag
+id splashscreen_icon_view
 id standard
 id tag_accessibility_actions
 id tag_accessibility_clickable_spans
@@ -258,6 +280,7 @@ id view_tree_view_model_store_owner
 id visible_removing_fragment_view_tag
 id wide
 id wrapped_composition_tag
+integer default_icon_animation_duration
 integer google_play_services_version
 integer status_bar_notification_info_maxnum
 layout custom_dialog
@@ -267,17 +290,11 @@ layout notification_template_custom_big
 layout notification_template_icon_group
 layout notification_template_part_chronometer
 layout notification_template_part_time
+layout splash_screen_view
 mipmap ic_launcher
 mipmap ic_launcher_round
 string androidx_startup
 string app_name
-string call_notification_answer_action
-string call_notification_answer_video_action
-string call_notification_decline_action
-string call_notification_hang_up_action
-string call_notification_incoming_text
-string call_notification_ongoing_text
-string call_notification_screening_text
 string cancel
 string climate_avg_temp_title
 string climate_ceiling_radiation
@@ -365,6 +382,7 @@ string refresh
 string retry
 string selected
 string status_bar_notification_info_overflow
+string switch_role
 string tab
 string template_percent
 string waiting_for_load
@@ -374,6 +392,13 @@ string water_inlet_temp
 string water_outlet_temp
 string water_pressure
 string water_system
+style Base_Theme_SplashScreen
+style Base_Theme_SplashScreen_DayNight
+style Base_Theme_SplashScreen_Light
+style Base_v21_Theme_SplashScreen
+style Base_v21_Theme_SplashScreen_Light
+style Base_v27_Theme_SplashScreen
+style Base_v27_Theme_SplashScreen_Light
 style DialogWindowTheme
 style FloatingDialogTheme
 style FloatingDialogWindowTheme
@@ -382,10 +407,17 @@ style TextAppearance_Compat_Notification_Info
 style TextAppearance_Compat_Notification_Line2
 style TextAppearance_Compat_Notification_Time
 style TextAppearance_Compat_Notification_Title
+style Theme_SplashScreen
+style Theme_SplashScreen_Common
+style Theme_SplashScreen_IconBackground
 style Theme_WuHeng
+style Theme_WuHeng_Starting
 style Widget_Compat_NotificationActionContainer
 style Widget_Compat_NotificationActionText
 styleable ActivityNavigator android_name action data dataPattern targetPackage
+styleable AnimatedStateListDrawableCompat android_dither android_visible android_variablePadding android_constantSize android_enterFadeDuration android_exitFadeDuration
+styleable AnimatedStateListDrawableItem android_id android_drawable
+styleable AnimatedStateListDrawableTransition android_drawable android_toId android_fromId android_reversible
 styleable Capability queryPatterns shortcutMatchRequired
 styleable ColorStateListItem android_color android_alpha android_lStar alpha lStar
 styleable FontFamily fontProviderAuthority fontProviderCerts fontProviderFetchStrategy fontProviderFetchTimeout fontProviderPackage fontProviderQuery fontProviderSystemFontFamily
@@ -402,7 +434,11 @@ styleable NavGraphNavigator startDestination
 styleable NavHost navGraph
 styleable NavInclude graph
 styleable Navigator android_label android_id route
+styleable SVGImageView css svg
 styleable SignInButton buttonSize colorScheme scopeUris
+styleable StateListDrawable android_dither android_visible android_variablePadding android_constantSize android_enterFadeDuration android_exitFadeDuration
+styleable StateListDrawableItem android_drawable
 xml backup_rules
 xml data_extraction_rules
+xml file_paths
 xml network_security_config

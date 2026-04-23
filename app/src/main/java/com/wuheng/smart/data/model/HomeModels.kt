@@ -124,7 +124,7 @@ data class Device(
     @SerializedName("type")
     val type: DeviceType = DeviceType.OTHER,
     @SerializedName("status")
-    val status: DeviceStatus = DeviceStatus.OFF,
+    val status: DeviceRunningStatus = DeviceRunningStatus.OFF,
     @SerializedName("roomName")
     val roomName: String = "",
     @SerializedName("isOnline")
@@ -143,7 +143,7 @@ data class DeviceDetail(
     @SerializedName("type")
     val type: DeviceType = DeviceType.OTHER,
     @SerializedName("status")
-    val status: DeviceStatus = DeviceStatus.OFF,
+    val status: DeviceRunningStatus = DeviceRunningStatus.OFF,
     @SerializedName("roomName")
     val roomName: String = "",
     @SerializedName("isOnline")
@@ -213,7 +213,7 @@ enum class DeviceType {
     OTHER       // 其他
 }
 
-enum class DeviceStatus {
+enum class DeviceRunningStatus {
     ON,
     OFF,
     STANDBY,

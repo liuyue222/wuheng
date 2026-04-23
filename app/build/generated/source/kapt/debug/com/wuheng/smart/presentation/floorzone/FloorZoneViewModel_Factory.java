@@ -1,6 +1,5 @@
 package com.wuheng.smart.presentation.floorzone;
 
-import com.wuheng.smart.data.network.TokenManager;
 import com.wuheng.smart.data.repository.HomeRepository;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
@@ -23,26 +22,20 @@ import javax.inject.Provider;
 public final class FloorZoneViewModel_Factory implements Factory<FloorZoneViewModel> {
   private final Provider<HomeRepository> homeRepositoryProvider;
 
-  private final Provider<TokenManager> tokenManagerProvider;
-
-  public FloorZoneViewModel_Factory(Provider<HomeRepository> homeRepositoryProvider,
-      Provider<TokenManager> tokenManagerProvider) {
+  public FloorZoneViewModel_Factory(Provider<HomeRepository> homeRepositoryProvider) {
     this.homeRepositoryProvider = homeRepositoryProvider;
-    this.tokenManagerProvider = tokenManagerProvider;
   }
 
   @Override
   public FloorZoneViewModel get() {
-    return newInstance(homeRepositoryProvider.get(), tokenManagerProvider.get());
+    return newInstance(homeRepositoryProvider.get());
   }
 
-  public static FloorZoneViewModel_Factory create(Provider<HomeRepository> homeRepositoryProvider,
-      Provider<TokenManager> tokenManagerProvider) {
-    return new FloorZoneViewModel_Factory(homeRepositoryProvider, tokenManagerProvider);
+  public static FloorZoneViewModel_Factory create(Provider<HomeRepository> homeRepositoryProvider) {
+    return new FloorZoneViewModel_Factory(homeRepositoryProvider);
   }
 
-  public static FloorZoneViewModel newInstance(HomeRepository homeRepository,
-      TokenManager tokenManager) {
-    return new FloorZoneViewModel(homeRepository, tokenManager);
+  public static FloorZoneViewModel newInstance(HomeRepository homeRepository) {
+    return new FloorZoneViewModel(homeRepository);
   }
 }

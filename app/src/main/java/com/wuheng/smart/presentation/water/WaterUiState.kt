@@ -37,13 +37,13 @@ enum class HotWaterMode {
 data class FilterItem(
     val name: String,
     val progress: Float,  // 0.0 - 1.0
-    val status: FilterStatus
+    val status: FilterUiStatus
 )
 
 /**
- * 滤芯状态枚举
+ * 滤芯UI状态枚举（用于UI展示）
  */
-enum class FilterStatus {
+enum class FilterUiStatus {
     NORMAL,   // 正常 (>30%)
     WARNING,  // 警告 (10%-30%)
     EXPIRED   // 已过期 (<10%)

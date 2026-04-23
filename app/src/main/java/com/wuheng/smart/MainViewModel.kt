@@ -21,8 +21,9 @@ import javax.inject.Inject
  * 1. 管理应用登录状态
  * 2. 根据登录状态决定起始页面
  * 3. 监听 Token 变化并更新登录状态
+ * 4. 管理主题设置（深色模式/系统主题）
  *
- * @param tokenManager Token 管理器，用于检查登录状态
+ * @param tokenManager Token 管理器，用于检查登录状态和主题设置
  */
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -40,6 +41,16 @@ class MainViewModel @Inject constructor(
      */
     private val _startDestination = MutableStateFlow(NavigationRoutes.LOGIN)
     val startDestination: StateFlow<String> = _startDestination.asStateFlow()
+
+    /**
+     * 深色模式设置
+     */
+    val darkMode: StateFlow<Boolean> = tokenManager.darkMode
+
+    /**
+     * 系统主题设置
+     */
+    val systemTheme: StateFlow<Boolean> = tokenManager.systemTheme
 
     init {
         // 初始化时检查登录状态
@@ -64,5 +75,35 @@ class MainViewModel @Inject constructor(
         _isLoggedIn.value = hasToken
         _startDestination.value = if (hasToken) NavigationRoutes.HOME else NavigationRoutes.LOGIN
         Timber.d("Initial login status check: isLoggedIn=$hasToken")
+    }
+
+    /**
+     * 设置深色模式
+     */
+    fun setDarkMode(enabled: Boolean) {
+        tokenManager.setDarkMode(enabled)
+        Timber.d("设置深色模式: $enabled")
+    }
+
+    /**
+     * 设置是否跟随系统主题
+     */
+    fun setSystemTheme(enabled: Boolean) {
+        tokenManager.setSystemTheme(enabled)
+        Timber.d("设置跟随系统主题: $enabled")
+    }
+
+    /**
+     * 语言设置
+     */
+    val language: StateFlow<String> = tokenManager.language
+
+    /**
+     * 设置语言
+     * @param languageCode 语言代码: "zh" - 中文, "en" - 英文
+     */
+    fun setLanguage(languageCode: String) {
+        tokenManager.setLanguage(languageCode)
+        Timber.d("设置语言: $languageCode")
     }
 }

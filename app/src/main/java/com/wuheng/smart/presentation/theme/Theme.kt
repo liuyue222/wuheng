@@ -118,16 +118,24 @@ private val DarkColorScheme = darkColorScheme(
 @Composable
 fun WuHengTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    useSystemTheme: Boolean = true,
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false, // 默认关闭动态颜色，使用品牌色
     content: @Composable () -> Unit
 ) {
+    // 根据用户设置决定是否使用系统主题
+    val isDarkTheme = if (useSystemTheme) {
+        isSystemInDarkTheme()
+    } else {
+        darkTheme
+    }
+
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (isDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        darkTheme -> DarkColorScheme
+        isDarkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
 
@@ -136,7 +144,7 @@ fun WuHengTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.background.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !isDarkTheme
         }
     }
 

@@ -8,28 +8,30 @@ import com.wuheng.smart.presentation.base.BaseViewModel;
 import com.wuheng.smart.presentation.base.UiDataState;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import kotlinx.coroutines.flow.StateFlow;
+import timber.log.Timber;
 import javax.inject.Inject;
 
 /**
  * 水系统 ViewModel（生产级实现）
  *
  * 职责：
- * 1. 管理水系统所有UI状态（热水循环、滤芯列表等）
+ * 1. 管理水系统所有UI状态（热水循环、净水状态、滤芯列表等）
  * 2. 处理用户交互事件（模式切换、时长设置、滤芯更换等）
  * 3. 协调Repository层数据获取与UI状态更新
  *
- * 使用新版API（水系统模块）：
- * - getHeaterStatus(houseId)
- * - setCirculationMode(houseId, mode, duration)
- * - getFilterStatus(houseId)
- * - bookFilterReplace(houseId, filterId, ...)
+ * 使用新版API（水系统模块4个接口）：
+ * - getHotWaterStatus(houseId)      -> GET /home/water/getHotWaterStatus
+ * - setCirculationMode(houseId, mode, duration) -> POST /home/water/setCirculationMode
+ * - getWaterPurifierStatus(houseId) -> GET /home/water/getWaterPurifierStatus
+ * - getFilterStatus(houseId)        -> GET /home/water/getFilterStatus
  *
  * UI组件映射：
  * - HotWaterCirculationCard: cycleModeState, currentTemp, temporaryDuration
+ * - WaterPurifierCard: waterPurifierStatusState (TDS, 水质等)
  * - FilterSystemCard: filterStatusState
  */
 @dagger.hilt.android.lifecycle.HiltViewModel()
-@kotlin.Metadata(mv = {1, 7, 1}, k = 1, d1 = {"\u0000n\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u0007\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010 \n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0000\n\u0002\u0010\b\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0010\n\u0002\u0010\u000e\n\u0002\b\t\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0004\b\u0007\u0018\u00002\u00020\u0001B\u0017\b\u0007\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u00a2\u0006\u0002\u0010\u0006J:\u0010(\u001a\u00020\u00132\u0006\u0010)\u001a\u00020*2\u0006\u0010+\u001a\u00020*2\n\b\u0002\u0010,\u001a\u0004\u0018\u00010*2\n\b\u0002\u0010-\u001a\u0004\u0018\u00010*2\n\b\u0002\u0010.\u001a\u0004\u0018\u00010*J\u000e\u0010/\u001a\u00020\u00132\u0006\u0010)\u001a\u00020*J\u000e\u00100\u001a\u00020\u00132\u0006\u0010)\u001a\u00020*J\b\u00101\u001a\u00020\u0013H\u0002J\u000e\u00102\u001a\u00020\u00132\u0006\u00103\u001a\u000204J\u0006\u00105\u001a\u00020\u0013J\u0006\u00106\u001a\u00020\u0013J\'\u00107\u001a\u00020\u00132\u0006\u0010)\u001a\u00020*2\u0006\u00103\u001a\u0002082\n\b\u0002\u00109\u001a\u0004\u0018\u00010\u0015\u00a2\u0006\u0002\u0010:J\u000e\u0010;\u001a\u00020\u00132\u0006\u00109\u001a\u00020\u0015R\u0014\u0010\u0007\u001a\b\u0012\u0004\u0012\u00020\t0\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010\n\u001a\b\u0012\u0004\u0012\u00020\u000b0\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R \u0010\f\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u000f0\u000e0\r0\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\u0010\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00110\r0\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\u0012\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00130\r0\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010\u0014\u001a\b\u0012\u0004\u0012\u00020\u00150\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010\u0016\u001a\b\u0012\u0004\u0012\u00020\u00170\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0017\u0010\u0018\u001a\b\u0012\u0004\u0012\u00020\t0\u0019\u00a2\u0006\b\n\u0000\u001a\u0004\b\u001a\u0010\u001bR\u0017\u0010\u001c\u001a\b\u0012\u0004\u0012\u00020\u000b0\u0019\u00a2\u0006\b\n\u0000\u001a\u0004\b\u001d\u0010\u001bR#\u0010\u001e\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u000f0\u000e0\r0\u0019\u00a2\u0006\b\n\u0000\u001a\u0004\b\u001f\u0010\u001bR\u001d\u0010 \u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00110\r0\u0019\u00a2\u0006\b\n\u0000\u001a\u0004\b!\u0010\u001bR\u001d\u0010\"\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00130\r0\u0019\u00a2\u0006\b\n\u0000\u001a\u0004\b#\u0010\u001bR\u0017\u0010$\u001a\b\u0012\u0004\u0012\u00020\u00150\u0019\u00a2\u0006\b\n\u0000\u001a\u0004\b%\u0010\u001bR\u000e\u0010\u0004\u001a\u00020\u0005X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0017\u0010&\u001a\b\u0012\u0004\u0012\u00020\u00170\u0019\u00a2\u0006\b\n\u0000\u001a\u0004\b\'\u0010\u001bR\u000e\u0010\u0002\u001a\u00020\u0003X\u0082\u0004\u00a2\u0006\u0002\n\u0000\u00a8\u0006<"}, d2 = {"Lcom/wuheng/smart/presentation/water/WaterViewModel;", "Lcom/wuheng/smart/presentation/base/BaseViewModel;", "waterRepository", "Lcom/wuheng/smart/data/repository/WaterRepository;", "tokenManager", "Lcom/wuheng/smart/data/network/TokenManager;", "(Lcom/wuheng/smart/data/repository/WaterRepository;Lcom/wuheng/smart/data/network/TokenManager;)V", "_currentTempState", "Lkotlinx/coroutines/flow/MutableStateFlow;", "", "_cycleModeState", "Lcom/wuheng/smart/data/model/CycleMode;", "_filterStatusState", "Lcom/wuheng/smart/presentation/base/UiDataState;", "", "Lcom/wuheng/smart/data/model/FilterStatusInfo;", "_heaterStatusState", "Lcom/wuheng/smart/data/model/HeaterStatus;", "_operationState", "", "_temporaryDurationState", "", "_uiState", "Lcom/wuheng/smart/presentation/water/WaterUiState;", "currentTempState", "Lkotlinx/coroutines/flow/StateFlow;", "getCurrentTempState", "()Lkotlinx/coroutines/flow/StateFlow;", "cycleModeState", "getCycleModeState", "filterStatusState", "getFilterStatusState", "heaterStatusState", "getHeaterStatusState", "operationState", "getOperationState", "temporaryDurationState", "getTemporaryDurationState", "uiState", "getUiState", "bookFilterReplace", "houseId", "", "filterId", "contactName", "contactPhone", "appointmentDate", "loadFilterStatus", "loadHeaterStatus", "loadInitialData", "onHotWaterModeSelected", "mode", "Lcom/wuheng/smart/presentation/water/HotWaterMode;", "refresh", "refreshData", "setCirculationMode", "Lcom/wuheng/smart/data/model/CirculationMode;", "duration", "(Ljava/lang/String;Lcom/wuheng/smart/data/model/CirculationMode;Ljava/lang/Integer;)V", "setTemporaryDuration", "app_debug"})
+@kotlin.Metadata(mv = {1, 7, 1}, k = 1, d1 = {"\u0000v\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u0007\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010 \n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0002\b\u0002\n\u0002\u0010\b\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0014\n\u0002\u0010\u000e\n\u0002\b\n\n\u0002\u0018\u0002\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0002\b\b\b\u0007\u0018\u00002\u00020\u0001B\u0017\b\u0007\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u00a2\u0006\u0002\u0010\u0006J:\u0010/\u001a\u00020\u00132\u0006\u00100\u001a\u0002012\u0006\u00102\u001a\u0002012\n\b\u0002\u00103\u001a\u0004\u0018\u0001012\n\b\u0002\u00104\u001a\u0004\u0018\u0001012\n\b\u0002\u00105\u001a\u0004\u0018\u000101J\u000e\u00106\u001a\u00020\u00132\u0006\u00100\u001a\u000201J\u000e\u00107\u001a\u00020\u00132\u0006\u00100\u001a\u000201J\b\u00108\u001a\u00020\u0013H\u0002J\u000e\u00109\u001a\u00020\u00132\u0006\u00100\u001a\u000201J\u000e\u0010:\u001a\u00020\u00132\u0006\u0010;\u001a\u00020<J\u0006\u0010=\u001a\u00020\u0013J\u0006\u0010>\u001a\u00020\u0013J\u0006\u0010?\u001a\u00020\u0013J\u0006\u0010@\u001a\u00020\u0013J\'\u0010A\u001a\u00020\u00132\u0006\u00100\u001a\u0002012\u0006\u0010;\u001a\u00020B2\n\b\u0002\u0010C\u001a\u0004\u0018\u00010\u0016\u00a2\u0006\u0002\u0010DJ\u000e\u0010E\u001a\u00020\u00132\u0006\u0010C\u001a\u00020\u0016J\u001e\u0010F\u001a\u00020\u00132\u0006\u0010G\u001a\u00020\u00162\u0006\u0010H\u001a\u00020\u00162\u0006\u0010I\u001a\u00020\u0016R\u0014\u0010\u0007\u001a\b\u0012\u0004\u0012\u00020\t0\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010\n\u001a\b\u0012\u0004\u0012\u00020\u000b0\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R \u0010\f\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u000f0\u000e0\r0\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\u0010\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00110\r0\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\u0012\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00130\r0\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\u0014\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00130\r0\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010\u0015\u001a\b\u0012\u0004\u0012\u00020\u00160\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010\u0017\u001a\b\u0012\u0004\u0012\u00020\u00180\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\u0019\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u001a0\r0\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0017\u0010\u001b\u001a\b\u0012\u0004\u0012\u00020\t0\u001c\u00a2\u0006\b\n\u0000\u001a\u0004\b\u001d\u0010\u001eR\u0017\u0010\u001f\u001a\b\u0012\u0004\u0012\u00020\u000b0\u001c\u00a2\u0006\b\n\u0000\u001a\u0004\b \u0010\u001eR#\u0010!\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u000f0\u000e0\r0\u001c\u00a2\u0006\b\n\u0000\u001a\u0004\b\"\u0010\u001eR\u001d\u0010#\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00110\r0\u001c\u00a2\u0006\b\n\u0000\u001a\u0004\b$\u0010\u001eR\u001d\u0010%\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00130\r0\u001c\u00a2\u0006\b\n\u0000\u001a\u0004\b&\u0010\u001eR\u001d\u0010\'\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00130\r0\u001c\u00a2\u0006\b\n\u0000\u001a\u0004\b(\u0010\u001eR\u0017\u0010)\u001a\b\u0012\u0004\u0012\u00020\u00160\u001c\u00a2\u0006\b\n\u0000\u001a\u0004\b*\u0010\u001eR\u000e\u0010\u0004\u001a\u00020\u0005X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0017\u0010+\u001a\b\u0012\u0004\u0012\u00020\u00180\u001c\u00a2\u0006\b\n\u0000\u001a\u0004\b,\u0010\u001eR\u001d\u0010-\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u001a0\r0\u001c\u00a2\u0006\b\n\u0000\u001a\u0004\b.\u0010\u001eR\u000e\u0010\u0002\u001a\u00020\u0003X\u0082\u0004\u00a2\u0006\u0002\n\u0000\u00a8\u0006J"}, d2 = {"Lcom/wuheng/smart/presentation/water/WaterViewModel;", "Lcom/wuheng/smart/presentation/base/BaseViewModel;", "waterRepository", "Lcom/wuheng/smart/data/repository/WaterRepository;", "tokenManager", "Lcom/wuheng/smart/data/network/TokenManager;", "(Lcom/wuheng/smart/data/repository/WaterRepository;Lcom/wuheng/smart/data/network/TokenManager;)V", "_currentTempState", "Lkotlinx/coroutines/flow/MutableStateFlow;", "", "_cycleModeState", "Lcom/wuheng/smart/data/model/CycleMode;", "_filterStatusState", "Lcom/wuheng/smart/presentation/base/UiDataState;", "", "Lcom/wuheng/smart/data/model/FilterStatusInfo;", "_hotWaterStatusState", "Lcom/wuheng/smart/data/model/HotWaterStatusResponse;", "_operationState", "", "_sterilizationState", "_temporaryDurationState", "", "_uiState", "Lcom/wuheng/smart/presentation/water/WaterUiState;", "_waterPurifierStatusState", "Lcom/wuheng/smart/data/model/WaterPurifierStatusResponse;", "currentTempState", "Lkotlinx/coroutines/flow/StateFlow;", "getCurrentTempState", "()Lkotlinx/coroutines/flow/StateFlow;", "cycleModeState", "getCycleModeState", "filterStatusState", "getFilterStatusState", "hotWaterStatusState", "getHotWaterStatusState", "operationState", "getOperationState", "sterilizationState", "getSterilizationState", "temporaryDurationState", "getTemporaryDurationState", "uiState", "getUiState", "waterPurifierStatusState", "getWaterPurifierStatusState", "bookFilterReplace", "houseId", "", "filterId", "contactName", "contactPhone", "appointmentDate", "loadFilterStatus", "loadHotWaterStatus", "loadInitialData", "loadWaterPurifierStatus", "onHotWaterModeSelected", "mode", "Lcom/wuheng/smart/presentation/water/HotWaterMode;", "refresh", "refreshData", "resetOperationState", "resetSterilizationState", "setCirculationMode", "Lcom/wuheng/smart/data/model/CirculationMode;", "duration", "(Ljava/lang/String;Lcom/wuheng/smart/data/model/CirculationMode;Ljava/lang/Integer;)V", "setTemporaryDuration", "updateSterilizationSchedule", "dayOfWeek", "hour", "minute", "app_debug"})
 public final class WaterViewModel extends com.wuheng.smart.presentation.base.BaseViewModel {
     private final com.wuheng.smart.data.repository.WaterRepository waterRepository = null;
     private final com.wuheng.smart.data.network.TokenManager tokenManager = null;
@@ -38,11 +40,18 @@ public final class WaterViewModel extends com.wuheng.smart.presentation.base.Bas
     private final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.water.WaterUiState> uiState = null;
     
     /**
-     * 热水循环状态（新版API）
+     * 热水循环状态（新版API: getHotWaterStatus）
      */
-    private final kotlinx.coroutines.flow.MutableStateFlow<com.wuheng.smart.presentation.base.UiDataState<com.wuheng.smart.data.model.HeaterStatus>> _heaterStatusState = null;
+    private final kotlinx.coroutines.flow.MutableStateFlow<com.wuheng.smart.presentation.base.UiDataState<com.wuheng.smart.data.model.HotWaterStatusResponse>> _hotWaterStatusState = null;
     @org.jetbrains.annotations.NotNull()
-    private final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.base.UiDataState<com.wuheng.smart.data.model.HeaterStatus>> heaterStatusState = null;
+    private final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.base.UiDataState<com.wuheng.smart.data.model.HotWaterStatusResponse>> hotWaterStatusState = null;
+    
+    /**
+     * 净水状态（新版API: getWaterPurifierStatus）
+     */
+    private final kotlinx.coroutines.flow.MutableStateFlow<com.wuheng.smart.presentation.base.UiDataState<com.wuheng.smart.data.model.WaterPurifierStatusResponse>> _waterPurifierStatusState = null;
+    @org.jetbrains.annotations.NotNull()
+    private final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.base.UiDataState<com.wuheng.smart.data.model.WaterPurifierStatusResponse>> waterPurifierStatusState = null;
     
     /**
      * 当前选中的循环模式
@@ -66,7 +75,7 @@ public final class WaterViewModel extends com.wuheng.smart.presentation.base.Bas
     private final kotlinx.coroutines.flow.StateFlow<java.lang.Float> currentTempState = null;
     
     /**
-     * 滤芯状态列表（新版API）
+     * 滤芯状态列表（新版API: getFilterStatus）
      */
     private final kotlinx.coroutines.flow.MutableStateFlow<com.wuheng.smart.presentation.base.UiDataState<java.util.List<com.wuheng.smart.data.model.FilterStatusInfo>>> _filterStatusState = null;
     @org.jetbrains.annotations.NotNull()
@@ -78,6 +87,13 @@ public final class WaterViewModel extends com.wuheng.smart.presentation.base.Bas
     private final kotlinx.coroutines.flow.MutableStateFlow<com.wuheng.smart.presentation.base.UiDataState<kotlin.Unit>> _operationState = null;
     @org.jetbrains.annotations.NotNull()
     private final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.base.UiDataState<kotlin.Unit>> operationState = null;
+    
+    /**
+     * 热力杀菌预约状态
+     */
+    private final kotlinx.coroutines.flow.MutableStateFlow<com.wuheng.smart.presentation.base.UiDataState<kotlin.Unit>> _sterilizationState = null;
+    @org.jetbrains.annotations.NotNull()
+    private final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.base.UiDataState<kotlin.Unit>> sterilizationState = null;
     
     @javax.inject.Inject()
     public WaterViewModel(@org.jetbrains.annotations.NotNull()
@@ -92,7 +108,12 @@ public final class WaterViewModel extends com.wuheng.smart.presentation.base.Bas
     }
     
     @org.jetbrains.annotations.NotNull()
-    public final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.base.UiDataState<com.wuheng.smart.data.model.HeaterStatus>> getHeaterStatusState() {
+    public final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.base.UiDataState<com.wuheng.smart.data.model.HotWaterStatusResponse>> getHotWaterStatusState() {
+        return null;
+    }
+    
+    @org.jetbrains.annotations.NotNull()
+    public final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.base.UiDataState<com.wuheng.smart.data.model.WaterPurifierStatusResponse>> getWaterPurifierStatusState() {
         return null;
     }
     
@@ -121,25 +142,37 @@ public final class WaterViewModel extends com.wuheng.smart.presentation.base.Bas
         return null;
     }
     
+    @org.jetbrains.annotations.NotNull()
+    public final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.base.UiDataState<kotlin.Unit>> getSterilizationState() {
+        return null;
+    }
+    
     private final void loadInitialData() {
     }
     
     /**
-     * 加载热水循环状态（新版API）
+     * 1. 加载热水循环状态（新版API: getHotWaterStatus）
      */
-    public final void loadHeaterStatus(@org.jetbrains.annotations.NotNull()
+    public final void loadHotWaterStatus(@org.jetbrains.annotations.NotNull()
     java.lang.String houseId) {
     }
     
     /**
-     * 加载滤芯状态（新版API）
+     * 2. 加载净水状态（新版API: getWaterPurifierStatus）
+     */
+    public final void loadWaterPurifierStatus(@org.jetbrains.annotations.NotNull()
+    java.lang.String houseId) {
+    }
+    
+    /**
+     * 3. 加载滤芯状态（新版API: getFilterStatus）
      */
     public final void loadFilterStatus(@org.jetbrains.annotations.NotNull()
     java.lang.String houseId) {
     }
     
     /**
-     * 切换热水循环模式（新版API）
+     * 4. 切换热水循环模式（新版API: setCirculationMode）
      *
      * @param houseId 房屋ID
      * @param mode 目标模式 (ALL_DAY/TIMER/TEMP/OFF)
@@ -160,7 +193,7 @@ public final class WaterViewModel extends com.wuheng.smart.presentation.base.Bas
     }
     
     /**
-     * 预约滤芯更换服务（新版API）
+     * 预约滤芯更换服务
      *
      * @param houseId 房屋ID
      * @param filterId 滤芯ID
@@ -193,5 +226,23 @@ public final class WaterViewModel extends com.wuheng.smart.presentation.base.Bas
      */
     public final void onHotWaterModeSelected(@org.jetbrains.annotations.NotNull()
     com.wuheng.smart.presentation.water.HotWaterMode mode) {
+    }
+    
+    /**
+     * 更新热力杀菌预约时间
+     */
+    public final void updateSterilizationSchedule(int dayOfWeek, int hour, int minute) {
+    }
+    
+    /**
+     * 重置热力杀菌状态
+     */
+    public final void resetSterilizationState() {
+    }
+    
+    /**
+     * 重置操作状态
+     */
+    public final void resetOperationState() {
     }
 }

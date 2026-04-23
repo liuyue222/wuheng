@@ -1,15 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    五恒智能控制系统 - AndroidManifest.xml
+    
+    版本: 1.0
+    更新日期: 2026-04-23
+    
+    安全说明:
+    - 禁用明文流量传输 (android:usesCleartextTraffic="false")
+    - 配置网络安全配置文件 (android:networkSecurityConfig)
+    - 禁用应用备份 (android:allowBackup="false")
+    - 禁用数据提取 (android:dataExtractionRules)
+    - 配置应用组件权限
+-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.wuheng.smart">
 
+    <!-- 
+        权限声明
+        按功能分组，遵循最小权限原则
+    -->
+    
+    <!-- 网络权限 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
+    <!-- 定位权限（天气功能需要） -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    
+    <!-- 前台服务权限（如需要后台任务） -->
+    <!-- <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> -->
+    
+    <!-- 通知权限（Android 13+） -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    
+    <!-- WiFi状态权限（局域网设备发现） -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    
+    <!-- 硬件特性声明 -->
+    <uses-feature
+        android:name="android.hardware.location"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.network"
+        android:required="false" />
 
     <application
         android:name=".WuHengApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -18,17 +60,125 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WuHeng"
-        android:usesCleartextTraffic="true"
-        tools:targetApi="31">
+        android:usesCleartextTraffic="false"
+        tools:targetApi="33">
+        
+        <!-- 
+            主Activity
+            配置: 应用入口，启用导出控制
+        -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.WuHeng">
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.WuHeng"
+            android:windowSoftInputMode="adjustResize"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            
+            <!-- Deep Link配置（如需要） -->
+            <!--
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                      android:host="wuheng.com"
+                      android:pathPrefix="/app" />
+            </intent-filter>
+            -->
         </activity>
+        
+        <!-- 
+            FileProvider配置（安全文件共享）
+            用于分享日志文件、图片等
+        -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+        
+        <!-- 
+            Hilt配置
+            自动生成，无需手动声明
+        -->
+        
+        <!-- 
+            前台服务（如需要后台同步）
+        -->
+        <!--
+        <service
+            android:name=".service.DataSyncService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+        -->
+        
+        <!-- 
+            广播接收器（如需要）
+        -->
+        <!--
+        <receiver
+            android:name=".receiver.NetworkChangeReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+        -->
+        
+        <!-- 
+            WorkManager配置（后台任务）
+        -->
+        <!--
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup" />
+        </provider>
+        -->
+        
+        <!-- 
+            App Startup 初始化器配置
+            用于初始化 Timber、定位SDK等
+        -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <!-- Timber 初始化器 -->
+            <meta-data
+                android:name="com.wuheng.smart.initializer.TimberInitializer"
+                android:value="androidx.startup" />
+            <!-- 定位SDK初始化器 -->
+            <meta-data
+                android:name="com.wuheng.smart.initializer.LocationSdkInitializer"
+                android:value="androidx.startup" />
+            <!-- 统计SDK初始化器 -->
+            <meta-data
+                android:name="com.wuheng.smart.initializer.AnalyticsInitializer"
+                android:value="androidx.startup" />
+            <!-- 推送SDK初始化器 -->
+            <meta-data
+                android:name="com.wuheng.smart.initializer.PushInitializer"
+                android:value="androidx.startup" />
+        </provider>
+        
     </application>
 
 </manifest>

@@ -52,6 +52,13 @@ class TokenManager @Inject constructor(
         private val KEY_SAVED_PHONE = stringPreferencesKey("saved_phone")
         private val KEY_SAVED_PASSWORD = stringPreferencesKey("saved_password")
         private val KEY_REMEMBER_PASSWORD = booleanPreferencesKey("remember_password")
+
+        // 主题设置 Keys
+        private val KEY_DARK_MODE = booleanPreferencesKey("dark_mode")
+        private val KEY_SYSTEM_THEME = booleanPreferencesKey("system_theme")
+
+        // 语言设置 Key
+        private val KEY_LANGUAGE = stringPreferencesKey("language")
     }
 
     private val dataStore = context.dataStore
@@ -291,5 +298,109 @@ class TokenManager @Inject constructor(
      */
     fun onLogout() {
         clearToken()
+    }
+
+    // ==================== 主题设置 ====================
+
+    private val _darkMode = MutableStateFlow(false)
+    val darkMode: StateFlow<Boolean> = _darkMode.asStateFlow()
+
+    private val _systemTheme = MutableStateFlow(true)
+    val systemTheme: StateFlow<Boolean> = _systemTheme.asStateFlow()
+
+    init {
+        // 初始化时从DataStore读取主题设置
+        coroutineScope.launch {
+            try {
+                val preferences = dataStore.data.first()
+                _darkMode.value = preferences[KEY_DARK_MODE] ?: false
+                _systemTheme.value = preferences[KEY_SYSTEM_THEME] ?: true
+            } catch (e: Exception) {
+                // 使用默认值
+                _darkMode.value = false
+                _systemTheme.value = true
+            }
+        }
+    }
+
+    /**
+     * 设置深色模式
+     */
+    fun setDarkMode(enabled: Boolean) {
+        _darkMode.value = enabled
+        coroutineScope.launch {
+            dataStore.edit { preferences ->
+                preferences[KEY_DARK_MODE] = enabled
+            }
+        }
+    }
+
+    /**
+     * 设置是否跟随系统主题
+     */
+    fun setSystemTheme(enabled: Boolean) {
+        _systemTheme.value = enabled
+        coroutineScope.launch {
+            dataStore.edit { preferences ->
+                preferences[KEY_SYSTEM_THEME] = enabled
+            }
+        }
+    }
+
+    /**
+     * 获取深色模式设置Flow
+     */
+    fun getDarkModeFlow(): Flow<Boolean> {
+        return dataStore.data.map { preferences ->
+            preferences[KEY_DARK_MODE] ?: false
+        }
+    }
+
+    /**
+     * 获取系统主题设置Flow
+     */
+    fun getSystemThemeFlow(): Flow<Boolean> {
+        return dataStore.data.map { preferences ->
+            preferences[KEY_SYSTEM_THEME] ?: true
+        }
+    }
+
+    // ==================== 语言设置 ====================
+
+    private val _language = MutableStateFlow("zh")
+    val language: StateFlow<String> = _language.asStateFlow()
+
+    init {
+        // 初始化时从DataStore读取语言设置
+        coroutineScope.launch {
+            try {
+                val preferences = dataStore.data.first()
+                _language.value = preferences[KEY_LANGUAGE] ?: "zh"
+            } catch (e: Exception) {
+                _language.value = "zh"
+            }
+        }
+    }
+
+    /**
+     * 设置语言
+     * @param languageCode 语言代码: "zh" - 中文, "en" - 英文
+     */
+    fun setLanguage(languageCode: String) {
+        _language.value = languageCode
+        coroutineScope.launch {
+            dataStore.edit { preferences ->
+                preferences[KEY_LANGUAGE] = languageCode
+            }
+        }
+    }
+
+    /**
+     * 获取语言设置Flow
+     */
+    fun getLanguageFlow(): Flow<String> {
+        return dataStore.data.map { preferences ->
+            preferences[KEY_LANGUAGE] ?: "zh"
+        }
     }
 }

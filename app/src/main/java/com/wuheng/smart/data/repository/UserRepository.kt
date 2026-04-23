@@ -3,6 +3,7 @@ package com.wuheng.smart.data.repository
 import com.wuheng.smart.data.model.*
 import com.wuheng.smart.data.network.ApiResult
 import com.wuheng.smart.data.network.ApiService
+import com.wuheng.smart.data.network.RetryConfig
 import com.wuheng.smart.data.network.TokenManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -151,7 +152,8 @@ class UserRepositoryImpl @Inject constructor(
         username: String,
         password: String,
         callback: LoginResultCallback?
-    ): Flow<ApiResult<LoginResponse>> = apiFlow(
+    ): Flow<ApiResult<LoginResponse>> = apiFlowWithRetry(
+        config = RetryConfig.FAST, // 登录使用快速重试
         operation = "login",
         params = "username=$username"
     ) {
@@ -159,14 +161,14 @@ class UserRepositoryImpl @Inject constructor(
             // Mock登录数据
             kotlinx.coroutines.delay(500) // 模拟网络延迟
             val mockResponse = LoginResponse(
-                userId = "1",
+                userId = 1,
                 userIdNo = "USER202604190001",
                 userName = username,
                 userTel = "13800138001",
                 userToken = "token001",
-                userType = "1",
-                houseId = "1",
-                status = "1"
+                userType = 1,
+                houseId = 1,
+                status = 1
             )
             handleLoginSuccess(mockResponse, callback)
             Timber.d("Mock login success: userId=${mockResponse.userId}")
@@ -190,19 +192,20 @@ class UserRepositoryImpl @Inject constructor(
         response: LoginResponse,
         callback: LoginResultCallback?
     ) {
-        // 保存Token到本地
+        // 保存Token到本地（将Int类型转换为String存储）
         tokenManager.onLoginSuccess(
-            response.userToken,
-            response.userId,
-            response.userName,
-            response.userType,
-            response.houseId
+            token = response.userToken,
+            userId = response.userId.toString(),
+            userName = response.userName,
+            userType = response.userType.toString(),
+            houseId = response.houseId.toString()
         )
         // 执行额外的回调操作（如保存用户数据到数据库）
         callback?.onLoginSuccess(response)
     }
 
-    override suspend fun register(request: RegisterRequest): Flow<ApiResult<RegisterResponse>> = apiFlow(
+    override suspend fun register(request: RegisterRequest): Flow<ApiResult<RegisterResponse>> = apiFlowWithRetry(
+        config = RetryConfig.FAST, // 注册使用快速重试
         operation = "register",
         params = "username=${request.username}, mobile=${request.mobile}"
     ) {
@@ -234,7 +237,8 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getUserInfo(): Flow<ApiResult<UserInfo>> = apiFlow(
+    override suspend fun getUserInfo(): Flow<ApiResult<UserInfo>> = apiFlowWithRetry(
+        config = RetryConfig.DEFAULT, // 获取用户信息使用默认重试
         operation = "getUserInfo"
     ) {
         if (useMock) {
@@ -254,7 +258,8 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateUserInfo(request: UpdateUserInfoRequest): Flow<ApiResult<Unit>> = apiFlow(
+    override suspend fun updateUserInfo(request: UpdateUserInfoRequest): Flow<ApiResult<Unit>> = apiFlowWithRetry(
+        config = RetryConfig.DEFAULT, // 更新用户信息使用默认重试
         operation = "updateUserInfo",
         params = "realname=${request.realname}, email=${request.email}"
     ) {

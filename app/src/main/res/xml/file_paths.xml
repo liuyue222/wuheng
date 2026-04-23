@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    五恒智能控制系统 - FileProvider路径配置
+    
+    用于安全地共享文件给其他应用
+    配置说明:
+    - files-path: 应用内部文件目录
+    - cache-path: 应用缓存目录
+    - external-path: 外部存储目录
+    - external-files-path: 应用外部文件目录
+    - external-cache-path: 应用外部缓存目录
+-->
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <!-- 应用内部文件目录 - 用于分享日志、配置文件等 -->
+    <files-path
+        name="internal_files"
+        path="." />
+    
+    <!-- 应用缓存目录 - 用于分享临时文件 -->
+    <cache-path
+        name="cache_files"
+        path="." />
+    
+    <!-- 应用外部文件目录 - 用于分享图片、文档等 -->
+    <external-files-path
+        name="external_files"
+        path="." />
+    
+    <!-- 应用外部缓存目录 -->
+    <external-cache-path
+        name="external_cache"
+        path="." />
+    
+    <!-- 外部存储图片目录 - 用于分享保存的图片 -->
+    <external-path
+        name="external_images"
+        path="Pictures/" />
+    
+    <!-- 下载目录 -->
+    <external-path
+        name="external_downloads"
+        path="Download/" />
+    
+</paths>

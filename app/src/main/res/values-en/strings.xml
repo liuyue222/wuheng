@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WuHeng</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_climate">Climate</string>
+    <string name="nav_water">Water</string>
+    <string name="nav_profile">Profile</string>
+
+    <!-- Common -->
+    <string name="loading">Loading...</string>
+    <string name="error_network">Network connection failed. Please check your network settings</string>
+    <string name="error_unknown">An unknown error occurred</string>
+    <string name="retry">Retry</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+    <string name="refresh">Refresh</string>
+    <string name="waiting_for_load">Waiting for load...</string>
+
+    <!-- Home Screen -->
+    <string name="home_overview">Home Overview</string>
+    <string name="home_room_count">Rooms</string>
+    <string name="home_device_count">Devices</string>
+    <string name="home_online_count">Online</string>
+    <string name="home_temperature">Temperature</string>
+    <string name="home_humidity">Humidity</string>
+    <string name="home_pm25">PM2.5</string>
+    <string name="home_recent_devices">Recently Used Devices</string>
+
+    <!-- Climate Screen -->
+    <string name="climate_system">Climate System</string>
+    <string name="climate_current_temp">Current Temperature</string>
+    <string name="climate_target_temp">Target Temperature</string>
+    <string name="climate_mode">Mode</string>
+    <string name="climate_floor_count">Floors</string>
+    <string name="climate_zone_count">Zones</string>
+    <string name="climate_running_count">Running</string>
+    <string name="climate_select_floor">Select Floor</string>
+    <string name="climate_zone_control">Zone Control</string>
+
+    <!-- Water Screen -->
+    <string name="water_system">Water System</string>
+    <string name="water_inlet_temp">Inlet Temperature</string>
+    <string name="water_outlet_temp">Outlet Temperature</string>
+    <string name="water_pressure">Pressure</string>
+    <string name="water_flow_rate">Flow Rate</string>
+    <string name="water_devices">Water System Devices</string>
+
+    <!-- Profile Screen -->
+    <string name="profile_account_settings">Account Settings</string>
+    <string name="profile_home_management">Home Management</string>
+    <string name="profile_about">About</string>
+    <string name="profile_logout">Logout</string>
+    <string name="profile_home">Home</string>
+    <string name="profile_email">Email</string>
+    <string name="profile_not_set">Not Set</string>
+
+    <!-- Climate Home Screen -->
+    <string name="climate_tab_whole_home">Home (Whole)</string>
+    <string name="climate_tab_floor">Floor</string>
+    <string name="climate_tab_zone">Zone</string>
+    <string name="climate_avg_temp_title">Whole Home Average Temperature</string>
+    <string name="climate_humidity_title">Whole Home Humidity Setting</string>
+
+    <!-- Climate Zone Screen -->
+    <string name="climate_zone_setting">%s Setting</string>
+    <string name="climate_temp_setting">Temperature Setting</string>
+    <string name="climate_ceiling_radiation">Ceiling Radiation</string>
+    <string name="climate_floor_radiation">Floor Radiation</string>
+    <string name="climate_fresh_air_title">Fresh Air Setting</string>
+    <string name="climate_co2_threshold">CO2 Threshold</string>
+    <string name="climate_humidity_control">Humidity Control</string>
+    <string name="climate_fan_speed">Fan Speed</string>
+    <string name="climate_fan_speed_low">Low</string>
+    <string name="climate_fan_speed_medium">Medium</string>
+    <string name="climate_fan_speed_high">High</string>
+</resources>

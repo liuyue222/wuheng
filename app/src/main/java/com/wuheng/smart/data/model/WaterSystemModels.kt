@@ -5,9 +5,10 @@ import com.google.gson.annotations.SerializedName
 // ==================== 水系统模块数据模型 (新版API) ====================
 
 /**
- * 热水循环状态
+ * 热水循环状态响应
+ * 对应接口: GET /home/water/getHotWaterStatus
  */
-data class HeaterStatus(
+data class HotWaterStatusResponse(
     @SerializedName("current_temp")
     val currentTemp: String,
     @SerializedName("target_temp")
@@ -20,6 +21,27 @@ data class HeaterStatus(
     val sterilizationEnable: Int,
     @SerializedName("sterilization_time")
     val sterilizationTime: String
+)
+
+/**
+ * 净水状态响应
+ * 对应接口: GET /home/water/getWaterPurifierStatus
+ */
+data class WaterPurifierStatusResponse(
+    @SerializedName("tds_in")
+    val tdsIn: Int?,                    // 进水TDS值
+    @SerializedName("tds_out")
+    val tdsOut: Int?,                   // 出水TDS值
+    @SerializedName("water_quality")
+    val waterQuality: String?,          // 水质等级: excellent/good/fair/poor
+    @SerializedName("total_flow")
+    val totalFlow: String?,             // 总净水量
+    @SerializedName("daily_flow")
+    val dailyFlow: String?,             // 今日净水量
+    @SerializedName("device_status")
+    val deviceStatus: Int,              // 设备状态: 0-离线, 1-在线, 2-工作中
+    @SerializedName("last_update")
+    val lastUpdate: String?             // 最后更新时间
 )
 
 /**

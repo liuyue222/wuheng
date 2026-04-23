@@ -7,6 +7,7 @@ import com.wuheng.smart.data.repository.HomeRepository;
 import com.wuheng.smart.presentation.base.BaseViewModel;
 import com.wuheng.smart.presentation.base.UiDataState;
 import com.wuheng.smart.presentation.home.components.DeviceCardUiState;
+import com.wuheng.smart.presentation.home.components.DeviceType;
 import com.wuheng.smart.presentation.home.components.WeatherModeSelectorUiState;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import kotlinx.coroutines.flow.SharedFlow;

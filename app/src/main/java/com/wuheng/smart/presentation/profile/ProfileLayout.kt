@@ -1,6 +1,7 @@
 package com.wuheng.smart.presentation.profile
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,9 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.wuheng.smart.presentation.components.*
 import com.wuheng.smart.presentation.theme.*
 
@@ -38,6 +42,7 @@ import com.wuheng.smart.presentation.theme.*
 @Composable
 fun ProfileLayout(
     uiState: ProfileUiState,
+    selectedServiceType: ServiceType? = null,
     onNotificationClick: () -> Unit,
     onServiceSelect: () -> Unit,
     onBookService: () -> Unit,
@@ -80,14 +85,15 @@ fun ProfileLayout(
         }
 
         // 预约服务卡片
-        item {
-            Spacer(modifier = Modifier.height(spacing_lg))
-            ServiceBookingCard(
-                lastServiceDate = uiState.lastServiceDate,
-                onServiceSelect = onServiceSelect,
-                onBookService = onBookService
-            )
-        }
+            item {
+                Spacer(modifier = Modifier.height(spacing_lg))
+                ServiceBookingCard(
+                    lastServiceDate = uiState.lastServiceDate,
+                    selectedServiceType = selectedServiceType,
+                    onServiceSelect = onServiceSelect,
+                    onBookService = onBookService
+                )
+            }
 
         // 耗材使用进度入口
         item {
@@ -132,7 +138,7 @@ fun ProfileLayout(
 // ==================== 子组件 ====================
 
 /**
- * 用户头部信息
+ * 用户头部信息 - 像素级还原设计图
  */
 @Composable
 private fun UserHeader(
@@ -148,10 +154,10 @@ private fun UserHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            // 头像
+            // 头像 - 像素级还原
             Box(
                 modifier = Modifier
-                    .size(avatar_size_default)
+                    .size(56.dp)
                     .clip(CircleShape)
                     .background(SurfaceVariantLight),
                 contentAlignment = Alignment.Center
@@ -159,11 +165,13 @@ private fun UserHeader(
                 Text(
                     text = userName.take(1).ifEmpty { "用" },
                     style = MaterialTheme.typography.titleLarge,
-                    color = PrimaryBlue
+                    color = PrimaryBlue,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Medium
                 )
             }
 
-            Spacer(modifier = Modifier.width(spacing_md))
+            Spacer(modifier = Modifier.width(12.dp))
 
             // 用户信息
             Column {
@@ -171,13 +179,15 @@ private fun UserHeader(
                     text = userName,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = TextPrimaryLight
+                    color = TextPrimaryLight,
+                    fontSize = 18.sp
                 )
-                Spacer(modifier = Modifier.height(spacing_xs))
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "$residenceName · $role",
                     style = MaterialTheme.typography.bodySmall,
-                    color = TextSecondaryLight
+                    color = TextSecondaryLight,
+                    fontSize = 13.sp
                 )
             }
         }
@@ -185,16 +195,16 @@ private fun UserHeader(
         // 通知图标
         Box(
             modifier = Modifier
-                .size(40.dp)
+                .size(44.dp)
                 .clip(CircleShape)
-                .background(SurfaceLight)
+                .background(Color.White)
                 .clickable(onClick = onNotificationClick),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Default.Notifications,
                 contentDescription = "通知",
-                modifier = Modifier.size(icon_size_md),
+                modifier = Modifier.size(24.dp),
                 tint = if (hasNotification) SecondaryOrange else TextSecondaryLight
             )
             // 红点指示器
@@ -212,46 +222,65 @@ private fun UserHeader(
 }
 
 /**
- * 项目概述卡片
+ * 项目概述卡片 - 像素级还原设计图
  */
 @Composable
 private fun ProjectOverviewCard(description: String) {
-    WuHengCard(
-        modifier = Modifier.fillMaxWidth()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 2.dp,
+                shape = RoundedCornerShape(16.dp),
+                spotColor = Color.Black.copy(alpha = 0.06f)
+            )
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.White)
+            .padding(16.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(card_padding_default)
-        ) {
+        Column {
             Text(
                 text = "项目概述",
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                color = TextPrimaryLight,
+                fontSize = 16.sp
             )
-            Spacer(modifier = Modifier.height(spacing_sm))
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodyMedium,
-                color = TextSecondaryLight
+                color = TextSecondaryLight,
+                fontSize = 14.sp,
+                lineHeight = 22.sp
             )
         }
     }
 }
 
 /**
- * 预约服务卡片
+ * 预约服务卡片 - 像素级还原设计图
  */
 @Composable
 private fun ServiceBookingCard(
     lastServiceDate: String,
+    selectedServiceType: ServiceType?,
     onServiceSelect: () -> Unit,
     onBookService: () -> Unit
 ) {
-    WuHengCard(
-        modifier = Modifier.fillMaxWidth()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 2.dp,
+                shape = RoundedCornerShape(16.dp),
+                spotColor = Color.Black.copy(alpha = 0.06f)
+            )
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.White)
+            .padding(16.dp)
     ) {
-        Column(
-            modifier = Modifier.padding(card_padding_default)
-        ) {
+        Column {
             // 标题行
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -261,27 +290,30 @@ private fun ServiceBookingCard(
                 Text(
                     text = "预约服务",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
+                    color = TextPrimaryLight,
+                    fontSize = 16.sp
                 )
                 if (lastServiceDate.isNotEmpty()) {
                     Text(
                         text = "上次预约:$lastServiceDate",
                         style = MaterialTheme.typography.bodySmall,
-                        color = TextTertiaryLight
+                        color = TextTertiaryLight,
+                        fontSize = 12.sp
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(spacing_md))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // 服务选择器
+            // 服务类型选择器
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(corner_sm))
-                    .background(InputBackground)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xFFF5F7FA))
                     .clickable(onClick = onServiceSelect)
-                    .padding(horizontal = spacing_default, vertical = spacing_md)
+                    .padding(horizontal = 16.dp, vertical = 14.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -289,28 +321,234 @@ private fun ServiceBookingCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "选择服务",
+                        text = selectedServiceType?.displayName ?: "选择服务",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = TextTertiaryLight
+                        color = if (selectedServiceType != null) TextPrimaryLight else TextTertiaryLight,
+                        fontSize = 14.sp
                     )
                     Icon(
                         imageVector = Icons.Filled.KeyboardArrowRight,
                         contentDescription = null,
-                        modifier = Modifier.size(icon_size_sm),
+                        modifier = Modifier.size(20.dp),
                         tint = TextTertiaryLight
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(spacing_md))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // 预约按钮
-            PrimaryButton(
-                text = "+预约服务",
-                onClick = onBookService
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(PrimaryBlue)
+                    .clickable(onClick = onBookService),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "+预约服务",
+                    color = Color.White,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+    }
+}
+
+/**
+ * 可点击列表项 - 像素级还原设计图
+ */
+@Composable
+private fun ClickableListItem(
+    title: String,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 2.dp,
+                shape = RoundedCornerShape(12.dp),
+                spotColor = Color.Black.copy(alpha = 0.06f)
+            )
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color.White)
+            .clickable(onClick = onClick)
+            .padding(16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyMedium,
+                color = TextPrimaryLight,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium
+            )
+            Icon(
+                imageVector = Icons.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+                tint = TextTertiaryLight
             )
         }
     }
+}
+
+/**
+ * 服务类型
+ */
+enum class ServiceType(val displayName: String, val description: String) {
+    REGULAR_MAINTENANCE("常规保养", "系统检查、清洁、调试"),
+    FILTER_REPLACEMENT("滤芯更换", "全屋净水滤芯更换服务"),
+    SYSTEM_INSPECTION("系统检修", "故障排查、部件更换"),
+    SEASONAL_SWITCH("换季切换", "制冷/制热模式切换服务")
+}
+
+/**
+ * 服务类型选择弹窗
+ */
+@Composable
+fun ServiceTypeSelectorDialog(
+    selectedType: ServiceType?,
+    onTypeSelected: (ServiceType) -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "选择保养类型",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(spacing_sm)) {
+                ServiceType.values().forEach { type ->
+                    val isSelected = selectedType == type
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(corner_sm))
+                            .background(
+                                if (isSelected) PrimaryBlue.copy(alpha = 0.1f) else SurfaceLight
+                            )
+                            .border(
+                                width = 1.dp,
+                                color = if (isSelected) PrimaryBlue else DividerLight,
+                                shape = RoundedCornerShape(corner_sm)
+                            )
+                            .clickable { onTypeSelected(type) }
+                            .padding(spacing_default)
+                    ) {
+                        Column {
+                            Text(
+                                text = type.displayName,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                                color = if (isSelected) PrimaryBlue else TextPrimaryLight
+                            )
+                            Spacer(modifier = Modifier.height(spacing_xs))
+                            Text(
+                                text = type.description,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondaryLight
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {},
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("取消")
+            }
+        }
+    )
+}
+
+/**
+ * 预约确认弹窗
+ */
+@Composable
+fun ServiceBookingConfirmDialog(
+    serviceType: ServiceType,
+    bookingState: com.wuheng.smart.presentation.base.UiDataState<Unit>,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "确认预约",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(spacing_sm)) {
+                Text("您即将预约以下保养服务：")
+                Text(
+                    text = serviceType.displayName,
+                    fontWeight = FontWeight.SemiBold,
+                    color = PrimaryBlue
+                )
+                Text(
+                    text = serviceType.description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondaryLight
+                )
+                Spacer(modifier = Modifier.height(spacing_sm))
+                Text(
+                    text = "我们的服务人员将在24小时内与您联系确认上门时间。",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondaryLight
+                )
+
+                // 加载状态
+                if (bookingState is com.wuheng.smart.presentation.base.UiDataState.Loading) {
+                    Spacer(modifier = Modifier.height(spacing_md))
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.CenterHorizontally),
+                        color = PrimaryBlue
+                    )
+                }
+
+                // 错误提示
+                if (bookingState is com.wuheng.smart.presentation.base.UiDataState.Error) {
+                    Spacer(modifier = Modifier.height(spacing_md))
+                    Text(
+                        text = "预约失败，请稍后重试",
+                        color = ErrorRed,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                enabled = bookingState !is com.wuheng.smart.presentation.base.UiDataState.Loading,
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
+            ) {
+                Text("确认预约")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("取消")
+            }
+        }
+    )
 }
 
 /**
@@ -320,23 +558,27 @@ private fun ServiceBookingCard(
 private fun LogoutButton(
     onLogout: () -> Unit
 ) {
-    WuHengCard(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onLogout)
-                .padding(card_padding_default),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "退出登录",
-                style = MaterialTheme.typography.bodyMedium,
-                color = ErrorRed,
-                fontWeight = FontWeight.Medium
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 2.dp,
+                shape = RoundedCornerShape(12.dp),
+                spotColor = Color.Black.copy(alpha = 0.06f)
             )
-        }
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color.White)
+            .clickable(onClick = onLogout)
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "退出登录",
+            style = MaterialTheme.typography.bodyMedium,
+            color = ErrorRed,
+            fontWeight = FontWeight.Medium,
+            fontSize = 15.sp
+        )
     }
 }
 
@@ -354,12 +596,16 @@ private fun FooterSection(
     ) {
         Text(
             text = version,
-            style = VersionTextStyle
+            style = MaterialTheme.typography.bodySmall,
+            color = TextTertiaryLight,
+            fontSize = 12.sp
         )
-        Spacer(modifier = Modifier.height(spacing_xs))
+        Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "《隐私服务条款》",
-            style = FooterTextStyle,
+            style = MaterialTheme.typography.bodySmall,
+            color = TextTertiaryLight,
+            fontSize = 12.sp,
             modifier = Modifier.clickable(onClick = onPrivacyClick)
         )
     }

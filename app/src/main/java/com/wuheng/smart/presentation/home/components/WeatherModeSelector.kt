@@ -9,7 +9,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,6 +72,11 @@ fun WeatherModeSelector(
     onModeSelected: (WeatherMode) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    // 优化: 使用remember缓存selector的状态，避免父组件重组时重复计算
+    val currentSelectedMode by remember(uiState.selectedMode) {
+        derivedStateOf { uiState.selectedMode }
+    }
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -87,13 +96,16 @@ fun WeatherModeSelector(
             verticalAlignment = Alignment.CenterVertically
         ) {
             uiState.availableModes.forEach { mode ->
-                ModeButtonHorizontal(
-                    mode = mode,
-                    isSelected = uiState.selectedMode == mode,
-                    isEnabled = uiState.isEnabled,
-                    onClick = { if (uiState.isEnabled) onModeSelected(mode) },
-                    modifier = Modifier.weight(1f)
-                )
+                // 优化: 使用key为每个模式按钮提供稳定标识，减少不必要的重组
+                key(mode) {
+                    ModeButtonHorizontal(
+                        mode = mode,
+                        isSelected = currentSelectedMode == mode,
+                        isEnabled = uiState.isEnabled,
+                        onClick = { if (uiState.isEnabled) onModeSelected(mode) },
+                        modifier = Modifier.weight(1f)
+                    )
+                }
             }
         }
     }
@@ -107,74 +119,102 @@ private fun ModeButtonHorizontal(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // 核心优化：使用设计令牌控制背景色（完全符合第二版设计图规范）
-    val backgroundColor by animateColorAsState(
-        targetValue = when {
-            !isEnabled -> Color.LightGray.copy(alpha = 0.5f)
-            isSelected -> ChipSelectedBg  // ✅ 选中状态：白色背景 #FFFFFF (来自设计令牌)
-            else -> Color.Transparent  // ❌ 未选中状态：完全透明背景（关键修改！）
-        },
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-        label = "backgroundColor"
-    )
+    // 优化1: 使用remember缓存模式对应的颜色和图标，避免每次重组时重新计算
+    val modeColor by remember(mode) {
+        derivedStateOf { mode.getColor() }
+    }
 
-    val contentColor by animateColorAsState(
-        targetValue = when {
-            !isEnabled -> TextDisabledLight
-            isSelected -> ChipSelectedText  // ✅ 选中状态：白色文字/图标（对比度保证）
-            else -> mode.getColor()  // 未选中态：使用模式对应的颜色（蓝/橙/灰蓝）
-        },
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-        label = "contentColor"
-    )
-
-    Box(modifier = modifier) {
-        Row(
-            modifier = Modifier
-                .then(
-                    if (isSelected) {
-                        // ✅ 选中时添加阴影效果（elevation_lg + 自定义阴影颜色）
-                        Modifier.shadow(
-                            elevation = elevation_lg,  // 8.dp - 使用设计令牌
-                            shape = RoundedCornerShape(corner_sm),  // 8.dp - 使用设计令牌
-                            ambientColor = ShadowLight.copy(alpha = 0.2f),
-                            spotColor = ShadowLight.copy(alpha = 0.35f)
-                        )
-                    } else {
-                        // ❌ 未选中时无阴影，保持扁平化透明效果
-                        Modifier
-                    }
-                )
-                .clip(RoundedCornerShape(corner_sm))  // 8.dp - 使用设计令牌
-                .background(backgroundColor)
-                .clickable(enabled = isEnabled, onClick = onClick)
-                .padding(horizontal = mode_button_padding_h, vertical = spacing_md)
-                .fillMaxWidth()
-                .heightIn(min = mode_button_height),  // 44.dp - 确保最小触摸区域
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(mode_button_icon_text_spacing)  // 6.dp - 使用设计令牌
-        ) {
-            // 左侧图标 - 使用切图资源
-            val iconRes = when (mode) {
+    val iconRes by remember(mode) {
+        derivedStateOf {
+            when (mode) {
                 WeatherMode.COOLING -> R.drawable.ic_snowflake
                 WeatherMode.HEATING -> R.drawable.ic_sun
                 WeatherMode.VENTILATION -> R.drawable.ic_wind
                 else -> R.drawable.ic_snowflake
             }
+        }
+    }
+
+    // 优化2: 使用remember缓存目标颜色值，避免动画过程中重复计算
+    val targetBackgroundColor = remember(isEnabled, isSelected) {
+        when {
+            !isEnabled -> Color.LightGray.copy(alpha = 0.5f)
+            isSelected -> ChipSelectedBg  // ✅ 选中状态：白色背景
+            else -> Color.Transparent  // ❌ 未选中状态：完全透明背景
+        }
+    }
+
+    val targetContentColor = remember(isEnabled, isSelected) {
+        when {
+            !isEnabled -> TextDisabledLight
+            isSelected -> ChipSelectedText  // ✅ 选中状态：深色文字
+            else -> modeColor  // 未选中态：使用模式对应的颜色
+        }
+    }
+
+    // 优化3: 使用animateColorAsState进行平滑动画，但减少不必要的重组
+    val backgroundColor by animateColorAsState(
+        targetValue = targetBackgroundColor,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow  // 降低刚度使动画更平滑
+        ),
+        label = "backgroundColor"
+    )
+
+    val contentColor by animateColorAsState(
+        targetValue = targetContentColor,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "contentColor"
+    )
+
+    // 优化4: 使用remember缓存shadow修饰符，避免条件判断导致的重组
+    val shadowModifier by remember(isSelected) {
+        derivedStateOf {
+            if (isSelected) {
+                Modifier.shadow(
+                    elevation = elevation_lg,
+                    shape = RoundedCornerShape(corner_sm),
+                    ambientColor = ShadowLight.copy(alpha = 0.2f),
+                    spotColor = ShadowLight.copy(alpha = 0.35f)
+                )
+            } else {
+                Modifier
+            }
+        }
+    }
+
+    Box(modifier = modifier) {
+        Row(
+            modifier = Modifier
+                .then(shadowModifier)
+                .clip(RoundedCornerShape(corner_sm))
+                .background(backgroundColor)
+                .clickable(enabled = isEnabled, onClick = onClick)
+                .padding(horizontal = mode_button_padding_h, vertical = spacing_md)
+                .fillMaxWidth()
+                .heightIn(min = mode_button_height),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(mode_button_icon_text_spacing)
+        ) {
+            // 左侧图标 - 使用缓存的iconRes
             Image(
                 painter = painterResource(id = iconRes),
                 contentDescription = mode.getDisplayName(),
-                modifier = Modifier.size(mode_button_icon_size),  // 18.dp - 使用设计令牌
+                modifier = Modifier.size(mode_button_icon_size),
                 colorFilter = ColorFilter.tint(contentColor)
             )
 
-            // 右侧文字 - 使用设计令牌中的模式名称和字号
+            // 右侧文字
             Text(
                 text = mode.getDisplayName(),
                 style = MaterialTheme.typography.bodyMedium,
-                fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,  // Medium字重
+                fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
                 color = contentColor,
-                fontSize = mode_button_text_size  // 14.sp - 使用设计令牌
+                fontSize = mode_button_text_size
             )
         }
     }

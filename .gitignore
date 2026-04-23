@@ -1,0 +1,83 @@
+# =============================================================================
+# 五恒智能控制系统 - Git忽略配置
+# =============================================================================
+
+# 签名文件和密钥库（重要：永远不要提交到版本控制）
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+
+# 本地配置文件（包含敏感信息）
+local.properties
+keystore.properties
+signing.properties
+
+# 版本代码文件（自动生成）
+version-code.properties
+
+# Gradle文件
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# 本地配置文件
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/captures
+.externalNativeBuild
+.cxx
+
+# Android Studio
+*.iml
+.idea/
+*.iws
+*.ipr
+
+# 构建输出
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+bin/
+gen/
+out/
+
+# 本地NDK
+obj/
+
+# 日志文件
+*.log
+
+# 临时文件
+*.tmp
+*.temp
+*.swp
+*~
+
+# OS文件
+Thumbs.db
+.DS_Store
+
+# 测试报告
+test-results/
+reports/
+coverage/
+
+# 本地CI/CD配置（可能包含敏感信息）
+.github/secrets/
+.github/workflows/*.local.yml
+
+# 发布目录
+release/
+distribution/

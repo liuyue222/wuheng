@@ -16,10 +16,11 @@ data class LoginRequest(
 
 /**
  * 用户登录响应
+ * 注意：后端返回的user_id、user_type、house_id、status是Int类型
  */
 data class LoginResponse(
     @SerializedName("user_id")
-    val userId: String,
+    val userId: Int,
     @SerializedName("user_id_no")
     val userIdNo: String,
     @SerializedName("user_name")
@@ -29,11 +30,11 @@ data class LoginResponse(
     @SerializedName("user_token")
     val userToken: String,
     @SerializedName("user_type")
-    val userType: String,
+    val userType: Int,
     @SerializedName("house_id")
-    val houseId: String,
+    val houseId: Int,
     @SerializedName("status")
-    val status: String
+    val status: Int
 )
 
 /**

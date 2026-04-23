@@ -95,22 +95,24 @@ interface ApiService {
     suspend fun getHouseInfo(@Query("house_id") houseId: Int): BaseResponse<HouseInfo>
 
     /**
-     * 2. 获取楼层列表
+     * 2. 获取楼层信息
      * URL: /home/house/getFloorList
      * Method: GET
      * 认证: 是
+     * 注意: 后端接口名为getFloorList，前端统一使用getFloorInfo
      */
     @GET("home/house/getFloorList")
-    suspend fun getFloorList(@Query("house_id") houseId: Int): BaseResponse<List<FloorInfo>>
+    suspend fun getFloorInfo(@Query("house_id") houseId: Int): BaseResponse<List<FloorInfo>>
 
     /**
-     * 3. 获取房间列表
+     * 3. 获取房间信息
      * URL: /home/house/getRoomList
      * Method: GET
      * 认证: 是
+     * 注意: 后端接口名为getRoomList，前端统一使用getRoomInfo
      */
     @GET("home/house/getRoomList")
-    suspend fun getRoomList(
+    suspend fun getRoomInfo(
         @Query("house_id") houseId: Int,
         @Query("floor_id") floorId: Int? = null
     ): BaseResponse<List<RoomInfo>>
@@ -131,21 +133,21 @@ interface ApiService {
 
     /**
      * 2. 获取设备详情
-     * URL: /home/device/getDeviceInfo
+     * URL: /home/device/getDeviceDetail
      * Method: GET
      * 认证: 是
      */
-    @GET("home/device/getDeviceInfo")
-    suspend fun getDeviceInfo(@Query("device_id") deviceId: Int): BaseResponse<DeviceInfo>
+    @GET("home/device/getDeviceDetail")
+    suspend fun getDeviceDetail(@Query("device_id") deviceId: Int): BaseResponse<DeviceInfo>
 
     /**
-     * 3. 获取设备实时数据
-     * URL: /home/device/getDeviceData
+     * 3. 获取设备状态
+     * URL: /home/device/getDeviceStatus
      * Method: GET
      * 认证: 是
      */
-    @GET("home/device/getDeviceData")
-    suspend fun getDeviceData(@Query("device_id") deviceId: Int): BaseResponse<DeviceData>
+    @GET("home/device/getDeviceStatus")
+    suspend fun getDeviceStatus(@Query("device_id") deviceId: Int): BaseResponse<DeviceStatus>
 
     /**
      * 4. 控制设备
@@ -223,16 +225,34 @@ interface ApiService {
     @POST("home/system/setGlobalHumidity")
     suspend fun setGlobalHumidity(@Body request: SetGlobalHumidityRequest): BaseResponse<Unit>
 
+    /**
+     * 5. 获取系统参数
+     * URL: /home/system/getSystemParams
+     * Method: GET
+     * 认证: 是
+     */
+    @GET("home/system/getSystemParams")
+    suspend fun getSystemParams(@Query("house_id") houseId: Int): BaseResponse<SystemParams>
+
+    /**
+     * 6. 设置系统参数
+     * URL: /home/system/setSystemParams
+     * Method: POST
+     * 认证: 是
+     */
+    @POST("home/system/setSystemParams")
+    suspend fun setSystemParams(@Body request: SetSystemParamsRequest): BaseResponse<SetSystemParamsResponse>
+
     // ==================== 六、水系统模块 (4个接口) ====================
 
     /**
      * 1. 获取热水循环状态
-     * URL: /home/water/getHeaterStatus
+     * URL: /home/water/getHotWaterStatus
      * Method: GET
      * 认证: 是
      */
-    @GET("home/water/getHeaterStatus")
-    suspend fun getHeaterStatus(@Query("house_id") houseId: Int): BaseResponse<HeaterStatus>
+    @GET("home/water/getHotWaterStatus")
+    suspend fun getHotWaterStatus(@Query("house_id") houseId: Int): BaseResponse<HotWaterStatusResponse>
 
     /**
      * 2. 设置循环模式
@@ -244,7 +264,16 @@ interface ApiService {
     suspend fun setCirculationMode(@Body request: SetCirculationModeRequest): BaseResponse<SetCirculationModeResponse>
 
     /**
-     * 3. 获取滤芯状态
+     * 3. 获取净水状态
+     * URL: /home/water/getWaterPurifierStatus
+     * Method: GET
+     * 认证: 是
+     */
+    @GET("home/water/getWaterPurifierStatus")
+    suspend fun getWaterPurifierStatus(@Query("house_id") houseId: Int): BaseResponse<WaterPurifierStatusResponse>
+
+    /**
+     * 4. 获取滤芯状态
      * URL: /home/water/getFilterStatus
      * Method: GET
      * 认证: 是
@@ -253,7 +282,7 @@ interface ApiService {
     suspend fun getFilterStatus(@Query("house_id") houseId: Int): BaseResponse<List<FilterStatusInfo>>
 
     /**
-     * 4. 预约滤芯更换
+     * 5. 预约滤芯更换
      * URL: /home/water/bookFilterReplace
      * Method: POST
      * 认证: 是

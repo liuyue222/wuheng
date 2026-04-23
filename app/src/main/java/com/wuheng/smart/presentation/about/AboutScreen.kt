@@ -106,7 +106,7 @@ fun AboutContent(
         containerColor = BackgroundLight
     ) { paddingValues ->
         when (aboutInfoState) {
-            is UiDataState.Idle, is UiDataState.Loading -> {
+            is UiDataState.Idle, is UiDataState.Loading, is UiDataState.LoadingWithData -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -116,7 +116,7 @@ fun AboutContent(
                     CircularProgressIndicator(color = PrimaryBlue)
                 }
             }
-            is UiDataState.Error -> {
+            is UiDataState.Error, is UiDataState.ErrorWithData -> {
                 // 显示默认内容
                 AboutContentBody(
                     paddingValues = paddingValues,

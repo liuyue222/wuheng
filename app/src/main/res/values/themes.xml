@@ -1,8 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- 应用主主题 -->
     <style name="Theme.WuHeng" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowBackground">@drawable/launch_background</item>
     </style>
+
+    <!-- 启动页主题（冷启动时使用） -->
+    <style name="Theme.WuHeng.Starting" parent="Theme.SplashScreen">
+        <!-- 窗口背景 -->
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+
+        <!-- 启动图标 -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_splash</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/splash_icon_background</item>
+
+        <!-- 动画时长（最大 1000ms） -->
+        <item name="windowSplashScreenAnimationDuration">300</item>
+
+        <!-- 退出动画主题 -->
+        <item name="postSplashScreenTheme">@style/Theme.WuHeng</item>
+
+        <!-- 状态栏和导航栏 -->
+        <item name="android:statusBarColor">@color/splash_background</item>
+        <item name="android:navigationBarColor">@color/splash_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+
 </resources>

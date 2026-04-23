@@ -1,0 +1,299 @@
+# 五恒智能控制系统 - CI/CD 工作流
+# 自动构建Release APK并上传到Artifacts
+
+name: Build Release APK
+
+on:
+  # 推送到main分支时触发
+  push:
+    branches: [ main, develop ]
+    tags:
+      - 'v*'  # 推送v开头的tag时触发（如v1.0.0）
+  
+  # 创建Pull Request时触发
+  pull_request:
+    branches: [ main ]
+  
+  # 手动触发
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: '构建类型'
+        required: true
+        default: 'release'
+        type: choice
+        options:
+          - release
+          - debug
+      flavor:
+        description: '渠道类型'
+        required: true
+        default: 'official'
+        type: choice
+        options:
+          - all
+          - official
+          - huawei
+          - xiaomi
+          - oppo
+          - vivo
+          - yingyongbao
+          - beta
+
+env:
+  # Java版本
+  JAVA_VERSION: '11'
+  # Gradle版本
+  GRADLE_VERSION: '7.5'
+
+jobs:
+  # =============================================================================
+  # 代码检查任务
+  # =============================================================================
+  lint:
+    name: Code Lint
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: gradle
+      
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
+      - name: Run lint
+        run: ./gradlew lint
+      
+      - name: Upload lint report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lint-report
+          path: app/build/reports/lint-results-*.html
+          retention-days: 7
+
+  # =============================================================================
+  # 单元测试任务
+  # =============================================================================
+  unit-test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: lint
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: gradle
+      
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
+      - name: Run unit tests
+        run: ./gradlew test
+      
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-results
+          path: |
+            app/build/test-results/test/
+            app/build/reports/tests/test/
+          retention-days: 7
+
+  # =============================================================================
+  # 构建Release APK任务
+  # =============================================================================
+  build:
+    name: Build Release APK
+    runs-on: ubuntu-latest
+    needs: [lint, unit-test]
+    
+    steps:
+      # -------------------------------------------------------------------------
+      # 1. 检出代码
+      # -------------------------------------------------------------------------
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      # -------------------------------------------------------------------------
+      # 2. 设置Java环境
+      # -------------------------------------------------------------------------
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: 'temurin'
+          cache: gradle
+      
+      # -------------------------------------------------------------------------
+      # 3. 设置Gradle
+      # -------------------------------------------------------------------------
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: ${{ env.GRADLE_VERSION }}
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+      
+      # -------------------------------------------------------------------------
+      # 4. 配置签名密钥（从GitHub Secrets读取）
+      # -------------------------------------------------------------------------
+      - name: Decode Keystore
+        env:
+          ENCODED_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$ENCODED_KEYSTORE" ]; then
+            echo "$ENCODED_KEYSTORE" | base64 -d > wuheng-release.jks
+            echo "Keystore decoded successfully"
+          else
+            echo "Warning: RELEASE_KEYSTORE_BASE64 not set, using debug signing"
+          fi
+      
+      - name: Create local.properties
+        env:
+          RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+        run: |
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+          if [ -f wuheng-release.jks ]; then
+            echo "RELEASE_STORE_FILE=wuheng-release.jks" >> local.properties
+            echo "RELEASE_STORE_PASSWORD=$RELEASE_STORE_PASSWORD" >> local.properties
+            echo "RELEASE_KEY_ALIAS=$RELEASE_KEY_ALIAS" >> local.properties
+            echo "RELEASE_KEY_PASSWORD=$RELEASE_KEY_PASSWORD" >> local.properties
+          fi
+          echo "local.properties created"
+      
+      # -------------------------------------------------------------------------
+      # 5. 授予gradlew执行权限
+      # -------------------------------------------------------------------------
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      
+      # -------------------------------------------------------------------------
+      # 6. 打印版本信息
+      # -------------------------------------------------------------------------
+      - name: Print Version Info
+        run: ./gradlew printVersionInfo
+      
+      # -------------------------------------------------------------------------
+      # 7. 根据输入构建APK
+      # -------------------------------------------------------------------------
+      - name: Build APK (All Flavors)
+        if: github.event.inputs.flavor == 'all' || github.event.inputs.flavor == null
+        run: ./gradlew buildAllRelease
+      
+      - name: Build APK (Single Flavor)
+        if: github.event.inputs.flavor != 'all' && github.event.inputs.flavor != null
+        run: ./gradlew assemble${{ github.event.inputs.flavor }}Release
+      
+      # -------------------------------------------------------------------------
+      # 8. 上传构建产物
+      # -------------------------------------------------------------------------
+      - name: Upload APK Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: WuHeng-APK-${{ github.run_number }}
+          path: |
+            app/build/outputs/apk/**/*.apk
+          retention-days: 30
+          if-no-files-found: error
+      
+      # -------------------------------------------------------------------------
+      # 9. 上传构建报告
+      # -------------------------------------------------------------------------
+      - name: Upload Build Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-reports-${{ github.run_number }}
+          path: |
+            app/build/reports/
+          retention-days: 7
+          if-no-files-found: warn
+
+  # =============================================================================
+  # 创建GitHub Release任务（仅在推送tag时执行）
+  # =============================================================================
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Download APK Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: WuHeng-APK-${{ github.run_number }}
+          path: ./apks
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./apks/**/*.apk
+          draft: false
+          prerelease: ${{ contains(github.ref, '-beta') || contains(github.ref, '-alpha') }}
+          generate_release_notes: true
+          body: |
+            ## 五恒智能控制系统 ${{ github.ref_name }}
+            
+            ### 下载说明
+            - 官方渠道: `WuHeng_official_release_*.apk`
+            - 华为渠道: `WuHeng_huawei_release_*.apk`
+            - 小米渠道: `WuHeng_xiaomi_release_*.apk`
+            - OPPO渠道: `WuHeng_oppo_release_*.apk`
+            - VIVO渠道: `WuHeng_vivo_release_*.apk`
+            - 应用宝渠道: `WuHeng_yingyongbao_release_*.apk`
+            
+            ### 安装说明
+            1. 下载对应渠道的APK文件
+            2. 允许安装未知来源应用
+            3. 安装并打开应用
+            
+            ### 注意事项
+            - 请根据您的设备品牌选择对应的渠道包
+            - 首次安装可能需要授予相关权限
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # =============================================================================
+  # 通知任务
+  # =============================================================================
+  notify:
+    name: Send Notification
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: always()
+    
+    steps:
+      - name: Send Success Notification
+        if: needs.build.result == 'success'
+        run: |
+          echo "✅ 构建成功！"
+          echo "📦 APK文件已上传到Artifacts"
+          echo "🔗 下载地址: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      
+      - name: Send Failure Notification
+        if: needs.build.result == 'failure'
+        run: |
+          echo "❌ 构建失败！"
+          echo "请检查构建日志: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"

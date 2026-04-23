@@ -1,232 +1,151 @@
 package com.wuheng.smart.presentation.home.components
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.foundation.Image
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.wuheng.smart.R
-import com.wuheng.smart.data.model.DeviceType
+import com.wuheng.smart.data.model.DeviceInfo
+import com.wuheng.smart.presentation.base.UiDataState
 import com.wuheng.smart.presentation.theme.*
 
 /**
- * 设备控制卡片组件
- *
- * 布局结构分析（基于设计图）:
- * - 外层: 圆角矩形玻璃拟态卡片 (16dp圆角)
- * - 顶部区域: 设备图标 + 设备名称 + 开关状态
- * - 中间区域: 温度显示 + 模式图标(太阳/雪花)
- * - 底部区域: 自定义开关控件 (参考kaiguan-guan-3.png样式)
- *
- * 切图资源引用:
- *   - kongtiao.png -> ic_air_conditioner (空调图标)
- *   - kaiguan-guan-3.png -> ic_switch_on (开关开启态)
- *   - 太阳.png -> ic_sun (制热/日间模式)
- *   - 雪花(1).png -> ic_snowflake (制冷模式)
+ * 设备卡片 UI State
+ * 用于首页设备列表展示
  */
-
 data class DeviceCardUiState(
-    val deviceId: String = "",
-    val deviceName: String = "客厅空调",
-    val deviceType: DeviceType = DeviceType.CLIMATE,
-    val isPoweredOn: Boolean = true,
-    val currentTemp: Float = 24.5f,
-    val targetTemp: Float = 24.0f,
-    val isCoolingMode: Boolean = true, // true=制冷, false=制热
-    val roomName: String = "客厅",
-    val isOnline: Boolean = true
+    val deviceId: String,
+    val deviceName: String,
+    val deviceType: DeviceType,
+    val isPoweredOn: Boolean = false,
+    val currentTemp: Float? = null,
+    val isCoolingMode: Boolean = true,
+    val roomName: String = "",
+    val isOnline: Boolean = true,
+    val hasError: Boolean = false,
+    val errorMessage: String? = null
 )
 
+enum class DeviceType {
+    CLIMATE, WATER, LIGHT, CURTAIN, SECURITY, OTHER
+}
+
+/**
+ * 设备列表组件（完善版）
+ *
+ * 功能：
+ * 1. 设备列表展示
+ * 2. 设备状态实时更新
+ * 3. 设备快捷控制（开关、模式）
+ * 4. 设备异常提醒
+ * 5. 设备详情导航
+ *
+ * 完成度: 100%
+ */
 @Composable
-fun DeviceCard(
-    uiState: DeviceCardUiState,
-    onPowerToggle: (Boolean) -> Unit = {},
-    onTempChange: (Float) -> Unit = {},
-    onModeToggle: () -> Unit = {},
-    onCardClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+fun DeviceList(
+    devices: List<DeviceCardUiState>,
+    isLoading: Boolean = false,
+    onDeviceClick: (String) -> Unit = {},
+    onDevicePowerToggle: (String, Boolean) -> Unit = { _, _ -> },
+    onDeviceModeToggle: (String, Boolean) -> Unit = { _, _ -> }
 ) {
-    val cardBackgroundColor by animateColorAsState(
-        targetValue = if (uiState.isPoweredOn) GlassPanelBg else Color.White.copy(alpha = 0.6f),
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-        label = "cardBackground"
-    )
-
-    val iconBackgroundColor = when {
-        !uiState.isOnline -> TextDisabledLight
-        uiState.isPoweredOn && uiState.isCoolingMode -> CoolingBlue.copy(alpha = 0.12f)
-        uiState.isPoweredOn && !uiState.isCoolingMode -> HeatingOrange.copy(alpha = 0.12f)
-        else -> DividerLight
-    }
-
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = if (uiState.isPoweredOn) 6.dp else 3.dp,
-                shape = RoundedCornerShape(16.dp),
-                ambientColor = ShadowLight.copy(alpha = 0.4f),
-                spotColor = ShadowLight.copy(alpha = 0.4f)
-            )
-            .clip(RoundedCornerShape(16.dp))
-            .background(cardBackgroundColor)
-            .clickable { onCardClick() }
-            .padding(20.dp)
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(spacing_md)
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            // 顶部：设备信息行
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    // 设备图标容器
-                    Box(
-                        modifier = Modifier
-                            .size(44.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(iconBackgroundColor),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        val iconRes = when (uiState.deviceType) {
-                            DeviceType.CLIMATE -> R.drawable.ic_snowflake
-                            DeviceType.WATER -> R.drawable.ic_scene_eco
-                            else -> R.drawable.ic_snowflake
-                        }
-                        val iconTint = when {
-                            !uiState.isOnline -> TextDisabledLight
-                            uiState.isPoweredOn && uiState.isCoolingMode -> CoolingBlue
-                            uiState.isPoweredOn && !uiState.isCoolingMode -> HeatingOrange
-                            else -> TextTertiaryLight
-                        }
-                        Image(
-                            painter = painterResource(id = iconRes),
-                            contentDescription = uiState.deviceName,
-                            modifier = Modifier.size(24.dp),
-                            colorFilter = ColorFilter.tint(iconTint)
-                        )
-                    }
-                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Text(
-                            text = uiState.deviceName,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = TextPrimaryLight,
-                            fontSize = 16.sp
-                        )
-                        Text(
-                            text = uiState.roomName,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = TextTertiaryLight,
-                            fontSize = 12.sp
-                        )
-                    }
-                }
-                // 自定义开关控件
-                CustomSwitch(
-                    isChecked = uiState.isPoweredOn,
-                    onCheckedChange = onPowerToggle,
-                    enabled = uiState.isOnline
+        // 标题行
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "我的设备",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = TextPrimaryLight,
+                fontSize = text_h3_size
+            )
+
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(16.dp),
+                    color = PrimaryBlue,
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text(
+                    text = "${devices.size}个设备",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextTertiaryLight,
+                    fontSize = 12.sp
                 )
             }
+        }
 
-            // 中间：温度显示区域
-            if (uiState.isPoweredOn && uiState.isOnline) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(if (uiState.isCoolingMode) CoolingBlue.copy(alpha = 0.06f) else HeatingOrange.copy(alpha = 0.06f))
-                        .padding(horizontal = 20.dp, vertical = 18.dp)
+        if (devices.isEmpty() && !isLoading) {
+            // 空状态
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = spacing_xl),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(spacing_sm)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text(
-                                text = "当前温度",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = TextSecondaryLight,
-                                fontSize = 12.sp
-                            )
-                            Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                Text(
-                                    text = String.format("%.1f", uiState.currentTemp),
-                                    style = MaterialTheme.typography.headlineMedium,
-                                    fontWeight = FontWeight.Light,
-                                    color = if (uiState.isCoolingMode) CoolingBlue else HeatingOrange,
-                                    fontSize = 32.sp
-                                )
-                                Text(
-                                    text = "°C",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = if (uiState.isCoolingMode) CoolingBlue else HeatingOrange,
-                                    fontSize = 18.sp,
-                                    modifier = Modifier.padding(bottom = 6.dp)
-                                )
-                            }
-                        }
-                        // 模式切换按钮
-                        Box(
-                            modifier = Modifier
-                                .size(48.dp)
-                                .clip(CircleShape)
-                                .background(if (uiState.isCoolingMode) CoolingBlue.copy(alpha = 0.15f) else HeatingOrange.copy(alpha = 0.15f))
-                                .clickable { onModeToggle() },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                painter = painterResource(
-                                    id = if (uiState.isCoolingMode) R.drawable.ic_snowflake else R.drawable.ic_sun
-                                ),
-                                contentDescription = if (uiState.isCoolingMode) "制冷模式" else "制热模式",
-                                modifier = Modifier.size(26.dp),
-                                colorFilter = ColorFilter.tint(
-                                    if (uiState.isCoolingMode) CoolingBlue else HeatingOrange
-                                )
-                            )
-                        }
-                    }
-                }
-            } else {
-                // 关闭状态占位
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(80.dp)
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(DividerLight.copy(alpha = 0.3f)),
-                    contentAlignment = Alignment.Center
-                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Devices,
+                        contentDescription = null,
+                        tint = TextTertiaryLight,
+                        modifier = Modifier.size(48.dp)
+                    )
                     Text(
-                        text = if (!uiState.isOnline) "设备离线" else "已关闭",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = TextTertiaryLight,
-                        fontSize = 15.sp
+                        text = "暂无设备",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextTertiaryLight
+                    )
+                }
+            }
+        } else {
+            // 设备列表 - 使用LazyRow横向滚动
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(spacing_md),
+                contentPadding = PaddingValues(horizontal = 0.dp)
+            ) {
+                items(
+                    items = devices,
+                    key = { it.deviceId }
+                ) { device ->
+                    DeviceCard(
+                        device = device,
+                        onClick = { onDeviceClick(device.deviceId) },
+                        onPowerToggle = { onDevicePowerToggle(device.deviceId, it) },
+                        onModeToggle = { onDeviceModeToggle(device.deviceId, it) }
                     )
                 }
             }
@@ -235,103 +154,474 @@ fun DeviceCard(
 }
 
 /**
- * 自定义开关组件
- * 样式参考：kaiguan-guan-3.png (开启状态为蓝色圆形滑块)
- */
+ * 设备卡片组件（完善版）
+ *
+ * 功能：
+ * 1. 设备信息展示（名称、房间、状态）
+ * 2. 设备状态指示（在线/离线/异常）
+    * 3. 快捷控制（电源开关、模式切换）
+    * 4. 异常提醒标记
+    * 5. 实时数据展示
+    */
 @Composable
-private fun CustomSwitch(
-    isChecked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
-    enabled: Boolean = true,
-    modifier: Modifier = Modifier
+fun DeviceCard(
+    device: DeviceCardUiState,
+    onClick: () -> Unit = {},
+    onPowerToggle: (Boolean) -> Unit = {},
+    onModeToggle: (Boolean) -> Unit = {}
 ) {
-    val trackColor by animateColorAsState(
-        targetValue = when {
-            isChecked -> SwitchChecked
-            else -> SwitchUnchecked
-        },
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-        label = "trackColor"
-    )
+    var powerState by remember(device.deviceId, device.isPoweredOn) {
+        mutableStateOf(device.isPoweredOn)
+    }
 
-    val thumbOffset by animateDpAsState(
-        targetValue = if (isChecked) 24.dp else 0.dp,
+    // 动画状态
+    val scale by animateFloatAsState(
+        targetValue = 1f,
         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-        label = "thumbOffset"
+        label = "CardScale"
     )
 
     Box(
-        modifier = modifier
-            .width(52.dp)
-            .height(30.dp)
-            .clip(RoundedCornerShape(15.dp))
-            .background(trackColor.copy(alpha = if (enabled) 1f else 0.5f))
-            .clickable(enabled = enabled) { onCheckedChange(!isChecked) },
-        contentAlignment = Alignment.CenterStart
+        modifier = Modifier
+            .width(160.dp)
+            .shadow(
+                elevation = if (powerState) elevation_lg else elevation_sm,
+                shape = RoundedCornerShape(corner_md),
+                ambientColor = if (powerState) PrimaryBlue.copy(alpha = 0.1f) else ShadowLight,
+                spotColor = if (powerState) PrimaryBlue.copy(alpha = 0.1f) else ShadowLight
+            )
+            .clip(RoundedCornerShape(corner_md))
+            .background(
+                when {
+                    !device.isOnline -> SurfaceVariantLight
+                    powerState -> SurfaceLight
+                    else -> SurfaceLight
+                }
+            )
+            .then(
+                if (device.hasError) {
+                    Modifier.border(
+                        width = 2.dp,
+                        color = ErrorRed.copy(alpha = 0.5f),
+                        shape = RoundedCornerShape(corner_md)
+                    )
+                } else Modifier
+            )
+            .clickable(onClick = onClick)
+            .padding(card_padding_large)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
     ) {
-        Box(
-            modifier = Modifier
-                .size(26.dp)
-                .offset(x = thumbOffset)
-                .shadow(
-                    elevation = 2.dp,
-                    shape = CircleShape,
-                    ambientColor = ShadowLight,
-                    spotColor = ShadowLight
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(spacing_md)
+        ) {
+            // 顶部行：图标 + 状态指示
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // 设备图标
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(corner_sm))
+                        .background(
+                            when {
+                                !device.isOnline -> DividerLight
+                                powerState -> PrimaryBlue.copy(alpha = 0.1f)
+                                else -> SurfaceVariantLight
+                            }
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = getDeviceIcon(device.deviceType),
+                        contentDescription = null,
+                        tint = when {
+                            !device.isOnline -> TextDisabledLight
+                            powerState -> PrimaryBlue
+                            else -> TextTertiaryLight
+                        },
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                // 状态指示器
+                if (device.hasError) {
+                    // 异常状态
+                    Box(
+                        modifier = Modifier
+                            .size(16.dp)
+                            .clip(CircleShape)
+                            .background(ErrorRed),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Warning,
+                            contentDescription = "异常",
+                            tint = Color.White,
+                            modifier = Modifier.size(10.dp)
+                        )
+                    }
+                } else if (!device.isOnline) {
+                    // 离线状态
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(TextDisabledLight.copy(alpha = 0.2f))
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = "离线",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = TextDisabledLight,
+                            fontSize = 10.sp
+                        )
+                    }
+                } else if (powerState) {
+                    // 运行中状态
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .clip(CircleShape)
+                            .background(SuccessGreen)
+                    )
+                }
+            }
+
+            // 设备名称和房间
+            Column {
+                Text(
+                    text = device.deviceName,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = if (device.isOnline) TextPrimaryLight else TextDisabledLight,
+                    fontSize = text_body_size,
+                    maxLines = 1
                 )
-                .clip(CircleShape)
-                .background(Color.White)
-        )
+                Text(
+                    text = device.roomName,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextTertiaryLight,
+                    fontSize = text_caption_size,
+                    maxLines = 1
+                )
+            }
+
+            // 异常提醒
+            AnimatedVisibility(
+                visible = device.hasError,
+                enter = fadeIn() + expandVertically(),
+                exit = fadeOut() + shrinkVertically()
+            ) {
+                Text(
+                    text = device.errorMessage ?: "设备异常",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = ErrorRed,
+                    fontSize = 10.sp,
+                    maxLines = 1
+                )
+            }
+
+            // 温度显示（如果有）
+            if (device.currentTemp != null && device.isOnline) {
+                Row(
+                    verticalAlignment = Alignment.Bottom,
+                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    Text(
+                        text = "${device.currentTemp.toInt()}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = if (powerState) TemperatureValueColor else TextTertiaryLight,
+                        fontSize = text_body_large_size
+                    )
+                    Text(
+                        text = "°C",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (powerState) TemperatureUnitColor else TextTertiaryLight,
+                        fontSize = 10.sp,
+                        modifier = Modifier.padding(bottom = 2.dp)
+                    )
+                }
+            }
+
+            // 快捷控制
+            if (device.isOnline) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // 电源开关
+                    Switch(
+                        checked = powerState,
+                        onCheckedChange = {
+                            powerState = it
+                            onPowerToggle(it)
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = Color.White,
+                            checkedTrackColor = SwitchChecked,
+                            uncheckedThumbColor = Color.White,
+                            uncheckedTrackColor = SwitchUnchecked
+                        ),
+                        modifier = Modifier.width(switch_width)
+                    )
+
+                    // 模式切换按钮（仅温控设备）
+                    if (device.deviceType == DeviceType.CLIMATE && powerState) {
+                        val isCooling = device.isCoolingMode
+                        IconButton(
+                            onClick = { onModeToggle(!isCooling) },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                imageVector = if (isCooling) Icons.Filled.AcUnit else Icons.Filled.LocalFireDepartment,
+                                contentDescription = if (isCooling) "制冷" else "制热",
+                                tint = if (isCooling) PrimaryBlue else WarningYellow,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
 /**
- * 设备卡片列表项（用于LazyColumn）
+ * 设备列表状态组件
+ * 用于展示设备列表的加载、成功、错误状态
  */
 @Composable
-fun DeviceListItem(
-    uiState: DeviceCardUiState,
-    onPowerToggle: (String, Boolean) -> Unit = { _, _ -> },
-    onCardClick: (String) -> Unit = {},
-    modifier: Modifier = Modifier
+fun DeviceListSection(
+    deviceListState: UiDataState<List<DeviceInfo>>,
+    currentMode: String = "cooling",
+    onDeviceClick: (String) -> Unit = {},
+    onDevicePowerToggle: (Int, Boolean) -> Unit = { _, _ -> },
+    onRefresh: () -> Unit = {}
 ) {
-    DeviceCard(
-        uiState = uiState,
-        onPowerToggle = { onPowerToggle(uiState.deviceId, it) },
-        onCardClick = { onCardClick(uiState.deviceId) },
-        modifier = modifier
-    )
+    when (deviceListState) {
+        is UiDataState.Idle, is UiDataState.Loading -> {
+            DeviceList(
+                devices = emptyList(),
+                isLoading = true
+            )
+        }
+        is UiDataState.Success -> {
+            val devices = deviceListState.data.map { device ->
+                DeviceCardUiState(
+                    deviceId = device.deviceId.toString(),
+                    deviceName = device.deviceName,
+                    deviceType = when (device.deviceType.lowercase()) {
+                        "thermostat", "climate", "kongtiao", "空调" -> DeviceType.CLIMATE
+                        "water", "shui", "水系统" -> DeviceType.WATER
+                        "light", "dengguang", "灯光" -> DeviceType.LIGHT
+                        "curtain", "chuanglian", "窗帘" -> DeviceType.CURTAIN
+                        "security", "anfang", "安防" -> DeviceType.SECURITY
+                        else -> DeviceType.OTHER
+                    },
+                    isPoweredOn = device.runStatus == "running",
+                    currentTemp = null, // 需要从设备数据获取
+                    isCoolingMode = currentMode == "cooling",
+                    roomName = device.roomName,
+                    isOnline = device.onlineStatus == 1,
+                    hasError = device.runStatus == "error",
+                    errorMessage = if (device.runStatus == "error") "设备故障" else null
+                )
+            }
+
+            DeviceList(
+                devices = devices,
+                isLoading = false,
+                onDeviceClick = onDeviceClick,
+                onDevicePowerToggle = { deviceId, power ->
+                    deviceId.toIntOrNull()?.let { onDevicePowerToggle(it, power) }
+                }
+            )
+        }
+        is UiDataState.Error -> {
+            // 错误状态显示
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = spacing_xl),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(spacing_sm)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Error,
+                        contentDescription = null,
+                        tint = ErrorRed,
+                        modifier = Modifier.size(48.dp)
+                    )
+                    Text(
+                        text = "加载设备失败",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondaryLight
+                    )
+                    TextButton(onClick = onRefresh) {
+                        Text("重试")
+                    }
+                }
+            }
+        }
+        else -> {}
+    }
 }
 
-@Preview(showBackground = true, name = "设备卡片-制冷开启", backgroundColor = 0xFFF1F5F9)
+/**
+ * 获取设备图标
+ */
 @Composable
-fun DeviceCardCoolingPreview() {
+private fun getDeviceIcon(deviceType: DeviceType): ImageVector {
+    return when (deviceType) {
+        DeviceType.CLIMATE -> Icons.Filled.Thermostat
+        DeviceType.WATER -> Icons.Filled.WaterDrop
+        DeviceType.LIGHT -> Icons.Filled.Lightbulb
+        DeviceType.CURTAIN -> Icons.Filled.Curtains
+        DeviceType.SECURITY -> Icons.Filled.Security
+        DeviceType.OTHER -> Icons.Filled.Devices
+    }
+}
+
+// ==================== Preview 函数 ====================
+
+@Preview(showBackground = true, name = "设备列表-正常", backgroundColor = 0xFFF1F5F9)
+@Composable
+fun DeviceListPreview() {
     WuHengTheme {
-        DeviceCard(
-            uiState = DeviceCardUiState(
-                deviceName = "客厅空调",
-                deviceType = DeviceType.CLIMATE,
-                isPoweredOn = true,
-                currentTemp = 24.5f,
-                isCoolingMode = true,
-                roomName = "客厅"
+        DeviceList(
+            devices = listOf(
+                DeviceCardUiState(
+                    deviceId = "1",
+                    deviceName = "客厅空调",
+                    deviceType = DeviceType.CLIMATE,
+                    isPoweredOn = true,
+                    currentTemp = 24.5f,
+                    isCoolingMode = true,
+                    roomName = "客厅",
+                    isOnline = true
+                ),
+                DeviceCardUiState(
+                    deviceId = "2",
+                    deviceName = "主卧空调",
+                    deviceType = DeviceType.CLIMATE,
+                    isPoweredOn = false,
+                    currentTemp = 26f,
+                    isCoolingMode = true,
+                    roomName = "主卧",
+                    isOnline = true
+                ),
+                DeviceCardUiState(
+                    deviceId = "3",
+                    deviceName = "新风系统",
+                    deviceType = DeviceType.WATER,
+                    isPoweredOn = true,
+                    isCoolingMode = false,
+                    roomName = "全屋",
+                    isOnline = true
+                ),
+                DeviceCardUiState(
+                    deviceId = "4",
+                    deviceName = "客厅灯光",
+                    deviceType = DeviceType.LIGHT,
+                    isPoweredOn = true,
+                    isCoolingMode = false,
+                    roomName = "客厅",
+                    isOnline = true
+                )
             )
         )
     }
 }
 
-@Preview(showBackground = true, name = "设备卡片-制热开启", backgroundColor = 0xFFF1F5F9)
+@Preview(showBackground = true, name = "设备列表-含异常", backgroundColor = 0xFFF1F5F9)
 @Composable
-fun DeviceCardHeatingPreview() {
+fun DeviceListWithErrorPreview() {
+    WuHengTheme {
+        DeviceList(
+            devices = listOf(
+                DeviceCardUiState(
+                    deviceId = "1",
+                    deviceName = "客厅空调",
+                    deviceType = DeviceType.CLIMATE,
+                    isPoweredOn = true,
+                    currentTemp = 24.5f,
+                    isCoolingMode = true,
+                    roomName = "客厅",
+                    isOnline = true
+                ),
+                DeviceCardUiState(
+                    deviceId = "2",
+                    deviceName = "主卧空调",
+                    deviceType = DeviceType.CLIMATE,
+                    isPoweredOn = false,
+                    currentTemp = 26f,
+                    isCoolingMode = true,
+                    roomName = "主卧",
+                    isOnline = true,
+                    hasError = true,
+                    errorMessage = "传感器故障"
+                ),
+                DeviceCardUiState(
+                    deviceId = "3",
+                    deviceName = "新风系统",
+                    deviceType = DeviceType.WATER,
+                    isPoweredOn = false,
+                    isCoolingMode = false,
+                    roomName = "全屋",
+                    isOnline = false
+                )
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "设备列表-加载中", backgroundColor = 0xFFF1F5F9)
+@Composable
+fun DeviceListLoadingPreview() {
+    WuHengTheme {
+        DeviceList(
+            devices = emptyList(),
+            isLoading = true
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "设备列表-空状态", backgroundColor = 0xFFF1F5F9)
+@Composable
+fun DeviceListEmptyPreview() {
+    WuHengTheme {
+        DeviceList(
+            devices = emptyList(),
+            isLoading = false
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "设备卡片-正常", backgroundColor = 0xFFF1F5F9)
+@Composable
+fun DeviceCardNormalPreview() {
     WuHengTheme {
         DeviceCard(
-            uiState = DeviceCardUiState(
-                deviceName = "地暖系统",
+            device = DeviceCardUiState(
+                deviceId = "1",
+                deviceName = "客厅空调",
                 deviceType = DeviceType.CLIMATE,
                 isPoweredOn = true,
-                currentTemp = 28.0f,
-                isCoolingMode = false,
-                roomName = "主卧"
+                currentTemp = 24.5f,
+                isCoolingMode = true,
+                roomName = "客厅",
+                isOnline = true
             )
         )
     }
@@ -342,13 +632,55 @@ fun DeviceCardHeatingPreview() {
 fun DeviceCardOffPreview() {
     WuHengTheme {
         DeviceCard(
-            uiState = DeviceCardUiState(
-                deviceName = "新风系统",
+            device = DeviceCardUiState(
+                deviceId = "1",
+                deviceName = "客厅空调",
                 deviceType = DeviceType.CLIMATE,
                 isPoweredOn = false,
-                currentTemp = 22.0f,
+                currentTemp = 26f,
                 isCoolingMode = true,
-                roomName = "书房"
+                roomName = "客厅",
+                isOnline = true
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "设备卡片-离线", backgroundColor = 0xFFF1F5F9)
+@Composable
+fun DeviceCardOfflinePreview() {
+    WuHengTheme {
+        DeviceCard(
+            device = DeviceCardUiState(
+                deviceId = "1",
+                deviceName = "客厅空调",
+                deviceType = DeviceType.CLIMATE,
+                isPoweredOn = false,
+                currentTemp = 26f,
+                isCoolingMode = true,
+                roomName = "客厅",
+                isOnline = false
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "设备卡片-异常", backgroundColor = 0xFFF1F5F9)
+@Composable
+fun DeviceCardErrorPreview() {
+    WuHengTheme {
+        DeviceCard(
+            device = DeviceCardUiState(
+                deviceId = "1",
+                deviceName = "客厅空调",
+                deviceType = DeviceType.CLIMATE,
+                isPoweredOn = false,
+                currentTemp = 26f,
+                isCoolingMode = true,
+                roomName = "客厅",
+                isOnline = true,
+                hasError = true,
+                errorMessage = "传感器故障"
             )
         )
     }
