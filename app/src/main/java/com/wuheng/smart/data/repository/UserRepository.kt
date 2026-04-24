@@ -98,6 +98,15 @@ interface UserRepository {
      */
     suspend fun getMyHouses(): Flow<ApiResult<List<MyHouse>>>
 
+    /**
+     * 忘记密码
+     *
+     * @param mobile 手机号
+     * @param newPassword 新密码
+     * @return 重置结果
+     */
+    suspend fun forgotPassword(mobile: String, newPassword: String): Flow<ApiResult<Unit>>
+
     // ==================== 记住密码功能 ====================
 
     /**
@@ -316,6 +325,24 @@ class UserRepositoryImpl @Inject constructor(
             ApiResult.Success(mockHouses)
         } else {
             apiCall { apiService.getMyHouses() }
+        }
+    }
+
+    override suspend fun forgotPassword(
+        mobile: String,
+        newPassword: String
+    ): Flow<ApiResult<Unit>> = apiFlow(
+        operation = "forgotPassword",
+        params = "mobile=$mobile"
+    ) {
+        if (useMock) {
+            kotlinx.coroutines.delay(1000)
+            Timber.d("Mock forgot password success: mobile=$mobile")
+            ApiResult.Success(Unit)
+        } else {
+            apiCall {
+                apiService.forgotPassword(ForgotPasswordRequest(mobile, newPassword))
+            }
         }
     }
 

@@ -156,3 +156,15 @@ data class UserInfoOld(
     @SerializedName("avatar")
     val avatar: String = ""
 )
+
+// ==================== 忘记密码 ====================
+
+/**
+ * 忘记密码请求
+ */
+data class ForgotPasswordRequest(
+    @SerializedName("mobile")
+    val mobile: String,
+    @SerializedName("new_password")
+    val newPassword: String
+)

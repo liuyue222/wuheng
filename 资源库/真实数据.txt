@@ -1,0 +1,1168 @@
+接口 1：用户登录
+请求
+
+http
+POST http://116.62.51.112/wuheng_iot/index.php/home/user/login
+Content-Type: application/json
+Accept: application/json
+
+{"password":"123456","username":"15900474254"}
+响应 （HTTP 200）
+
+text
+Content-Type: application/json; charset=utf-8
+
+{
+  "code": 200,
+  "msg": "登录成功",
+  "data": {
+    "user_id": "8",
+    "user_id_no": "USER202604201590",
+    "user_token": "a4dc079422a720357a81d552c106173b",
+    "share_user_token": "",
+    "share_user_id_no": "",
+    "wei_openid": "",
+    "user_name": "刘大大",
+    "user_img_url": "",
+    "user_tel": "15900474254",
+    "user_type": "1",
+    "house_id": "5",
+    "status": "1",
+    "createtime": "1776680887",
+    "updatetime": "1776690738"
+  }
+}
+✅ 接口 2：获取房屋信息
+请求
+
+http
+GET http://116.62.51.112/wuheng_iot/index.php/home/house/getHouseInfo?house_id=5
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer a4dc079422a720357a81d552c106173b
+响应 （HTTP 200）
+
+text
+Content-Type: application/json; charset=utf-8
+
+{
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "house_id": "5",
+    "house_id_no": "HOUSE202604190005",
+    "house_name": "未来科技城公寓",
+    "owner_name": "刘大大",
+    "owner_phone": "15900474254",
+    "address": "浙江省杭州市余杭区文一西路202号",
+    "floor_count": 1,
+    "area_total": "89.00",
+    "system_type": "辐射空调系统",
+    "install_date": "2025-04-01",
+    "warranty_end": "2030-04-01",
+    "jetlinks_device_id": "",
+    "status": "1",
+    "createtime": "1745059600",
+    "updatetime": "1745059600",
+    "room_count": 5,
+    "device_count": 6,
+    "online_count": 6
+  }
+}
+✅ 接口 3：获取设备列表
+请求
+
+http
+GET http://116.62.51.112/wuheng_iot/index.php/home/device/getDeviceList?house_id=5
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer a4dc079422a720357a81d552c106173b
+响应 （HTTP 200）
+
+text
+Content-Type: application/json; charset=utf-8
+
+{
+  "code": 200,
+  "msg": "success",
+  "data": [
+    {
+      "device_id": "1",
+      "device_id_no": "DEV202604190001",
+      "house_id": "5",
+      "floor_id": "2",
+      "room_id": "1",
+      "device_name": "客厅温控器",
+      "device_type": "thermostat",
+      "device_model": "TH-2025A",
+      "jetlinks_device_id": "jet-001",
+      "jetlinks_product_id": "prod-001",
+      "online_status": "1",
+      "run_status": "running",
+      "last_heartbeat": "1745059200",
+      "install_date": "2025-01-15",
+      "warranty_end": "2030-01-15",
+      "sort_order": "1",
+      "status": "1",
+      "createtime": "1745059200",
+      "updatetime": "1745059200",
+      "room_name": "客厅"
+    },
+    {
+      "device_id": "2",
+      "device_id_no": "DEV202604190002",
+      "house_id": "5",
+      "floor_id": "2",
+      "room_id": "1",
+      "device_name": "客厅新风面板",
+      "device_type": "fresh_air",
+      "device_model": "FA-2025B",
+      "jetlinks_device_id": "jet-002",
+      "jetlinks_product_id": "prod-002",
+      "online_status": "1",
+      "run_status": "running",
+      "last_heartbeat": "1745059200",
+      "install_date": "2025-01-15",
+      "warranty_end": "2030-01-15",
+      "sort_order": "2",
+      "status": "1",
+      "createtime": "1745059200",
+      "updatetime": "1745059200",
+      "room_name": "客厅"
+    },
+    {
+      "device_id": "3",
+      "device_id_no": "DEV202604190003",
+      "house_id": "5",
+      "floor_id": "2",
+      "room_id": "2",
+      "device_name": "主卧温控器",
+      "device_type": "thermostat",
+      "device_model": "TH-2025A",
+      "jetlinks_device_id": "jet-003",
+      "jetlinks_product_id": "prod-001",
+      "online_status": "1",
+      "run_status": "running",
+      "last_heartbeat": "1745059200",
+      "install_date": "2025-01-15",
+      "warranty_end": "2030-01-15",
+      "sort_order": "3",
+      "status": "1",
+      "createtime": "1745059200",
+      "updatetime": "1745059200",
+      "room_name": "主卧"
+    },
+    {
+      "device_id": "4",
+      "device_id_no": "DEV202604190004",
+      "house_id": "5",
+      "floor_id": "2",
+      "room_id": "3",
+      "device_name": "次卧温控器",
+      "device_type": "thermostat",
+      "device_model": "TH-2025A",
+      "jetlinks_device_id": "jet-004",
+      "jetlinks_product_id": "prod-001",
+      "online_status": "1",
+      "run_status": "running",
+      "last_heartbeat": "1745059200",
+      "install_date": "2025-01-15",
+      "warranty_end": "2030-01-15",
+      "sort_order": "4",
+      "status": "1",
+      "createtime": "1745059200",
+      "updatetime": "1745059200",
+      "room_name": "次卧"
+    },
+    {
+      "device_id": "5",
+      "device_id_no": "DEV202604190005",
+      "house_id": "5",
+      "floor_id": "1",
+      "room_id": "0",
+      "device_name": "热水器",
+      "device_type": "water_heater",
+      "device_model": "WH-2025C",
+      "jetlinks_device_id": "jet-005",
+      "jetlinks_product_id": "prod-003",
+      "online_status": "1",
+      "run_status": "running",
+      "last_heartbeat": "1745059200",
+      "install_date": "2025-01-15",
+      "warranty_end": "2030-01-15",
+      "sort_order": "5",
+      "status": "1",
+      "createtime": "1745059200",
+      "updatetime": "1745059200",
+      "room_name": "-"
+    },
+    {
+      "device_id": "6",
+      "device_id_no": "DEV202604190006",
+      "house_id": "5",
+      "floor_id": "1",
+      "room_id": "0",
+      "device_name": "净水设备",
+      "device_type": "water_filter",
+      "device_model": "WF-2025D",
+      "jetlinks_device_id": "jet-006",
+      "jetlinks_product_id": "prod-004",
+      "online_status": "1",
+      "run_status": "running",
+      "last_heartbeat": "1745059200",
+      "install_date": "2025-01-15",
+      "warranty_end": "2030-01-15",
+      "sort_order": "6",
+      "status": "1",
+      "createtime": "1745059200",
+      "updatetime": "1745059200",
+      "room_name": "-"
+    }
+  ]
+}
+✅ 接口 4：获取场景列表
+请求
+
+http
+GET http://116.62.51.112/wuheng_iot/index.php/home/scene/getSceneList?house_id=5
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer a4dc079422a720357a81d552c106173b
+响应 （HTTP 200）
+
+text
+Content-Type: application/json; charset=utf-8
+
+{
+  "code": 200,
+  "msg": "success",
+  "data": [
+    {
+      "scene_id": "1",
+      "scene_id_no": "SCENE00001",
+      "house_id": "5",
+      "scene_name": "会客模式",
+      "scene_type": "guest",
+      "temp_set": "24.00",
+      "humidity_set": "45.00",
+      "co2_threshold": "800",
+      "fan_speed": "1",
+      "ceiling_radiation": "1",
+      "floor_radiation": "1",
+      "fresh_air": "1",
+      "is_default": "0",
+      "sort_order": "1",
+      "status": "1",
+      "createtime": "0",
+      "updatetime": "0"
+    },
+    {
+      "scene_id": "2",
+      "scene_id_no": "SCENE00002",
+      "house_id": "5",
+      "scene_name": "离家模式",
+      "scene_type": "away",
+      "temp_set": "16.00",
+      "humidity_set": "50.00",
+      "co2_threshold": "1000",
+      "fan_speed": "0",
+      "ceiling_radiation": "0",
+      "floor_radiation": "0",
+      "fresh_air": "0",
+      "is_default": "0",
+      "sort_order": "2",
+      "status": "1",
+      "createtime": "0",
+      "updatetime": "0"
+    },
+    {
+      "scene_id": "3",
+      "scene_id_no": "SCENE00003",
+      "house_id": "5",
+      "scene_name": "睡眠模式",
+      "scene_type": "sleep",
+      "temp_set": "26.00",
+      "humidity_set": "50.00",
+      "co2_threshold": "800",
+      "fan_speed": "0",
+      "ceiling_radiation": "1",
+      "floor_radiation": "0",
+      "fresh_air": "1",
+      "is_default": "0",
+      "sort_order": "3",
+      "status": "1",
+      "createtime": "0",
+      "updatetime": "0"
+    },
+    {
+      "scene_id": "4",
+      "scene_id_no": "SCENE00004",
+      "house_id": "5",
+      "scene_name": "ECO节能",
+      "scene_type": "eco",
+      "temp_set": "25.00",
+      "humidity_set": "50.00",
+      "co2_threshold": "900",
+      "fan_speed": "0",
+      "ceiling_radiation": "1",
+      "floor_radiation": "1",
+      "fresh_air": "1",
+      "is_default": "1",
+      "sort_order": "4",
+      "status": "1",
+      "createtime": "0",
+      "updatetime": "0"
+    },
+    {
+      "scene_id": "5",
+      "scene_id_no": "SCENE00005",
+      "house_id": "5",
+      "scene_name": "度假模式",
+      "scene_type": "vacation",
+      "temp_set": "18.00",
+      "humidity_set": "55.00",
+      "co2_threshold": "1200",
+      "fan_speed": "0",
+      "ceiling_radiation": "0",
+      "floor_radiation": "0",
+      "fresh_air": "0",
+      "is_default": "0",
+      "sort_order": "5",
+      "status": "1",
+      "createtime": "0",
+      "updatetime": "0"
+    }
+  ]
+}
+✅ 接口 5：获取系统状态
+请求
+
+http
+GET http://116.62.51.112/wuheng_iot/index.php/home/system/getSystemStatus?house_id=5
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer a4dc079422a720357a81d552c106173b
+响应 （HTTP 200）
+
+text
+Content-Type: application/json; charset=utf-8
+
+{
+  "code": 200,
+  "msg": "success",
+  "data": {
+    "system_status": {
+      "status_id": "5",
+      "house_id": "5",
+      "system_mode": "ventilation",
+      "global_temp_set": "24.00",
+      "global_humidity_set": "45.00",
+      "avg_indoor_temp": "24.80",
+      "avg_indoor_humidity": "52.00",
+      "avg_co2": "350",
+      "outdoor_temp": "22.00",
+      "outdoor_humidity": "60.00",
+      "outdoor_aqi": "55",
+      "outdoor_pm25": "28",
+      "system_run_status": "running",
+      "last_update": "1776694399"
+    },
+    "house_info": {
+      "house_id": "5",
+      "house_id_no": "HOUSE202604190005",
+      "house_name": "未来科技城公寓",
+      "owner_name": "刘大大",
+      "owner_phone": "15900474254",
+      "address": "浙江省杭州市余杭区文一西路202号",
+      "floor_count": "1",
+      "area_total": "89.00",
+      "system_type": "辐射空调系统",
+      "install_date": "2025-04-01",
+      "warranty_end": "2030-04-01",
+      "jetlinks_device_id": "",
+      "status": "1",
+      "createtime": "1745059600",
+      "updatetime": "1745059600"
+    },
+    "device_count": 6,
+    "online_count": 6
+  }
+}
+⚠️ 报错/异常信息（非致命）
+权限请求被拒绝（用户未授权位置权限）
+
+text
+Permission grant result ... permission=android.permission.ACCESS_FINE_LOCATION result=4
+Permission grant result ... permission=android.permission.ACCESS_COARSE_LOCATION result=4
+协程取消（加载本地存储时，因页面生命周期导致）
+
+text
+kotlinx.coroutines.JobCancellationException: Job was cancelled
+Google Play 服务不可用（不影响应用核心功能）
+
+text
+GoogleApiManager: The service for com.google.android.gms.internal.location.zzda is not available: ConnectionResult{statusCode=SERVICE_DISABLED}
+主线程掉帧警告（性能问题，非崩溃）
+
+text
+Skipped 30 frames! The application may be doing too much work on its main thread.
+
+[MotionEvent] publisher action=0x0, 688246563, channel '28360f9 com.wuheng.smart/com.wuheng.smart.MainActivity (server)'
+2026-04-24 15:51:51.960  2383-2383  RecentsModel            com.miui.home                        D  logTasks: type_all, [TaskInfo{userId=0 taskId=1926 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.wuheng.smart/.MainActivity } baseActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} topActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} origActivity=null realActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} numActivities=1 lastActiveTime=688246578 supportsSplitScreenMultiWindow=true supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@6b657c1} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{aa65b66 com.wuheng.smart.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}, TaskInfo{userId=0 taskId=2 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.HOME] flg=0x10800100 cmp=com.miui.home/.launcher.Launcher } baseActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} topActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} origActivity=null realActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} numActivities=1 lastActiveTime=688146973 supportsSplitScreenMultiWindow=true supportsMultiWindow=true resizeMode=2 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@f922ea7} topActivityType=2 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{79eef54 com.miui.home.launcher.Launcher} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}, TaskInfo{userId=0 taskId=1907 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.android.settings/.MainSettings } baseActivity=ComponentInfo{com.android.settings/com.android.settings.MainSettings} topActivity=ComponentInfo{com.android.settings/com.android.settings.MiuiSettings} origActivity=ComponentInfo{com.android.settings/com.android.settings.MainSettings} realActivity=ComponentInfo{com.android.settings/com.android.settings.MiuiSettings} numActivities=1 lastActiveTime=684419007 supportsSplitScreenMultiWindow=false supportsMultiWindow=false resizeMode=0 isResizeable=false minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@a8faefd} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{b2cc7f2 com.android.settings.MainSettings} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}, TaskInfo{userId=0 taskId=1893 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 cmp=com.bys.bysplusedome/.MainActivity } baseActivity=ComponentInfo{com.bys.bysplusedome/com.bys.bysplusedome.MainActivity} topActivity=ComponentInfo{com.bys.bysplusedome/com.bys.bysplusedome.MainAct
+2026-04-24 15:51:51.961  2383-2383  RecentsModel            com.miui.home                        D  logTasks: type_ignore_split_and_freefrom, [TaskInfo{userId=0 taskId=1926 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.wuheng.smart/.MainActivity } baseActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} topActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} origActivity=null realActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} numActivities=1 lastActiveTime=688246578 supportsSplitScreenMultiWindow=true supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@6b657c1} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{aa65b66 com.wuheng.smart.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}, TaskInfo{userId=0 taskId=2 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.HOME] flg=0x10800100 cmp=com.miui.home/.launcher.Launcher } baseActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} topActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} origActivity=null realActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} numActivities=1 lastActiveTime=688146973 supportsSplitScreenMultiWindow=true supportsMultiWindow=true resizeMode=2 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@f922ea7} topActivityType=2 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{79eef54 com.miui.home.launcher.Launcher} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}, TaskInfo{userId=0 taskId=1907 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.android.settings/.MainSettings } baseActivity=ComponentInfo{com.android.settings/com.android.settings.MainSettings} topActivity=ComponentInfo{com.android.settings/com.android.settings.MiuiSettings} origActivity=ComponentInfo{com.android.settings/com.android.settings.MainSettings} realActivity=ComponentInfo{com.android.settings/com.android.settings.MiuiSettings} numActivities=1 lastActiveTime=684419007 supportsSplitScreenMultiWindow=false supportsMultiWindow=false resizeMode=0 isResizeable=false minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@a8faefd} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{b2cc7f2 com.android.settings.MainSettings} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}, TaskInfo{userId=0 taskId=1893 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 cmp=com.bys.bysplusedome/.MainActivity } baseActivity=ComponentInfo{com.bys.bysplusedome/com.bys.bysplusedome.MainActivity} topActivity=ComponentInfo{com.bys.bysplusedome/com.by
+2026-04-24 15:51:52.022  1930-2152  MIUIInput               system_server                        D  [MotionEvent] publisher action=0x1, 688246637, channel '28360f9 com.wuheng.smart/com.wuheng.smart.MainActivity (server)'
+2026-04-24 15:51:52.040 23360-23360 AndroidRuntime          com.wuheng.smart                     E  FATAL EXCEPTION: main
+                                                                                                    Process: com.wuheng.smart, PID: 23360
+                                                                                                    java.lang.IllegalArgumentException: Navigation destination that matches request NavDeepLinkRequest{ uri=android-app://androidx.navigation/climate } cannot be found in the navigation graph NavGraph(0x0) startDestination={Destination(0x78d845ec) route=home}
+                                                                                                    	at androidx.navigation.NavController.navigate(NavController.kt:1664)
+                                                                                                    	at androidx.navigation.NavController.navigate(NavController.kt:1984)
+                                                                                                    	at androidx.navigation.NavController.navigate$default(NavController.kt:1979)
+                                                                                                    	at androidx.navigation.NavController.navigate(NavController.kt:1965)
+                                                                                                    	at com.wuheng.smart.MainActivityKt$WuHengApp$3$1$1.invoke(MainActivity.kt:220)
+                                                                                                    	at com.wuheng.smart.MainActivityKt$WuHengApp$3$1$1.invoke(MainActivity.kt:210)
+                                                                                                    	at com.wuheng.smart.presentation.theme.WuHengComponentsKt$WuHengBottomNavigation$1$1$1$1$1.invoke(WuHengComponents.kt:81)
+                                                                                                    	at com.wuheng.smart.presentation.theme.WuHengComponentsKt$WuHengBottomNavigation$1$1$1$1$1.invoke(WuHengComponents.kt:81)
+                                                                                                    	at androidx.compose.foundation.ClickableKt$clickable$4$gesture$1$1$2.invoke-k-4lQ0M(Clickable.kt:167)
+                                                                                                    	at androidx.compose.foundation.ClickableKt$clickable$4$gesture$1$1$2.invoke(Clickable.kt:156)
+                                                                                                    	at androidx.compose.foundation.gestures.TapGestureDetectorKt$detectTapAndPress$2$1.invokeSuspend(TapGestureDetector.kt:255)
+                                                                                                    	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+                                                                                                    	at kotlinx.coroutines.DispatchedTaskKt.resume(DispatchedTask.kt:177)
+                                                                                                    	at kotlinx.coroutines.DispatchedTaskKt.dispatch(DispatchedTask.kt:166)
+                                                                                                    	at kotlinx.coroutines.CancellableContinuationImpl.dispatchResume(CancellableContinuationImpl.kt:474)
+                                                                                                    	at kotlinx.coroutines.CancellableContinuationImpl.resumeImpl(CancellableContinuationImpl.kt:508)
+                                                                                                    	at kotlinx.coroutines.CancellableContinuationImpl.resumeImpl$default(CancellableContinuationImpl.kt:497)
+                                                                                                    	at kotlinx.coroutines.CancellableContinuationImpl.resumeWith(CancellableContinuationImpl.kt:368)
+                                                                                                    	at androidx.compose.ui.input.pointer.SuspendingPointerInputFilter$PointerEventHandlerCoroutine.offerPointerEvent(SuspendingPointerInputFilter.kt:566)
+                                                                                                    	at androidx.compose.ui.input.pointer.SuspendingPointerInputFilter.dispatchPointerEvent(SuspendingPointerInputFilter.kt:456)
+                                                                                                    	at androidx.compose.ui.input.pointer.SuspendingPointerInputFilter.onPointerEvent-H0pRuoY(SuspendingPointerInputFilter.kt:469)
+                                                                                                    	at androidx.compose.ui.node.BackwardsCompatNode.onPointerEvent-H0pRuoY(BackwardsCompatNode.kt:374)
+                                                                                                    	at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:314)
+                                                                                                    	at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:301)
+                                                                                                    	at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:301)
+                                                                                                    	at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:301)
+                                                                                                    	at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:301)
+                                                                                                    	at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:301)
+                                                                                                    	at androidx.compose.ui.input.pointer.NodeParent.dispatchMainEventPass(HitPathTracker.kt:183)
+                                                                                                    	at androidx.compose.ui.input.pointer.HitPathTracker.dispatchChanges(HitPathTracker.kt:102)
+                                                                                                    	at androidx.compose.ui.input.pointer.PointerInputEventProcessor.process-BIzXfog(PointerInputEventProcessor.kt:98)
+                                                                                                    	at androidx.compose.ui.platform.AndroidComposeView.sendMotionEvent-8iAsVTc(AndroidComposeView.android.kt:1361)
+                                                                                                    	at androidx.compose.ui.platform.AndroidComposeView.handleMotionEvent-8iAsVTc(AndroidComposeView.android.kt:1307)
+                                                                                                    	at androidx.compose.ui.platform.AndroidComposeView.dispatchTouchEvent(AndroidComposeView.android.kt:1246)
+                                                                                                    	at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:3152)
+                                                                                                    	at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:2820)
+                                                                                                    	at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:3152)
+                                                                                                    	at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:2820)
+                                                                                                    	at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:3152)
+2026-04-24 15:51:52.040 23360-23360 AndroidRuntime          com.wuheng.smart                     E  	at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:2820)
+                                                                                                    	at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:3152)
+                                                                                                    	at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:2820)
+                                                                                                    	at com.android.internal.policy.DecorView.superDispatchTouchEvent(DecorView.java:579)
+                                                                                                    	at com.android.internal.policy.PhoneWindow.superDispatchTouchEvent(PhoneWindow.java:1903)
+                                                                                                    	at android.app.Activity.dispatchTouchEvent(Activity.java:4456)
+                                                                                                    	at com.android.internal.policy.DecorView.dispatchTouchEvent(DecorView.java:537)
+                                                                                                    	at android.view.View.dispatchPointerEvent(View.java:15435)
+                                                                                                    	at android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent(ViewRootImpl.java:7316)
+                                                                                                    	at android.view.ViewRootImpl$ViewPostImeInputStage.onProcess(ViewRootImpl.java:7086)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.deliver(ViewRootImpl.java:6505)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.onDeliverToNext(ViewRootImpl.java:6562)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.forward(ViewRootImpl.java:6528)
+                                                                                                    	at android.view.ViewRootImpl$AsyncInputStage.forward(ViewRootImpl.java:6693)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.apply(ViewRootImpl.java:6536)
+                                                                                                    	at android.view.ViewRootImpl$AsyncInputStage.apply(ViewRootImpl.java:6750)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.deliver(ViewRootImpl.java:6509)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.onDeliverToNext(ViewRootImpl.java:6562)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.forward(ViewRootImpl.java:6528)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.apply(ViewRootImpl.java:6536)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.deliver(ViewRootImpl.java:6509)
+                                                                                                    	at android.view.ViewRootImpl.deliverInputEvent(ViewRootImpl.java:9714)
+                                                                                                    	at android.view.ViewRootImpl.doProcessInputEvents(ViewRootImpl.java:9665)
+                                                                                                    	at android.view.ViewRootImpl.enqueueInputEvent(ViewRootImpl.java:9633)
+                                                                                                    	at android.view.ViewRootImpl$WindowInputEventReceiver.onInputEvent(ViewRootImpl.java:9870)
+                                                                                                    	at android.view.InputEventReceiver.dispatchInputEvent(InputEventReceiver.java:298)
+                                                                                                    	at android.os.MessageQueue.nativePollOnce(Native Method)
+                                                                                                    	at android.os.MessageQueue.next(MessageQueue.java:341)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:169)
+                                                                                                    	at android.os.Looper.loop(Looper.java:300)
+                                                                                                    	at android.app.ActivityThread.main(ActivityThread.java:8503)
+                                                                                                    	at java.lang.reflect.Method.invoke(Native Method)
+                                                                                                    	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:561)
+                                                                                                    	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:954)
+                                                                                                    	Suppressed: kotlinx.coroutines.internal.DiagnosticCoroutineContextException: [androidx.compose.ui.platform.MotionDurationScaleImpl@4691a2f, androidx.compose.runtime.BroadcastFrameClock@614a83c, StandaloneCoroutine{Cancelling}@c7619c5, AndroidUiDispatcher@d812f1a]
+2026-04-24 15:51:52.039 23360-23360 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360058): avc: denied { search } for name="miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:52.039 23360-23360 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360059): avc: denied { search } for name="miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:52.039 23360-23360 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360060): avc: denied { search } for name="miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:52.043 23360-23360 OOMEventManagerFK       com.wuheng.smart                     W  Failed to mkdir /data/miuilog/stability/memleak/heapdump/
+2026-04-24 15:51:52.039 23360-23360 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360061): avc: denied { search } for name="miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:52.039 23360-23360 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360062): avc: denied { search } for name="miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:52.039 23360-23360 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360063): avc: denied { search } for name="miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:52.039 23360-23360 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360064): avc: denied { getattr } for path="/data/miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:52.039 23360-23360 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360065): avc: denied { search } for name="miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:52.039 23360-23360 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360066): avc: denied { search } for name="miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:52.049  1930-1986  ActivityTaskManager     system_server                        W    Force finishing activity com.wuheng.smart/.MainActivity
+2026-04-24 15:51:52.080 23360-23360 Process                 com.wuheng.smart                     I  Process is going to kill itself!
+                                                                                                    java.lang.Exception
+                                                                                                    	at android.os.Process.killProcess(Process.java:1344)
+                                                                                                    	at com.android.internal.os.RuntimeInit$KillApplicationHandler.uncaughtException(RuntimeInit.java:174)
+                                                                                                    	at java.lang.ThreadGroup.uncaughtException(ThreadGroup.java:1073)
+                                                                                                    	at java.lang.ThreadGroup.uncaughtException(ThreadGroup.java:1068)
+                                                                                                    	at kotlinx.coroutines.internal.CoroutineExceptionHandlerImplKt.propagateExceptionFinalResort(CoroutineExceptionHandlerImpl.kt:35)
+                                                                                                    	at kotlinx.coroutines.internal.CoroutineExceptionHandlerImpl_commonKt.handleUncaughtCoroutineException(CoroutineExceptionHandlerImpl.common.kt:52)
+                                                                                                    	at kotlinx.coroutines.CoroutineExceptionHandlerKt.handleCoroutineException(CoroutineExceptionHandler.kt:32)
+                                                                                                    	at kotlinx.coroutines.StandaloneCoroutine.handleJobException(Builders.common.kt:194)
+                                                                                                    	at kotlinx.coroutines.JobSupport.finalizeFinishingState(JobSupport.kt:230)
+                                                                                                    	at kotlinx.coroutines.JobSupport.tryMakeCompletingSlowPath(JobSupport.kt:909)
+                                                                                                    	at kotlinx.coroutines.JobSupport.tryMakeCompleting(JobSupport.kt:866)
+                                                                                                    	at kotlinx.coroutines.JobSupport.makeCompletingOnce$kotlinx_coroutines_core(JobSupport.kt:831)
+                                                                                                    	at kotlinx.coroutines.AbstractCoroutine.resumeWith(AbstractCoroutine.kt:100)
+                                                                                                    	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:46)
+                                                                                                    	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:104)
+                                                                                                    	at androidx.compose.ui.platform.AndroidUiDispatcher.performTrampolineDispatch(AndroidUiDispatcher.android.kt:81)
+                                                                                                    	at androidx.compose.ui.platform.AndroidUiDispatcher.access$performTrampolineDispatch(AndroidUiDispatcher.android.kt:41)
+                                                                                                    	at androidx.compose.ui.platform.AndroidUiDispatcher$dispatchCallback$1.doFrame(AndroidUiDispatcher.android.kt:68)
+                                                                                                    	at android.view.Choreographer$CallbackRecord.run(Choreographer.java:1503)
+                                                                                                    	at android.view.Choreographer$CallbackRecord.run(Choreographer.java:1513)
+                                                                                                    	at android.view.Choreographer.doCallbacks(Choreographer.java:1128)
+                                                                                                    	at android.view.Choreographer.doFrame(Choreographer.java:1037)
+                                                                                                    	at android.view.Choreographer$FrameDisplayEventReceiver.run(Choreographer.java:1481)
+                                                                                                    	at android.os.Handler.handleCallback(Handler.java:942)
+                                                                                                    	at android.os.Handler.dispatchMessage(Handler.java:99)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:211)
+                                                                                                    	at android.os.Looper.loop(Looper.java:300)
+                                                                                                    	at android.app.ActivityThread.main(ActivityThread.java:8503)
+                                                                                                    	at java.lang.reflect.Method.invoke(Native Method)
+                                                                                                    	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:561)
+                                                                                                    	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:954)
+2026-04-24 15:51:52.080 23360-23360 Process                 com.wuheng.smart                     I  Sending signal. PID: 23360 SIG: 9
+2026-04-24 15:51:52.090  4109-4306  DigestGenerator         com.miui.daemon                      D  digest=============com.wuheng.smartjava.lang.IllegalArgumentException: Navigation destination that matches request NavDeepLinkRequest{ uri=android-app://androidx.navigation/climate } cannot XX found in the navigation graph NavGraph(XX) startDestination={Destination(XX) route=home}
+                                                                                                    at androidx.navigation.NavController.navigate(NavController.kt:XX)
+                                                                                                    at androidx.navigation.NavController.navigate(NavController.kt:XX)
+                                                                                                    at androidx.navigation.NavController.navigate$default(NavController.kt:XX)
+                                                                                                    at androidx.navigation.NavController.navigate(NavController.kt:XX)
+                                                                                                    at com.wuheng.smart.MainActivityKt$WuHengApp$$$.invoke(MainActivity.kt:XX)
+                                                                                                    at com.wuheng.smart.MainActivityKt$WuHengApp$$$.invoke(MainActivity.kt:XX)
+                                                                                                    at com.wuheng.smart.presentation.theme.WuHengComponentsKt$WuHengBottomNavigation$$$$$.invoke(WuHengComponents.kt:XX)
+                                                                                                    at com.wuheng.smart.presentation.theme.WuHengComponentsKt$WuHengBottomNavigation$$$$$.invoke(WuHengComponents.kt:XX)
+                                                                                                    at androidx.compose.foundation.ClickableKt$clickable$$gesture$$$.invoke-k-lQ(Clickable.kt:XX)
+                                                                                                    at androidx.compose.foundation.ClickableKt$clickable$$gesture$$$.invoke(Clickable.kt:XX)
+                                                                                                    at androidx.compose.foundation.gestures.TapGestureDetectorKt$detectTapAndPress$$.invokeSuspend(TapGestureDetector.kt:XX)
+                                                                                                    at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:XX)
+                                                                                                    at kotlinx.coroutines.DispatchedTaskKt.resume(DispatchedTask.kt:XX)
+                                                                                                    at kotlinx.coroutines.DispatchedTaskKt.dispatch(DispatchedTask.kt:XX)
+                                                                                                    at kotlinx.coroutines.CancellableContinuationImpl.dispatchResume(CancellableContinuationImpl.kt:XX)
+                                                                                                    at kotlinx.coroutines.CancellableContinuationImpl.resumeImpl(CancellableContinuationImpl.kt:XX)
+                                                                                                    at kotlinx.coroutines.CancellableContinuationImpl.resumeImpl$default(CancellableContinuationImpl.kt:XX)
+                                                                                                    at kotlinx.coroutines.CancellableContinuationImpl.resumeWith(CancellableContinuationImpl.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.SuspendingPointerInputFilter$PointerEventHandlerCoroutine.offerPointerEvent(SuspendingPointerInputFilter.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.SuspendingPointerInputFilter.dispatchPointerEvent(SuspendingPointerInputFilter.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.SuspendingPointerInputFilter.onPointerEvent-HpRuoY(SuspendingPointerInputFilter.kt:XX)
+                                                                                                    at androidx.compose.ui.node.BackwardsCompatNode.onPointerEvent-HpRuoY(BackwardsCompatNode.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.NodeParent.dispatchMainEventPass(HitPathTracker.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.HitPathTracker.dispatchChanges(HitPathTracker.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.PointerInputEventProcessor.process-BIzXfog(PointerInputEventProcessor.kt:XX)
+                                                                                                    at androidx.compose.ui.platform.AndroidComposeView.sendMotionEvent-iAsVTc(AndroidComposeView.android.kt:XX)
+                                                                                                    at androidx.compose.ui.platform.AndroidComposeView.handleMotionEvent-iAsVTc(AndroidComposeView.android.kt:XX)
+                                                                                                    at androidx.compose.ui.platform.AndroidComposeView.dispatchTouchEvent(AndroidComposeView.android.kt:XX)
+                                                                                                    at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:XX)
+                                                                                                    at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:XX)
+                                                                                                    at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:XX)
+                                                                                                    at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:XX)
+                                                                                                    at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:XX)
+                                                                                                    at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:XX)
+                                                                                                    at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:XX)
+2026-04-24 15:51:52.113  4109-4306  MQSEventManager         com.miui.daemon                      D  send MSG_JUDGE_TRANSMISSION packageName com.wuheng.smart
+---------------------------- PROCESS ENDED (23360) for package com.wuheng.smart ----------------------------
+2026-04-24 15:51:52.166  1930-1986  WindowManager           system_server                        I  WIN DEATH: Window{28360f9 u0 com.wuheng.smart/com.wuheng.smart.MainActivity}
+2026-04-24 15:51:52.166  1930-1986  InputManager-JNI        system_server                        W  Input channel object '28360f9 com.wuheng.smart/com.wuheng.smart.MainActivity (client)' was disposed without first being removed with the input manager!
+2026-04-24 15:51:52.166  1930-5984  ActivityManager         system_server                        I  Process com.wuheng.smart (pid 23360) has died: fg  TOP 
+2026-04-24 15:51:52.172  5672-5672  AppLifecycleObserver    com.xiaomi.xmsf                      D  onReceive: com.wuheng.smart DESTROY
+2026-04-24 15:51:52.178  5672-5672  PkgUtils                com.xiaomi.xmsf                      D  getApplicationInfo packageName:com.wuheng.smart, flags:128 applicationInfo:ApplicationInfo{5a55fb9 com.wuheng.smart} needSecondSpace:false
+2026-04-24 15:51:52.187  2686-4058  A2dpLatencyMode         com.android.bluetooth                D  ForegroundInfo{mForegroundPackageName='com.miui.home', mForegroundUid=10124, mForegroundPid=2383, mLastForegroundPackageName='com.wuheng.smart', mLastForegroundUid=10312, mLastForegroundPid=23360, mMultiWindowForegroundPackageName='com.miui.home', mMultiWindowForegroundUid=10124, mFlags=0}
+2026-04-24 15:51:52.188  4360-5660  ProcessMonitor          com.miui.securitycenter.remote       I  onForegroundInfoChanged: ForegroundInfo{mForegroundPackageName='com.miui.home', mForegroundUid=10124, mForegroundPid=2383, mLastForegroundPackageName='com.wuheng.smart', mLastForegroundUid=10312, mLastForegroundPid=23360, mMultiWindowForegroundPackageName='com.miui.home', mMultiWindowForegroundUid=10124, mFlags=0}
+2026-04-24 15:51:52.188  5516-6767  PerfEngineController    com.miui.powerkeeper                 D  ForegroundInfo{mForegroundPackageName='com.miui.home', mForegroundUid=10124, mForegroundPid=2383, mLastForegroundPackageName='com.wuheng.smart', mLastForegroundUid=10312, mLastForegroundPid=23360, mMultiWindowForegroundPackageName='com.miui.home', mMultiWindowForegroundUid=10124, mFlags=0}
+2026-04-24 15:51:52.190  2383-8038  AppObserver             com.miui.home                        D  ForegroundInfo{mForegroundPackageName='com.miui.home', mForegroundUid=10124, mForegroundPid=2383, mLastForegroundPackageName='com.wuheng.smart', mLastForegroundUid=10312, mLastForegroundPid=23360, mMultiWindowForegroundPackageName='com.miui.home', mMultiWindowForegroundUid=10124, mFlags=0}
+2026-04-24 15:51:52.191  4360-5660  GameBoosterService      com.miui.securitycenter.remote       I  onForegroundInfoChanged: Cur=com.miui.home	 last=com.wuheng.smart
+2026-04-24 15:51:52.191  5548-29081 GST                     com.xiaomi.joyose                    I  forePkg: com.miui.home, preForePkg: com.wuheng.smart
+2026-04-24 15:51:52.194  4360-5660  GameBoosterService      com.miui.securitycenter.remote       D  onGameStatusChange foreground:ForegroundInfo{mForegroundPackageName='com.miui.home', mForegroundUid=10124, mForegroundPid=2383, mLastForegroundPackageName='com.wuheng.smart', mLastForegroundUid=10312, mLastForegroundPid=23360, mMultiWindowForegroundPackageName='com.miui.home', mMultiWindowForegroundUid=10124, mFlags=0}
+2026-04-24 15:51:52.199  4360-5660  BeautyService           com.miui.securitycenter.remote       I  onForegroundInfoChanged: Cur=com.miui.home	 last=com.wuheng.smart
+2026-04-24 15:51:52.204  1930-2008  WindowManager           system_server                        W  Failed to deliver inset state change to w=Window{28360f9 u0 com.wuheng.smart/com.wuheng.smart.MainActivity EXITING}
+                                                                                                    android.os.DeadObjectException
+                                                                                                    	at android.os.BinderProxy.transactNative(Native Method)
+                                                                                                    	at android.os.BinderProxy.transact(BinderProxy.java:643)
+                                                                                                    	at android.view.IWindow$Stub$Proxy.insetsControlChanged(IWindow.java:569)
+                                                                                                    	at com.android.server.wm.WindowState.notifyInsetsControlChanged(WindowState.java:4490)
+                                                                                                    	at com.android.server.wm.InsetsStateController.lambda$notifyPendingInsetsControlChanged$5$com-android-server-wm-InsetsStateController(InsetsStateController.java:348)
+                                                                                                    	at com.android.server.wm.InsetsStateController$$ExternalSyntheticLambda4.run(Unknown Source:2)
+                                                                                                    	at com.android.server.wm.WindowAnimator.executeAfterPrepareSurfacesRunnables(WindowAnimator.java:351)
+                                                                                                    	at com.android.server.wm.WindowAnimator.animate(WindowAnimator.java:232)
+                                                                                                    	at com.android.server.wm.WindowAnimator.lambda$new$1$com-android-server-wm-WindowAnimator(WindowAnimator.java:106)
+                                                                                                    	at com.android.server.wm.WindowAnimator$$ExternalSyntheticLambda1.doFrame(Unknown Source:2)
+                                                                                                    	at android.view.Choreographer$CallbackRecord.run(Choreographer.java:1503)
+                                                                                                    	at android.view.Choreographer$CallbackRecord.run(Choreographer.java:1513)
+                                                                                                    	at android.view.Choreographer.doCallbacks(Choreographer.java:1128)
+                                                                                                    	at android.view.Choreographer.doFrame(Choreographer.java:1037)
+                                                                                                    	at android.view.Choreographer$FrameDisplayEventReceiver.run(Choreographer.java:1481)
+                                                                                                    	at android.os.Handler.handleCallback(Handler.java:942)
+                                                                                                    	at android.os.Handler.dispatchMessage(Handler.java:99)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:211)
+                                                                                                    	at android.os.Looper.loop(Looper.java:300)
+                                                                                                    	at android.os.HandlerThread.run(HandlerThread.java:67)
+                                                                                                    	at com.android.server.ServiceThread.run(ServiceThread.java:46)
+2026-04-24 15:51:52.231  1930-2008  WindowManager           system_server                        W  Exception thrown during dispatchAppVisibility Window{28360f9 u0 com.wuheng.smart/com.wuheng.smart.MainActivity EXITING}
+                                                                                                    android.os.DeadObjectException
+                                                                                                    	at android.os.BinderProxy.transactNative(Native Method)
+                                                                                                    	at android.os.BinderProxy.transact(BinderProxy.java:643)
+                                                                                                    	at android.view.IWindow$Stub$Proxy.dispatchAppVisibility(IWindow.java:632)
+                                                                                                    	at com.android.server.wm.WindowState.sendAppVisibilityToClients(WindowState.java:3844)
+                                                                                                    	at com.android.server.wm.WindowContainer.sendAppVisibilityToClients(WindowContainer.java:1298)
+                                                                                                    	at com.android.server.wm.WindowToken.setClientVisible(WindowToken.java:419)
+                                                                                                    	at com.android.server.wm.ActivityRecord.setClientVisible(ActivityRecord.java:7728)
+                                                                                                    	at com.android.server.wm.ActivityRecord.onAnimationFinished(ActivityRecord.java:8644)
+                                                                                                    	at com.android.server.wm.ActivityRecord.postApplyAnimation(ActivityRecord.java:6206)
+                                                                                                    	at com.android.server.wm.ActivityRecord.commitVisibility(ActivityRecord.java:6178)
+                                                                                                    	at com.android.server.wm.ActivityRecord.commitVisibility(ActivityRecord.java:6182)
+                                                                                                    	at com.android.server.wm.AppTransitionController.handleClosingApps(AppTransitionController.java:1207)
+                                                                                                    	at com.android.server.wm.AppTransitionController.handleAppTransitionReady(AppTransitionController.java:295)
+                                                                                                    	at com.android.server.wm.RootWindowContainer.checkAppTransitionReady(RootWindowContainer.java:1070)
+                                                                                                    	at com.android.server.wm.RootWindowContainer.performSurfacePlacementNoTrace(RootWindowContainer.java:937)
+                                                                                                    	at com.android.server.wm.RootWindowContainer.performSurfacePlacement(RootWindowContainer.java:877)
+                                                                                                    	at com.android.server.wm.WindowSurfacePlacer.performSurfacePlacementLoop(WindowSurfacePlacer.java:199)
+                                                                                                    	at com.android.server.wm.WindowSurfacePlacer.performSurfacePlacement(WindowSurfacePlacer.java:148)
+                                                                                                    	at com.android.server.wm.WindowSurfacePlacer.performSurfacePlacement(WindowSurfacePlacer.java:137)
+                                                                                                    	at com.android.server.wm.WindowSurfacePlacer$Traverser.run(WindowSurfacePlacer.java:79)
+                                                                                                    	at android.os.Handler.handleCallback(Handler.java:942)
+                                                                                                    	at android.os.Handler.dispatchMessage(Handler.java:99)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:211)
+                                                                                                    	at android.os.Looper.loop(Looper.java:300)
+                                                                                                    	at android.os.HandlerThread.run(HandlerThread.java:67)
+                                                                                                    	at com.android.server.ServiceThread.run(ServiceThread.java:46)
+2026-04-24 15:51:52.263  2383-3643  ActivityManagerWrapper  com.miui.home                        E  getRecentTasks: mainTaskId=1926   userId=0   windowMode=1   baseIntent=Intent { act=android.intent.action.MAIN flag=270532608 cmp=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} }
+2026-04-24 15:51:52.274   648-717   ThirdAppAssistant       com.miui.thirdappassistant           I  ExceptionManager match exception type failed for com.wuheng.smart
+2026-04-24 15:51:52.316  2383-3643  ActivityManagerWrapper  com.miui.home                        E  getRecentTasks: mainTaskId=1926   userId=0   windowMode=1   baseIntent=Intent { act=android.intent.action.MAIN flag=270532608 cmp=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} }
+2026-04-24 15:51:52.551  1930-2007  ActivityTaskManager     system_server                        W  Activity top resumed state loss timeout for ActivityRecord{c38e1cf u0 com.wuheng.smart/.MainActivity} t-1 f}}
+2026-04-24 15:51:55.775  2383-2383  Launcher.CellLayout     com.miui.home                        D  touch item:ShortcutInfo, id=123, itemType=0, user=UserHandle{0}, mIconType=0, pkgName=com.wuheng.smart, className=com.wuheng.smart.MainActivity, screenId=2, container=-100, cellX=0, cellY=1, spanX=1, spanY=1
+2026-04-24 15:51:55.858  1930-3046  ActivityTaskManager     system_server                        I  START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.wuheng.smart/.MainActivity bnds=[289,611][419,741] (has extras)} from uid 10124 from pid 2383 callingPackage com.miui.home
+2026-04-24 15:51:55.863  1930-3046  MiGgameTyp...cationImpl system_server                        D  checkIfGameBeSupported app:com.wuheng.smart
+2026-04-24 15:51:55.863  1930-3046  WindowManager           system_server                        I  When perf version lower than 2.3, MiGTStub result: false, gameType: -1, packageName: com.wuheng.smart
+2026-04-24 15:51:55.866  1117-1148  ANDR-PERF-LM            ven...qti.hardware.perf@2.2-service  I  MetaMeter: isValidAsync() 203: Invalid (hintID,hintType,appName,duration,appPID,appThreadTID) = (4225, 2,com.wuheng.smart,-1,1930,3046)
+2026-04-24 15:51:55.866  1117-1148  ANDR-PERF-LM            ven...qti.hardware.perf@2.2-service  I  MetaMeter: isValidAsync() 203: Invalid (hintID,hintType,appName,duration,appPID,appThreadTID) = (4225, 3,com.wuheng.smart,-1,1930,3046)
+2026-04-24 15:51:55.867  1930-3046  WindowManager           system_server                        D  setLockTaskAuth: task=Task{98a777a #1927 type=standard A=10312:com.wuheng.smart U=0 visible=false visibleRequested=false mode=fullscreen translucent=true sz=0} mLockTaskAuth=LOCK_TASK_AUTH_PINNABLE
+2026-04-24 15:51:55.869  1930-3046  WindowManager           system_server                        D  setLockTaskAuth: task=Task{98a777a #1927 type=standard A=10312:com.wuheng.smart U=0 visible=true visibleRequested=false mode=fullscreen translucent=true sz=1} mLockTaskAuth=LOCK_TASK_AUTH_PINNABLE
+2026-04-24 15:51:55.884  2965-2965  KeyguardEditorHelper    com.android.systemui                 D  onTopActivityMayChanged, topActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity}; mState=IDEL
+2026-04-24 15:51:55.884  2965-2965  FocusedNotifPromptContr com.android.systemui                 I  onTopActivityMayChanged: topActivity=com.wuheng.smart
+2026-04-24 15:51:55.884  2965-2965  FocusedNotifPromptContr com.android.systemui                 I  topActivityMayChanged: topActivity=com.wuheng.smart
+2026-04-24 15:51:55.888  1930-5968  CoreBackPreview         system_server                        D  Window{6fd5f07 u0 Splash Screen com.wuheng.smart}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@5c7bd2, mPriority=0}
+2026-04-24 15:51:55.891 23361-23361 Zygote                  usap64                               E  process_name_ptr:23361 com.wuheng.smart
+2026-04-24 15:51:55.898  1930-2031  Boost                   system_server                        D  hostingType=next-top-activity, hostingName={com.wuheng.smart/com.wuheng.smart.MainActivity}, callerPackage=com.miui.home, isSystem=true, isBoostNeeded=false.
+2026-04-24 15:51:55.899  2383-3643  ActivityManagerWrapper  com.miui.home                        E  getRecentTasks: mainTaskId=1927   userId=0   windowMode=1   baseIntent=Intent { act=android.intent.action.MAIN flag=270532608 cmp=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} }
+2026-04-24 15:51:55.900  1117-1148  ANDR-PERF-LM            ven...qti.hardware.perf@2.2-service  I  MetaMeter: isValidAsync() 203: Invalid (hintID,hintType,appName,duration,appPID,appThreadTID) = (4225, 101,com.wuheng.smart,23361,1930,2031)
+2026-04-24 15:51:55.901  1930-2031  ActivityManager         system_server                        I  Start proc 23361:com.wuheng.smart/u0a312 for next-top-activity {com.wuheng.smart/com.wuheng.smart.MainActivity} caller=com.miui.home
+2026-04-24 15:51:55.909  4220-8525  SQLiteLog               com.qualcomm.qti.workloadclassifier  W  (28) double-quoted string literal: "com.wuheng.smart"
+2026-04-24 15:51:55.913  1930-2008  SmartPower...t/10312(0) system_server                        I  died->visible(3746ms) R(become visible) adj=-10000.
+2026-04-24 15:51:55.918  1930-2008  WindowManager           system_server                        I  wms.showSurfaceRobustly mWin:Window{6fd5f07 u0 Splash Screen com.wuheng.smart}
+2026-04-24 15:51:55.925  2383-3643  ActivityManagerWrapper  com.miui.home                        E  getRecentTasks: mainTaskId=1927   userId=0   windowMode=1   baseIntent=Intent { act=android.intent.action.MAIN flag=270532608 cmp=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} }
+2026-04-24 15:51:55.947  1117-1148  ANDR-PERF-LM            ven...qti.hardware.perf@2.2-service  I  MetaMeter: isValidAsync() 203: Invalid (hintID,hintType,appName,duration,appPID,appThreadTID) = (4225, 103,com.wuheng.smart,23361,1930,5966)
+---------------------------- PROCESS STARTED (23361) for package com.wuheng.smart ----------------------------
+2026-04-24 15:51:55.955 23361-23361 Compatibil...geReporter com.wuheng.smart                     D  Compat change id reported: 171979766; UID 10312; state: ENABLED
+2026-04-24 15:51:55.958  5672-5672  AppLifecycleObserver    com.xiaomi.xmsf                      D  onReceive: com.wuheng.smart FOREGROUND
+2026-04-24 15:51:55.959  2383-17517 AppObserver             com.miui.home                        D  ForegroundInfo{mForegroundPackageName='com.wuheng.smart', mForegroundUid=10312, mForegroundPid=23361, mLastForegroundPackageName='com.miui.home', mLastForegroundUid=10124, mLastForegroundPid=2383, mMultiWindowForegroundPackageName='com.wuheng.smart', mMultiWindowForegroundUid=10312, mFlags=1}
+2026-04-24 15:51:55.959  1930-2308  MiuiMultiW...mendHelper system_server                        D  current foreground task: taskId is1927 package name: com.wuheng.smart
+2026-04-24 15:51:55.959  1930-2308  MiuiMultiW...mendHelper system_server                        D  printRecentAppInfo: com.wuheng.smart,com.wuheng.smart mRecentAppList size= 2
+2026-04-24 15:51:55.959  2686-4058  A2dpLatencyMode         com.android.bluetooth                D  ForegroundInfo{mForegroundPackageName='com.wuheng.smart', mForegroundUid=10312, mForegroundPid=23361, mLastForegroundPackageName='com.miui.home', mLastForegroundUid=10124, mLastForegroundPid=2383, mMultiWindowForegroundPackageName='com.wuheng.smart', mMultiWindowForegroundUid=10312, mFlags=1}
+2026-04-24 15:51:55.959  1930-2308  MiuiMultiW...mendHelper system_server                        D   focused task id = 1927 packageName = com.wuheng.smart
+2026-04-24 15:51:55.959  5548-29081 GST                     com.xiaomi.joyose                    I  forePkg: com.wuheng.smart, preForePkg: com.miui.home
+2026-04-24 15:51:55.959  5516-8041  PerfEngineController    com.miui.powerkeeper                 D  ForegroundInfo{mForegroundPackageName='com.wuheng.smart', mForegroundUid=10312, mForegroundPid=23361, mLastForegroundPackageName='com.miui.home', mLastForegroundUid=10124, mLastForegroundPid=2383, mMultiWindowForegroundPackageName='com.wuheng.smart', mMultiWindowForegroundUid=10312, mFlags=1}
+2026-04-24 15:51:55.959  4360-8044  ProcessMonitor          com.miui.securitycenter.remote       I  onForegroundInfoChanged: ForegroundInfo{mForegroundPackageName='com.wuheng.smart', mForegroundUid=10312, mForegroundPid=23361, mLastForegroundPackageName='com.miui.home', mLastForegroundUid=10124, mLastForegroundPid=2383, mMultiWindowForegroundPackageName='com.wuheng.smart', mMultiWindowForegroundUid=10312, mFlags=1}
+2026-04-24 15:51:55.960  4360-8044  GameBoosterService      com.miui.securitycenter.remote       I  onForegroundInfoChanged: Cur=com.wuheng.smart	 last=com.miui.home
+2026-04-24 15:51:55.961  5672-5672  PkgUtils                com.xiaomi.xmsf                      D  getApplicationInfo packageName:com.wuheng.smart, flags:128 applicationInfo:ApplicationInfo{5a55fb9 com.wuheng.smart} needSecondSpace:false
+2026-04-24 15:51:55.966  4360-8044  GameBoosterService      com.miui.securitycenter.remote       D  onGameStatusChange foreground:ForegroundInfo{mForegroundPackageName='com.wuheng.smart', mForegroundUid=10312, mForegroundPid=23361, mLastForegroundPackageName='com.miui.home', mLastForegroundUid=10124, mLastForegroundPid=2383, mMultiWindowForegroundPackageName='com.wuheng.smart', mMultiWindowForegroundUid=10312, mFlags=1}
+2026-04-24 15:51:55.966 23361-23361 ziparchive              com.wuheng.smart                     W  Unable to open '/data/app/~~3IZj46ePjkA9ezMEiAXyWA==/com.wuheng.smart-8yh7FeFIOwYh_dlnSqcEyw==/base.dm': No such file or directory
+2026-04-24 15:51:55.966 23361-23361 ziparchive              com.wuheng.smart                     W  Unable to open '/data/app/~~3IZj46ePjkA9ezMEiAXyWA==/com.wuheng.smart-8yh7FeFIOwYh_dlnSqcEyw==/base.dm': No such file or directory
+2026-04-24 15:51:55.966 23361-26327 AppScoutStateMachine    com.wuheng.smart                     D  23361-ScoutStateMachinecreated
+2026-04-24 15:51:55.966  4360-5152  SuggestManager          com.miui.securitycenter.remote       E  openApp name = com.wuheng.smart
+2026-04-24 15:51:55.968  4360-8044  BeautyService           com.miui.securitycenter.remote       I  onForegroundInfoChanged: Cur=com.wuheng.smart	 last=com.miui.home
+2026-04-24 15:51:55.983  2383-3643  RecentsModel            com.miui.home                        W  getRunningTask   taskInfo=TaskInfo{userId=0 taskId=1927 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.wuheng.smart/.MainActivity } baseActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} topActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} origActivity=null realActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} numActivities=1 lastActiveTime=688250601 supportsSplitScreenMultiWindow=true supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@afdb34e} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{6fb4c6f com.wuheng.smart.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}
+2026-04-24 15:51:55.983  2383-3643  RecentsModel            com.miui.home                        W  getTaskInfoIgnoreHomeAndFreeform   taskInfo=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity}
+2026-04-24 15:51:55.985  2383-3643  ActivityManagerWrapper  com.miui.home                        E  getRecentTasks: mainTaskId=1927   userId=0   windowMode=1   baseIntent=Intent { act=android.intent.action.MAIN flag=270532608 cmp=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} }
+2026-04-24 15:51:55.999  2383-3643  RecentsModel            com.miui.home                        W  getRunningTask   taskInfo=TaskInfo{userId=0 taskId=1927 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.wuheng.smart/.MainActivity } baseActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} topActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} origActivity=null realActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} numActivities=1 lastActiveTime=688250615 supportsSplitScreenMultiWindow=true supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@9273605} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{505b65a com.wuheng.smart.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}
+2026-04-24 15:51:55.999  2383-3643  RecentsModel            com.miui.home                        W  getTaskInfoIgnoreHomeAndFreeform   taskInfo=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity}
+2026-04-24 15:51:56.000  2383-3643  ActivityManagerWrapper  com.miui.home                        E  getRecentTasks: mainTaskId=1927   userId=0   windowMode=1   baseIntent=Intent { act=android.intent.action.MAIN flag=270532608 cmp=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} }
+2026-04-24 15:51:56.440 23361-23361 Perf                    com.wuheng.smart                     I  Connecting to perf service.
+2026-04-24 15:51:56.444 23361-23361 GraphicsEnvironment     com.wuheng.smart                     V  ANGLE Developer option for 'com.wuheng.smart' set to: 'default'
+2026-04-24 15:51:56.444 23361-23361 GraphicsEnvironment     com.wuheng.smart                     V  ANGLE GameManagerService for com.wuheng.smart: false
+2026-04-24 15:51:56.444 23361-23361 GraphicsEnvironment     com.wuheng.smart                     V  App is not on the allowlist for updatable production driver.
+2026-04-24 15:51:56.447 23361-23361 ForceDarkHelperStubImpl com.wuheng.smart                     I  initialize for com.wuheng.smart , ForceDarkOrigin
+2026-04-24 15:51:56.448 23361-23361 om.wuheng.smart         com.wuheng.smart                     D  JNI_OnLoad success
+2026-04-24 15:51:56.448 23361-23361 MiuiForceDarkConfig     com.wuheng.smart                     I  setConfig density:2.250000, mainRule:0, secondaryRule:0, tertiaryRule:0
+2026-04-24 15:51:56.450 23361-23361 NetworkSecurityConfig   com.wuheng.smart                     D  Using Network Security Config from resource network_security_config debugBuild: true
+2026-04-24 15:51:56.451 23361-23361 NetworkSecurityConfig   com.wuheng.smart                     D  Using Network Security Config from resource network_security_config debugBuild: true
+2026-04-24 15:51:56.510 23361-23361 StartupTimer            com.wuheng.smart                     D  [StartupTimer] Ended: task_timber_init, duration: 4ms
+2026-04-24 15:51:56.517 23361-26335 StartupTimer            com.wuheng.smart                     D  [StartupTimer] Started: task_location_init at 688251132
+2026-04-24 15:51:56.532 23361-23361 MemoryMonitor           com.wuheng.smart                     D  内存监控已启动，间隔: 30000ms
+2026-04-24 15:51:56.532 23361-23361 MemoryMonitor           com.wuheng.smart                     D  内存监控已启动，间隔: 30000ms
+2026-04-24 15:51:56.532 23361-23361 WuHengApplication       com.wuheng.smart                     D  WuHengApplication 初始化完成
+2026-04-24 15:51:56.532 23361-23361 WuHengApplication       com.wuheng.smart                     D  WuHengApplication 初始化完成
+2026-04-24 15:51:56.533 23361-26335 MemoryMonitor           com.wuheng.smart                     D  内存状态: used=7MB, max=256MB, usage=2%
+2026-04-24 15:51:56.533 23361-26335 MemoryMonitor           com.wuheng.smart                     D  内存状态: used=7MB, max=256MB, usage=2%
+2026-04-24 15:51:56.555 23361-23361 IS_CTS_MODE             com.wuheng.smart                     D  false
+2026-04-24 15:51:56.555 23361-23361 MULTI_WINDOW_ENABLED    com.wuheng.smart                     D  true
+2026-04-24 15:51:56.557 23361-23361 DecorView[]             com.wuheng.smart                     D  getWindowModeFromSystem  windowmode is 1
+2026-04-24 15:51:56.560 23361-23361 StartupTimer            com.wuheng.smart                     D  [StartupTimer] Started: main_activity_create at 688251176
+2026-04-24 15:51:56.560 23361-23361 StartupTimer            com.wuheng.smart                     D  [StartupTimer] Started: main_activity_create at 688251176
+2026-04-24 15:51:56.566 23361-23361 libc                    com.wuheng.smart                     W  Access denied finding property "ro.vendor.df.effect.conflict"
+2026-04-24 15:51:56.563 23361-23361 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360117): avc: denied { read } for name="u:object_r:vendor_displayfeature_prop:s0" dev="tmpfs" ino=12103 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:vendor_displayfeature_prop:s0 tclass=file permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:56.569 23361-26335 SdkInitMan...onSdkAsync com.wuheng.smart                     D  Location SDK initialized
+2026-04-24 15:51:56.569 23361-26335 SdkInitMan...onSdkAsync com.wuheng.smart                     D  Location SDK initialized
+2026-04-24 15:51:56.569 23361-26335 StartupTimer            com.wuheng.smart                     D  [StartupTimer] Ended: task_location_init, duration: 53ms
+2026-04-24 15:51:56.570 23361-26335 StartupTimer            com.wuheng.smart                     D  [StartupTimer] Ended: task_location_init, duration: 53ms
+2026-04-24 15:51:56.584 23361-23361 StartupTimer            com.wuheng.smart                     D  [StartupTimer] Ended: main_activity_create, duration: 23ms
+2026-04-24 15:51:56.584 23361-23361 StartupTimer            com.wuheng.smart                     D  [StartupTimer] Ended: main_activity_create, duration: 23ms
+2026-04-24 15:51:56.588 23361-26342 ViewContentFactory      com.wuheng.smart                     D  initViewContentFetcherClass
+2026-04-24 15:51:56.588 23361-26342 ViewContentFactory      com.wuheng.smart                     D  getInterceptorPackageInfo
+2026-04-24 15:51:56.589 23361-26342 ViewContentFactory      com.wuheng.smart                     D  getInitialApplication took 1ms
+2026-04-24 15:51:56.589 23361-26342 ViewContentFactory      com.wuheng.smart                     D  packageInfo.packageName: com.miui.catcherpatch
+2026-04-24 15:51:56.590 23361-23361 StartupTimer            com.wuheng.smart                     D  [StartupTimer] Cold start recorded at: 688251205
+2026-04-24 15:51:56.590 23361-23361 StartupTimer            com.wuheng.smart                     D  [StartupTimer] Cold start recorded at: 688251205
+2026-04-24 15:51:56.590 23361-23361 StartupTimer            com.wuheng.smart                     D  [StartupTimer] main_activity_start from cold start: 1ms
+2026-04-24 15:51:56.590 23361-23361 StartupTimer            com.wuheng.smart                     D  [StartupTimer] main_activity_start from cold start: 1ms
+2026-04-24 15:51:56.596 23361-23361 StartupTimer            com.wuheng.smart                     D  [StartupTimer] main_activity_resume from cold start: 6ms
+2026-04-24 15:51:56.596 23361-23361 StartupTimer            com.wuheng.smart                     D  [StartupTimer] main_activity_resume from cold start: 6ms
+2026-04-24 15:51:56.598 23361-26342 ViewContentFactory      com.wuheng.smart                     D  initViewContentFetcherClass took 10ms
+2026-04-24 15:51:56.598 23361-26342 ContentCatcher          com.wuheng.smart                     I  ViewContentFetcher : ViewContentFetcher
+2026-04-24 15:51:56.598 23361-26342 ViewContentFactory      com.wuheng.smart                     D  createInterceptor took 10ms
+2026-04-24 15:51:56.599 23361-26342 ContentCatcherManager   com.wuheng.smart                     E  failed to get ContentCatcherService.
+2026-04-24 15:51:56.599 23361-26342 ContentCatcherManager   com.wuheng.smart                     E  failed to get ContentCatcherService.
+2026-04-24 15:51:56.612  1930-5984  CoreBackPreview         system_server                        D  Window{8620a39 u0 com.wuheng.smart/com.wuheng.smart.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@84a91df, mPriority=0}
+2026-04-24 15:51:56.613 23361-23361 Looper                  com.wuheng.smart                     W  PerfMonitor looperActivity : package=com.wuheng.smart/.MainActivity time=79ms latency=582ms running=69ms  procState=-1  historyMsgCount=3 (msgIndex=3 wall=579ms seq=3 running=568ms late=5ms h=android.app.ActivityThread$H w=110)
+2026-04-24 15:51:56.613  5672-20650 services                com.xiaomi.xmsf                      D  [XMS][observer] ActivityObserver activityResumed packageName: com.wuheng.smart
+2026-04-24 15:51:56.613 23361-23361 Looper                  com.wuheng.smart                     W  PerfMonitor looperActivity : package=com.wuheng.smart/.MainActivity time=0ms latency=648ms running=0ms  procState=-1  historyMsgCount=2 (msgIndex=1 wall=579ms seq=3 running=568ms late=5ms h=android.app.ActivityThread$H w=110)
+2026-04-24 15:51:56.614  5672-20650 AppUpdateXmsfLauncher   com.xiaomi.xmsf                      D  activityResumed intent : Intent { cmp=com.wuheng.smart/.MainActivity (has extras) }
+2026-04-24 15:51:56.614  2383-2383  RecentsImpl             com.miui.home                        D  mActivityStateObserver com.wuheng.smart.MainActivity
+2026-04-24 15:51:56.614 23361-23361 FramePredict            com.wuheng.smart                     D  FramePredict init: false
+2026-04-24 15:51:56.614  2383-2383  RecentsImpl             com.miui.home                        W  onResumed className=com.wuheng.smart.MainActivity   mIsInAnotherPro=false   isKeyguardLocked=false
+2026-04-24 15:51:56.614 10755-10807 auth                    com.xiaomi.xmsf                      D  [XMS][Auth] ActivityObserver activityResumed packageName: com.wuheng.smart
+2026-04-24 15:51:56.625  4944-5427  XMSF-actMo...torManager com.xiaomi.xmsf                      I  onActivityResumed: ActivityInfo{name='com.wuheng.smart.MainActivity', pkg='com.wuheng.smart', callerPkg='com.miui.home', windowMode=-1, displayId=-1, appBounds=Rect(0, 0 - 1600, 2524), duration=-1},activityInfoQueue:30,curMonitorStrategy=
+2026-04-24 15:51:56.718 23361-23361 om.wuheng.smart         com.wuheng.smart                     W  Method java.lang.Object androidx.compose.runtime.snapshots.SnapshotStateMap.mutate(kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+                                                                                                    Common causes for lock verification issues are non-optimized dex code
+                                                                                                    and incorrect proguard optimizations.
+2026-04-24 15:51:56.718 23361-23361 om.wuheng.smart         com.wuheng.smart                     W  Method void androidx.compose.runtime.snapshots.SnapshotStateMap.update(kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+2026-04-24 15:51:56.718 23361-23361 om.wuheng.smart         com.wuheng.smart                     W  Method boolean androidx.compose.runtime.snapshots.SnapshotStateMap.removeIf$runtime_release(kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+2026-04-24 15:51:56.763 23361-23361 MainViewModel           com.wuheng.smart                     D  Initial login status check: isLoggedIn=false
+2026-04-24 15:51:56.763 23361-23361 MainViewModel           com.wuheng.smart                     D  Initial login status check: isLoggedIn=false
+2026-04-24 15:51:56.764 23361-23361 MainViewModel           com.wuheng.smart                     D  Token changed, isLoggedIn=false, startDestination=login
+2026-04-24 15:51:56.764 23361-23361 MainViewModel           com.wuheng.smart                     D  Token changed, isLoggedIn=false, startDestination=login
+2026-04-24 15:51:56.822 23361-23361 DecorView[]             com.wuheng.smart                     D  getWindowModeFromSystem  windowmode is 1
+2026-04-24 15:51:56.822 23361-23361 DecorView[]             com.wuheng.smart                     D  updateDecorCaptionStatus windowMode is 1
+2026-04-24 15:51:56.826  1930-5968  WindowManager           system_server                        D  wms.Input focus has changed to Window{8620a39 u0 com.wuheng.smart/com.wuheng.smart.MainActivity} display=0 updateInputWindows = true
+2026-04-24 15:51:56.827  1930-2008  WindowManager           system_server                        D  wms.Update InputWindowHandle: 8620a39 com.wuheng.smart/com.wuheng.smart.MainActivity, frame=[0,0,0,0], touchableRegion=SkRegion((0,0,1600,2560)), scaleFactor=1.0, transform=null, windowToken=android.os.BinderProxy@bb90200, isClone=false, visibal=true, focusable=true, changed=true
+2026-04-24 15:51:56.835 23361-26339 AdrenoGLES-0            com.wuheng.smart                     I  QUALCOMM build                   : 83a0eede45, If3f4a1ab82
+                                                                                                    Build Date                       : 11/18/21
+                                                                                                    OpenGL ES Shader Compiler Version: EV031.32.02.15
+                                                                                                    Local Branch                     : 
+                                                                                                    Remote Branch                    : refs/tags/AU_LINUX_ANDROID_LA.UM.9.1.R1.11.00.00.604.070
+                                                                                                    Remote Branch                    : NONE
+                                                                                                    Reconstruct Branch               : NOTHING
+2026-04-24 15:51:56.835 23361-26339 AdrenoGLES-0            com.wuheng.smart                     I  Build Config                     : S P 10.0.6 AArch64
+2026-04-24 15:51:56.835 23361-26339 AdrenoGLES-0            com.wuheng.smart                     I  Driver Path                      : /vendor/lib64/egl/libGLESv2_adreno.so
+2026-04-24 15:51:56.837  1244-1914  SurfaceFlinger          surfaceflinger                       I  sf.setTransactionState focusRequest transactionId:8289286987853 frontWin:8620a39 com.wuheng.smart/com.wuheng.smart.MainActivity
+2026-04-24 15:51:56.840 23361-26339 AdrenoGLES-0            com.wuheng.smart                     I  PFP: 0x016ee190, ME: 0x00000000
+2026-04-24 15:51:56.845  1244-1904  SurfaceFlinger          surfaceflinger                       D  updateInputFlinger::setFocusedWindow: windowName=8620a39 com.wuheng.smart/com.wuheng.smart.MainActivity focusRequests.size=1
+2026-04-24 15:51:56.846 23361-26339 libc                    com.wuheng.smart                     W  Access denied finding property "vendor.migl.debug"
+2026-04-24 15:51:56.849 23361-26339 libEGL                  com.wuheng.smart                     E  pre_cache appList: ,,,
+2026-04-24 15:51:56.878 23361-23361 om.wuheng.smart         com.wuheng.smart                     W  Method boolean androidx.compose.runtime.snapshots.SnapshotStateList.conditionalUpdate(kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+2026-04-24 15:51:56.879 23361-23361 om.wuheng.smart         com.wuheng.smart                     W  Method java.lang.Object androidx.compose.runtime.snapshots.SnapshotStateList.mutate(kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+2026-04-24 15:51:56.879 23361-23361 om.wuheng.smart         com.wuheng.smart                     W  Method void androidx.compose.runtime.snapshots.SnapshotStateList.update(kotlin.jvm.functions.Function1) failed lock verification and will run slower.
+2026-04-24 15:51:56.882 23361-23361 VRI[MainActivity]       com.wuheng.smart                     D  vri.reportNextDraw android.view.ViewRootImpl.performTraversals:4013 android.view.ViewRootImpl.doTraversal:2725 android.view.ViewRootImpl$TraversalRunnable.run:9812 android.view.Choreographer$CallbackRecord.run:1505 android.view.Choreographer$CallbackRecord.run:1513 
+2026-04-24 15:51:56.883 23361-23361 VRI[MainActivity]       com.wuheng.smart                     D  vri.Setup new sync id=0 syncSeqId=0
+2026-04-24 15:51:56.887 23361-26339 om.wuheng.smart         com.wuheng.smart                     D  MiuiProcessManagerServiceStub setSchedFifo
+2026-04-24 15:51:56.887 23361-26339 MiuiProcessManagerImpl  com.wuheng.smart                     I  setSchedFifo pid:23361, mode:3
+2026-04-24 15:51:56.888 23361-26339 libboost                com.wuheng.smart                     E  fail to open node: No such file or directory
+2026-04-24 15:51:56.893 23361-26339 perf_hint               com.wuheng.smart                     E  Session creation failed, mPreferredRateNanos: -1
+2026-04-24 15:51:56.894 23361-23361 VRI[MainActivity]       com.wuheng.smart                     D  vri.reportDrawFinished syncSeqId=0 android.view.ViewRootImpl.lambda$createSyncIfNeeded$4$android-view-ViewRootImpl:4081 android.view.ViewRootImpl$$ExternalSyntheticLambda2.run:6 android.os.Handler.handleCallback:942 android.os.Handler.dispatchMessage:99 android.os.Looper.loopOnce:211 
+2026-04-24 15:51:56.894  1930-5968  WindowManager           system_server                        D  wms.finishDrawingLocked: mDrawState=COMMIT_DRAW_PENDING Window{8620a39 u0 com.wuheng.smart/com.wuheng.smart.MainActivity} in Surface(name=com.wuheng.smart/com.wuheng.smart.MainActivity)/@0xd988956
+2026-04-24 15:51:56.894  1930-5968  MiuiFreeFo...ntListener system_server                        D  finishDrawingWindow: topFullScreenWindow= Window{8620a39 u0 com.wuheng.smart/com.wuheng.smart.MainActivity}
+2026-04-24 15:51:56.899 23361-23361 MainActivi...$WuHengApp com.wuheng.smart                     D  User not logged in, navigating to login page
+2026-04-24 15:51:56.899 23361-23361 MainActivi...$WuHengApp com.wuheng.smart                     D  User not logged in, navigating to login page
+2026-04-24 15:51:56.901 23361-23361 om.wuheng.smart         com.wuheng.smart                     E  No package ID 78 found for ID 0x78d845ec.
+2026-04-24 15:51:56.901 23361-23361 NavController           com.wuheng.smart                     I  Ignoring popBackStack to destination 2027439596 as it was not found on the current back stack
+2026-04-24 15:51:56.902 23361-23361 OnBackInvokedCallback   com.wuheng.smart                     W  OnBackInvokedCallback is not enabled for the application.
+                                                                                                    Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+2026-04-24 15:51:56.904 23361-23361 Choreographer           com.wuheng.smart                     I  Skipped 31 frames!  The application may be doing too much work on its main thread.
+2026-04-24 15:51:56.912  1930-2004  ziparchive              system_server                        W  Unable to open '/data/app/~~3IZj46ePjkA9ezMEiAXyWA==/com.wuheng.smart-8yh7FeFIOwYh_dlnSqcEyw==/base.dm': No such file or directory
+2026-04-24 15:51:56.913  1930-2008  WindowManager           system_server                        I  wms.showSurfaceRobustly mWin:Window{8620a39 u0 com.wuheng.smart/com.wuheng.smart.MainActivity}
+2026-04-24 15:51:56.915  1930-2004  ActivityTaskManager     system_server                        I  Displayed com.wuheng.smart/.MainActivity: +1s55ms
+2026-04-24 15:51:56.916  1930-2008  WindowManager           system_server                        D  wms.Update InputWindowHandle: 8620a39 com.wuheng.smart/com.wuheng.smart.MainActivity, frame=[0,0,0,0], touchableRegion=SkRegion((0,0,1600,2560)), scaleFactor=1.0, transform=null, windowToken=android.os.BinderProxy@bb90200, isClone=false, visibal=true, focusable=true, changed=true
+2026-04-24 15:51:56.924  1930-5984  CoreBackPreview         system_server                        D  Window{6fd5f07 u0 Splash Screen com.wuheng.smart}: Setting back callback null
+2026-04-24 15:51:56.924  1930-5968  InputManager-JNI        system_server                        W  Input channel object '6fd5f07 Splash Screen com.wuheng.smart (client)' was disposed without first being removed with the input manager!
+2026-04-24 15:51:56.930  1930-2008  WindowManager           system_server                        D  wms.Update InputWindowHandle: 8620a39 com.wuheng.smart/com.wuheng.smart.MainActivity, frame=[0,0,0,0], touchableRegion=SkRegion((0,0,1600,2560)), scaleFactor=1.0, transform=null, windowToken=android.os.BinderProxy@bb90200, isClone=false, visibal=true, focusable=true, changed=true
+2026-04-24 15:51:56.948 23361-23361 om.wuheng.smart         com.wuheng.smart                     W  Accessing hidden method Ljava/lang/invoke/MethodHandles$Lookup;-><init>(Ljava/lang/Class;I)V (unsupported, reflection, allowed)
+2026-04-24 15:51:56.963 23361-23361 LoginViewM...dLoginInfo com.wuheng.smart                     D  Loaded saved phone: false
+2026-04-24 15:51:56.963 23361-23361 LoginViewM...dLoginInfo com.wuheng.smart                     D  Loaded saved phone: false
+2026-04-24 15:51:56.964 23361-23361 LoginViewM...dLoginInfo com.wuheng.smart                     D  Loaded saved password: false
+2026-04-24 15:51:56.964 23361-23361 LoginViewM...dLoginInfo com.wuheng.smart                     D  Loaded saved password: false
+2026-04-24 15:51:56.965 23361-23361 LoginViewM...dLoginInfo com.wuheng.smart                     D  Loaded remember password state: false
+2026-04-24 15:51:56.966 23361-23361 LoginViewM...dLoginInfo com.wuheng.smart                     D  Loaded remember password state: false
+2026-04-24 15:51:57.230 23361-23361 Looper                  com.wuheng.smart                     W  PerfMonitor doFrame : time=326ms vsyncFrame=0 latency=260ms procState=-1 historyMsgCount=6
+2026-04-24 15:51:57.231 23361-23361 MainViewModel           com.wuheng.smart                     D  Token changed, isLoggedIn=true, startDestination=home
+2026-04-24 15:51:57.231 23361-23361 MainViewModel           com.wuheng.smart                     D  Token changed, isLoggedIn=true, startDestination=home
+2026-04-24 15:51:57.247 23361-23361 Choreographer           com.wuheng.smart                     I  Skipped 32 frames!  The application may be doing too much work on its main thread.
+2026-04-24 15:51:57.290 23361-23361 DecorView[]             com.wuheng.smart                     D  onWindowFocusChanged hasWindowFocus true
+2026-04-24 15:51:57.291 23361-23361 HandWritingStubImpl     com.wuheng.smart                     I  refreshLastKeyboardType: 1
+2026-04-24 15:51:57.291 23361-23361 HandWritingStubImpl     com.wuheng.smart                     I  getCurrentKeyboardType: 1
+2026-04-24 15:51:57.337 23361-23361 BaseRepository          com.wuheng.smart                     D  Repository Operation: getHouseInfo, Params: houseId=5
+2026-04-24 15:51:57.337 23361-23361 BaseRepository          com.wuheng.smart                     D  Repository Operation: getHouseInfo, Params: houseId=5
+2026-04-24 15:51:57.348 23361-23361 BaseRepository          com.wuheng.smart                     D  Repository Operation: getDeviceList, Params: houseId=5, roomId=null
+2026-04-24 15:51:57.349 23361-23361 BaseRepository          com.wuheng.smart                     D  Repository Operation: getDeviceList, Params: houseId=5, roomId=null
+2026-04-24 15:51:57.349 23361-26354 okhttp.OkHttpClient     com.wuheng.smart                     I  --> GET http://116.62.51.112/wuheng_iot/index.php/home/house/getHouseInfo?house_id=5
+2026-04-24 15:51:57.349 23361-26354 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-04-24 15:51:57.349 23361-26354 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-04-24 15:51:57.349 23361-26354 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer a4dc079422a720357a81d552c106173b
+2026-04-24 15:51:57.349 23361-26354 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END GET
+2026-04-24 15:51:57.351 23361-23361 BaseRepository          com.wuheng.smart                     D  Repository Operation: getSceneList, Params: houseId=5
+2026-04-24 15:51:57.351 23361-23361 BaseRepository          com.wuheng.smart                     D  Repository Operation: getSceneList, Params: houseId=5
+2026-04-24 15:51:57.355 23361-23361 BaseRepository          com.wuheng.smart                     D  Repository Operation: getSystemStatus, Params: houseId=5
+2026-04-24 15:51:57.355 23361-26355 okhttp.OkHttpClient     com.wuheng.smart                     I  --> GET http://116.62.51.112/wuheng_iot/index.php/home/device/getDeviceList?house_id=5
+2026-04-24 15:51:57.355 23361-26355 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-04-24 15:51:57.355 23361-26355 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-04-24 15:51:57.355 23361-26355 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer a4dc079422a720357a81d552c106173b
+2026-04-24 15:51:57.356 23361-23361 BaseRepository          com.wuheng.smart                     D  Repository Operation: getSystemStatus, Params: houseId=5
+2026-04-24 15:51:57.356 23361-26355 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END GET
+2026-04-24 15:51:57.358 23361-26354 TrafficStats            com.wuheng.smart                     D  tagSocket(124) with statsTag=0xffffffff, statsUid=-1
+2026-04-24 15:51:57.359 23361-26355 TrafficStats            com.wuheng.smart                     D  tagSocket(131) with statsTag=0xffffffff, statsUid=-1
+2026-04-24 15:51:57.360 23361-26356 okhttp.OkHttpClient     com.wuheng.smart                     I  --> GET http://116.62.51.112/wuheng_iot/index.php/home/scene/getSceneList?house_id=5
+2026-04-24 15:51:57.361 23361-26357 okhttp.OkHttpClient     com.wuheng.smart                     I  --> GET http://116.62.51.112/wuheng_iot/index.php/home/system/getSystemStatus?house_id=5
+2026-04-24 15:51:57.361 23361-26356 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-04-24 15:51:57.361 23361-26357 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-04-24 15:51:57.361 23361-26356 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-04-24 15:51:57.361 23361-26356 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer a4dc079422a720357a81d552c106173b
+2026-04-24 15:51:57.361 23361-26357 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-04-24 15:51:57.361 23361-26356 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END GET
+2026-04-24 15:51:57.361 23361-26357 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer a4dc079422a720357a81d552c106173b
+2026-04-24 15:51:57.361 23361-26357 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END GET
+2026-04-24 15:51:57.362 23361-26357 TrafficStats            com.wuheng.smart                     D  tagSocket(128) with statsTag=0xffffffff, statsUid=-1
+2026-04-24 15:51:57.362 23361-26356 TrafficStats            com.wuheng.smart                     D  tagSocket(132) with statsTag=0xffffffff, statsUid=-1
+2026-04-24 15:51:57.380 23361-26358 GoogleApiManager        com.wuheng.smart                     W  The service for com.google.android.gms.internal.location.zzda is not available: ConnectionResult{statusCode=SERVICE_DISABLED, resolution=null, message=null}
+2026-04-24 15:51:57.458 23361-23361 HandWritingStubImpl     com.wuheng.smart                     I  getCurrentKeyboardType: 1
+2026-04-24 15:51:57.466 23361-26358 GoogleApiManager        com.wuheng.smart                     W  The service for com.google.android.gms.internal.location.zzda is not available: ConnectionResult{statusCode=SERVICE_DISABLED, resolution=null, message=null}
+2026-04-24 15:51:57.467 23361-26358 Compatibil...geReporter com.wuheng.smart                     D  Compat change id reported: 160794467; UID 10312; state: ENABLED
+2026-04-24 15:51:57.469 23361-26358 GoogleApiAvailability   com.wuheng.smart                     W  GMS core API Availability. ConnectionResult=3, tag=null
+                                                                                                    java.lang.IllegalArgumentException
+                                                                                                    	at com.google.android.gms.common.GoogleApiAvailability.zae(com.google.android.gms:play-services-base@@18.1.0:2)
+                                                                                                    	at com.google.android.gms.common.GoogleApiAvailability.zah(com.google.android.gms:play-services-base@@18.1.0:6)
+                                                                                                    	at com.google.android.gms.common.api.internal.GoogleApiManager.zaG(com.google.android.gms:play-services-base@@18.1.0:1)
+                                                                                                    	at com.google.android.gms.common.api.internal.zabq.zar(com.google.android.gms:play-services-base@@18.1.0:21)
+                                                                                                    	at com.google.android.gms.common.api.internal.zabq.zao(com.google.android.gms:play-services-base@@18.1.0:13)
+                                                                                                    	at com.google.android.gms.common.api.internal.zabq.zap(com.google.android.gms:play-services-base@@18.1.0:8)
+                                                                                                    	at com.google.android.gms.common.api.internal.GoogleApiManager.handleMessage(com.google.android.gms:play-services-base@@18.1.0:64)
+                                                                                                    	at android.os.Handler.dispatchMessage(Handler.java:102)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:211)
+                                                                                                    	at android.os.Looper.loop(Looper.java:300)
+                                                                                                    	at android.os.HandlerThread.run(HandlerThread.java:67)
+2026-04-24 15:51:57.520 23361-26354 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/house/getHouseInfo?house_id=5 (170ms)
+2026-04-24 15:51:57.520 23361-26356 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/scene/getSceneList?house_id=5 (159ms)
+2026-04-24 15:51:57.520 23361-26357 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/system/getSystemStatus?house_id=5 (159ms)
+2026-04-24 15:51:57.520 23361-26356 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Fri, 24 Apr 2026 07:51:56 GMT
+2026-04-24 15:51:57.520 23361-26357 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Fri, 24 Apr 2026 07:51:56 GMT
+2026-04-24 15:51:57.520 23361-26354 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Fri, 24 Apr 2026 07:51:56 GMT
+2026-04-24 15:51:57.521 23361-26356 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-04-24 15:51:57.521 23361-26355 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/device/getDeviceList?house_id=5 (164ms)
+2026-04-24 15:51:57.521 23361-26357 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-04-24 15:51:57.521 23361-26354 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-04-24 15:51:57.521 23361-26356 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-04-24 15:51:57.521 23361-26355 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Fri, 24 Apr 2026 07:51:56 GMT
+2026-04-24 15:51:57.521 23361-26356 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-04-24 15:51:57.521 23361-26356 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-04-24 15:51:57.521 23361-26356 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-04-24 15:51:57.521 23361-26356 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 1691
+2026-04-24 15:51:57.521 23361-26356 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-04-24 15:51:57.521 23361-26356 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-04-24 15:51:57.521 23361-26355 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-04-24 15:51:57.521 23361-26354 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-04-24 15:51:57.521 23361-26355 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-04-24 15:51:57.521 23361-26355 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-04-24 15:51:57.521 23361-26355 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-04-24 15:51:57.522 23361-26354 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-04-24 15:51:57.522 23361-26357 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-04-24 15:51:57.522 23361-26354 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-04-24 15:51:57.522 23361-26357 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-04-24 15:51:57.522 23361-26354 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-04-24 15:51:57.522 23361-26357 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-04-24 15:51:57.522 23361-26354 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 500
+2026-04-24 15:51:57.522 23361-26357 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-04-24 15:51:57.522 23361-26354 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-04-24 15:51:57.522 23361-26357 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 853
+2026-04-24 15:51:57.522 23361-26354 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-04-24 15:51:57.522 23361-26357 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-04-24 15:51:57.522 23361-26357 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-04-24 15:51:57.522 23361-26356 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"success","data":[{"scene_id":"1","scene_id_no":"SCENE00001","house_id":"5","scene_name":"会客模式","scene_type":"guest","temp_set":"24.00","humidity_set":"45.00","co2_threshold":"800","fan_speed":"1","ceiling_radiation":"1","floor_radiation":"1","fresh_air":"1","is_default":"0","sort_order":"1","status":"1","createtime":"0","updatetime":"0"},{"scene_id":"2","scene_id_no":"SCENE00002","house_id":"5","scene_name":"离家模式","scene_type":"away","temp_set":"16.00","humidity_set":"50.00","co2_threshold":"1000","fan_speed":"0","ceiling_radiation":"0","floor_radiation":"0","fresh_air":"0","is_default":"0","sort_order":"2","status":"1","createtime":"0","updatetime":"0"},{"scene_id":"3","scene_id_no":"SCENE00003","house_id":"5","scene_name":"睡眠模式","scene_type":"sleep","temp_set":"26.00","humidity_set":"50.00","co2_threshold":"800","fan_speed":"0","ceiling_radiation":"1","floor_radiation":"0","fresh_air":"1","is_default":"0","sort_order":"3","status":"1","createtime":"0","updatetime":"0"},{"scene_id":"4","scene_id_no":"SCENE00004","house_id":"5","scene_name":"ECO节能","scene_type":"eco","temp_set":"25.00","humidity_set":"50.00","co2_threshold":"900","fan_speed":"0","ceiling_radiation":"1","floor_radiation":"1","fresh_air":"1","is_default":"1","sort_order":"4","status":"1","createtime":"0","updatetime":"0"},{"scene_id":"5","scene_id_no":"SCENE00005","house_id":"5","scene_name":"度假模式","scene_type":"vacation","temp_set":"18.00","humidity_set":"55.00","co2_threshold":"1200","fan_speed":"0","ceiling_radiation":"0","floor_radiation":"0","fresh_air":"0","is_default":"0","sort_order":"5","status":"1","createtime":"0","updatetime":"0"}]}
+2026-04-24 15:51:57.522 23361-26356 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (1691-byte body)
+2026-04-24 15:51:57.522 23361-26354 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"success","data":{"house_id":"5","house_id_no":"HOUSE202604190005","house_name":"未来科技城公寓","owner_name":"刘大大","owner_phone":"15900474254","address":"浙江省杭州市余杭区文一西路202号","floor_count":1,"area_total":"89.00","system_type":"辐射空调系统","install_date":"2025-04-01","warranty_end":"2030-04-01","jetlinks_device_id":"","status":"1","createtime":"1745059600","updatetime":"1745059600","room_count":5,"device_count":6,"online_count":6}}
+2026-04-24 15:51:57.522 23361-26354 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (500-byte body)
+2026-04-24 15:51:57.522 23361-26355 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-04-24 15:51:57.522 23361-26355 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 2880
+2026-04-24 15:51:57.522 23361-26355 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-04-24 15:51:57.522 23361-26355 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-04-24 15:51:57.523 23361-26355 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"success","data":[{"device_id":"1","device_id_no":"DEV202604190001","house_id":"5","floor_id":"2","room_id":"1","device_name":"客厅温控器","device_type":"thermostat","device_model":"TH-2025A","jetlinks_device_id":"jet-001","jetlinks_product_id":"prod-001","online_status":"1","run_status":"running","last_heartbeat":"1745059200","install_date":"2025-01-15","warranty_end":"2030-01-15","sort_order":"1","status":"1","createtime":"1745059200","updatetime":"1745059200","room_name":"客厅"},{"device_id":"2","device_id_no":"DEV202604190002","house_id":"5","floor_id":"2","room_id":"1","device_name":"客厅新风面板","device_type":"fresh_air","device_model":"FA-2025B","jetlinks_device_id":"jet-002","jetlinks_product_id":"prod-002","online_status":"1","run_status":"running","last_heartbeat":"1745059200","install_date":"2025-01-15","warranty_end":"2030-01-15","sort_order":"2","status":"1","createtime":"1745059200","updatetime":"1745059200","room_name":"客厅"},{"device_id":"3","device_id_no":"DEV202604190003","house_id":"5","floor_id":"2","room_id":"2","device_name":"主卧温控器","device_type":"thermostat","device_model":"TH-2025A","jetlinks_device_id":"jet-003","jetlinks_product_id":"prod-001","online_status":"1","run_status":"running","last_heartbeat":"1745059200","install_date":"2025-01-15","warranty_end":"2030-01-15","sort_order":"3","status":"1","createtime":"1745059200","updatetime":"1745059200","room_name":"主卧"},{"device_id":"4","device_id_no":"DEV202604190004","house_id":"5","floor_id":"2","room_id":"3","device_name":"次卧温控器","device_type":"thermostat","device_model":"TH-2025A","jetlinks_device_id":"jet-004","jetlinks_product_id":"prod-001","online_status":"1","run_status":"running","last_heartbeat":"1745059200","install_date":"2025-01-15","warranty_end":"2030-01-15","sort_order":"4","status":"1","createtime":"1745059200","updatetime":"1745059200","room_name":"次卧"},{"device_id":"5","device_id_no":"DEV202604190005","house_id":"5","floor_id":"1","room_id":"0","device_name":"热水器","device_type":"water_heater","device_model":"WH-2025C","jetlinks_device_id":"jet-005","jetlinks_product_id":"prod-003","online_status":"1","run_status":"running","last_heartbeat":"1745059200","install_date":"2025-01-15","warranty_end":"2030-01-15","sort_order":"5","status":"1","createtime":"1745059200","updatetime":"1745059200","room_name":"-"},{"device_id":"6","device_id_no":"DEV202604190006","house_id":"5","floor_id":"1","room_id":"0","device_name":"净水设备","device_type":"water_filter","device_model":"WF-2025D","jetlinks_device_id":"jet-006","jetlinks_product_id":"prod-004","online_status":"1","run_status":"running","last_heartbeat":"1745059200","install_date":"2025-01-15","warranty_end":"2030-01-15","sort_order":"6","status":"1","createtime":"1745059200","updatetime":"1745059200","room_name":"-"}]}
+2026-04-24 15:51:57.523 23361-26357 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"success","data":{"system_status":{"status_id":"5","house_id":"5","system_mode":"ventilation","global_temp_set":"24.00","global_humidity_set":"45.00","avg_indoor_temp":"24.80","avg_indoor_humidity":"52.00","avg_co2":"350","outdoor_temp":"22.00","outdoor_humidity":"60.00","outdoor_aqi":"55","outdoor_pm25":"28","system_run_status":"running","last_update":"1776694399"},"house_info":{"house_id":"5","house_id_no":"HOUSE202604190005","house_name":"未来科技城公寓","owner_name":"刘大大","owner_phone":"15900474254","address":"浙江省杭州市余杭区文一西路202号","floor_count":"1","area_total":"89.00","system_type":"辐射空调系统","install_date":"2025-04-01","warranty_end":"2030-04-01","jetlinks_device_id":"","status":"1","createtime":"1745059600","updatetime":"1745059600"},"device_count":6,"online_count":6}}
+2026-04-24 15:51:57.523 23361-26355 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (2880-byte body)
+2026-04-24 15:51:57.523 23361-26357 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (853-byte body)
+2026-04-24 15:51:57.567 23361-23361 Compatibil...geReporter com.wuheng.smart                     D  Compat change id reported: 171228096; UID 10312; state: ENABLED
+2026-04-24 15:51:57.711 23361-26339 libEGL                  com.wuheng.smart                     E  pre_cache appList: ,,,
+2026-04-24 15:51:57.783 23361-23361 LoginViewM...dLoginInfo com.wuheng.smart                     E  Failed to load saved phone
+                                                                                                    kotlinx.coroutines.JobCancellationException: Job was cancelled; job=SupervisorJobImpl{Cancelling}@af51f7c
+2026-04-24 15:51:57.783 23361-23361 LoginViewM...dLoginInfo com.wuheng.smart                     E  Failed to load saved phone
+                                                                                                    kotlinx.coroutines.JobCancellationException: Job was cancelled; job=SupervisorJobImpl{Cancelling}@af51f7c
+2026-04-24 15:51:57.784 23361-23361 LoginViewM...dLoginInfo com.wuheng.smart                     E  Failed to load saved password
+                                                                                                    kotlinx.coroutines.JobCancellationException: Job was cancelled; job=SupervisorJobImpl{Cancelling}@af51f7c
+2026-04-24 15:51:57.784 23361-23361 LoginViewM...dLoginInfo com.wuheng.smart                     E  Failed to load saved password
+                                                                                                    kotlinx.coroutines.JobCancellationException: Job was cancelled; job=SupervisorJobImpl{Cancelling}@af51f7c
+2026-04-24 15:51:57.785 23361-23361 LoginViewM...dLoginInfo com.wuheng.smart                     E  Failed to load remember password state
+                                                                                                    kotlinx.coroutines.JobCancellationException: Job was cancelled; job=SupervisorJobImpl{Cancelling}@af51f7c
+2026-04-24 15:51:57.785 23361-23361 LoginViewM...dLoginInfo com.wuheng.smart                     E  Failed to load remember password state
+                                                                                                    kotlinx.coroutines.JobCancellationException: Job was cancelled; job=SupervisorJobImpl{Cancelling}@af51f7c
+2026-04-24 15:51:58.523 23361-26345 StartupTimer            com.wuheng.smart                     D  [StartupTimer] Started: task_sdk_init at 688253138
+2026-04-24 15:51:58.524 23361-26345 StartupTimer            com.wuheng.smart                     D  [StartupTimer] Started: task_sdk_init at 688253138
+2026-04-24 15:51:58.626 23361-26345 SdkInitMan...yticsAsync com.wuheng.smart                     D  Analytics SDK initialized
+2026-04-24 15:51:58.627 23361-26345 SdkInitMan...yticsAsync com.wuheng.smart                     D  Analytics SDK initialized
+2026-04-24 15:51:58.627 23361-26345 StartupTimer            com.wuheng.smart                     D  [StartupTimer] Ended: task_sdk_init, duration: 105ms
+2026-04-24 15:51:58.628 23361-26345 StartupTimer            com.wuheng.smart                     D  [StartupTimer] Ended: task_sdk_init, duration: 105ms
+2026-04-24 15:51:58.675  1930-2152  MIUIInput               system_server                        D  [MotionEvent] publisher action=0x0, 688253288, channel '8620a39 com.wuheng.smart/com.wuheng.smart.MainActivity (server)'
+2026-04-24 15:51:58.681  2383-2383  RecentsModel            com.miui.home                        D  logTasks: type_all, [TaskInfo{userId=0 taskId=1927 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.wuheng.smart/.MainActivity } baseActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} topActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} origActivity=null realActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} numActivities=1 lastActiveTime=688253298 supportsSplitScreenMultiWindow=true supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@900627b} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{94d9898 com.wuheng.smart.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}, TaskInfo{userId=0 taskId=2 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.HOME] flg=0x10800100 cmp=com.miui.home/.launcher.Launcher } baseActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} topActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} origActivity=null realActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} numActivities=1 lastActiveTime=688250488 supportsSplitScreenMultiWindow=true supportsMultiWindow=true resizeMode=2 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@81878f1} topActivityType=2 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{2ab1cd6 com.miui.home.launcher.Launcher} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}, TaskInfo{userId=0 taskId=1907 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.android.settings/.MainSettings } baseActivity=ComponentInfo{com.android.settings/com.android.settings.MainSettings} topActivity=ComponentInfo{com.android.settings/com.android.settings.MiuiSettings} origActivity=ComponentInfo{com.android.settings/com.android.settings.MainSettings} realActivity=ComponentInfo{com.android.settings/com.android.settings.MiuiSettings} numActivities=1 lastActiveTime=684419007 supportsSplitScreenMultiWindow=false supportsMultiWindow=false resizeMode=0 isResizeable=false minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@928ab57} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{6cfa644 com.android.settings.MainSettings} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}, TaskInfo{userId=0 taskId=1893 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 cmp=com.bys.bysplusedome/.MainActivity } baseActivity=ComponentInfo{com.bys.bysplusedome/com.bys.bysplusedome.MainActivity} topActivity=ComponentInfo{com.bys.bysplusedome/com.bys.bysplusedome.MainAct
+2026-04-24 15:51:58.682  2383-2383  RecentsModel            com.miui.home                        D  logTasks: type_ignore_split_and_freefrom, [TaskInfo{userId=0 taskId=1927 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.wuheng.smart/.MainActivity } baseActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} topActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} origActivity=null realActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} numActivities=1 lastActiveTime=688253298 supportsSplitScreenMultiWindow=true supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@900627b} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{94d9898 com.wuheng.smart.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}, TaskInfo{userId=0 taskId=2 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.HOME] flg=0x10800100 cmp=com.miui.home/.launcher.Launcher } baseActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} topActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} origActivity=null realActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} numActivities=1 lastActiveTime=688250488 supportsSplitScreenMultiWindow=true supportsMultiWindow=true resizeMode=2 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@81878f1} topActivityType=2 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{2ab1cd6 com.miui.home.launcher.Launcher} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}, TaskInfo{userId=0 taskId=1907 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.android.settings/.MainSettings } baseActivity=ComponentInfo{com.android.settings/com.android.settings.MainSettings} topActivity=ComponentInfo{com.android.settings/com.android.settings.MiuiSettings} origActivity=ComponentInfo{com.android.settings/com.android.settings.MainSettings} realActivity=ComponentInfo{com.android.settings/com.android.settings.MiuiSettings} numActivities=1 lastActiveTime=684419007 supportsSplitScreenMultiWindow=false supportsMultiWindow=false resizeMode=0 isResizeable=false minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@928ab57} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{6cfa644 com.android.settings.MainSettings} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}, TaskInfo{userId=0 taskId=1893 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 cmp=com.bys.bysplusedome/.MainActivity } baseActivity=ComponentInfo{com.bys.bysplusedome/com.bys.bysplusedome.MainActivity} topActivity=ComponentInfo{com.bys.bysplusedome/com.by
+2026-04-24 15:51:58.772  1930-2152  MIUIInput               system_server                        D  [MotionEvent] publisher action=0x1, 688253387, channel '8620a39 com.wuheng.smart/com.wuheng.smart.MainActivity (server)'
+2026-04-24 15:51:58.797 23361-23361 AndroidRuntime          com.wuheng.smart                     E  FATAL EXCEPTION: main
+                                                                                                    Process: com.wuheng.smart, PID: 23361
+                                                                                                    java.lang.IllegalArgumentException: Navigation destination that matches request NavDeepLinkRequest{ uri=android-app://androidx.navigation/water } cannot be found in the navigation graph NavGraph(0x0) startDestination={Destination(0x78d845ec) route=home}
+                                                                                                    	at androidx.navigation.NavController.navigate(NavController.kt:1664)
+                                                                                                    	at androidx.navigation.NavController.navigate(NavController.kt:1984)
+                                                                                                    	at androidx.navigation.NavController.navigate$default(NavController.kt:1979)
+                                                                                                    	at androidx.navigation.NavController.navigate(NavController.kt:1965)
+                                                                                                    	at com.wuheng.smart.MainActivityKt$WuHengApp$3$1$1.invoke(MainActivity.kt:220)
+                                                                                                    	at com.wuheng.smart.MainActivityKt$WuHengApp$3$1$1.invoke(MainActivity.kt:210)
+                                                                                                    	at com.wuheng.smart.presentation.theme.WuHengComponentsKt$WuHengBottomNavigation$1$1$1$1$1.invoke(WuHengComponents.kt:81)
+                                                                                                    	at com.wuheng.smart.presentation.theme.WuHengComponentsKt$WuHengBottomNavigation$1$1$1$1$1.invoke(WuHengComponents.kt:81)
+                                                                                                    	at androidx.compose.foundation.ClickableKt$clickable$4$gesture$1$1$2.invoke-k-4lQ0M(Clickable.kt:167)
+                                                                                                    	at androidx.compose.foundation.ClickableKt$clickable$4$gesture$1$1$2.invoke(Clickable.kt:156)
+                                                                                                    	at androidx.compose.foundation.gestures.TapGestureDetectorKt$detectTapAndPress$2$1.invokeSuspend(TapGestureDetector.kt:255)
+                                                                                                    	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:33)
+                                                                                                    	at kotlinx.coroutines.DispatchedTaskKt.resume(DispatchedTask.kt:177)
+                                                                                                    	at kotlinx.coroutines.DispatchedTaskKt.dispatch(DispatchedTask.kt:166)
+                                                                                                    	at kotlinx.coroutines.CancellableContinuationImpl.dispatchResume(CancellableContinuationImpl.kt:474)
+                                                                                                    	at kotlinx.coroutines.CancellableContinuationImpl.resumeImpl(CancellableContinuationImpl.kt:508)
+                                                                                                    	at kotlinx.coroutines.CancellableContinuationImpl.resumeImpl$default(CancellableContinuationImpl.kt:497)
+                                                                                                    	at kotlinx.coroutines.CancellableContinuationImpl.resumeWith(CancellableContinuationImpl.kt:368)
+                                                                                                    	at androidx.compose.ui.input.pointer.SuspendingPointerInputFilter$PointerEventHandlerCoroutine.offerPointerEvent(SuspendingPointerInputFilter.kt:566)
+                                                                                                    	at androidx.compose.ui.input.pointer.SuspendingPointerInputFilter.dispatchPointerEvent(SuspendingPointerInputFilter.kt:456)
+                                                                                                    	at androidx.compose.ui.input.pointer.SuspendingPointerInputFilter.onPointerEvent-H0pRuoY(SuspendingPointerInputFilter.kt:469)
+                                                                                                    	at androidx.compose.ui.node.BackwardsCompatNode.onPointerEvent-H0pRuoY(BackwardsCompatNode.kt:374)
+                                                                                                    	at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:314)
+                                                                                                    	at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:301)
+                                                                                                    	at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:301)
+                                                                                                    	at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:301)
+                                                                                                    	at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:301)
+                                                                                                    	at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:301)
+                                                                                                    	at androidx.compose.ui.input.pointer.NodeParent.dispatchMainEventPass(HitPathTracker.kt:183)
+                                                                                                    	at androidx.compose.ui.input.pointer.HitPathTracker.dispatchChanges(HitPathTracker.kt:102)
+                                                                                                    	at androidx.compose.ui.input.pointer.PointerInputEventProcessor.process-BIzXfog(PointerInputEventProcessor.kt:98)
+                                                                                                    	at androidx.compose.ui.platform.AndroidComposeView.sendMotionEvent-8iAsVTc(AndroidComposeView.android.kt:1361)
+                                                                                                    	at androidx.compose.ui.platform.AndroidComposeView.handleMotionEvent-8iAsVTc(AndroidComposeView.android.kt:1307)
+                                                                                                    	at androidx.compose.ui.platform.AndroidComposeView.dispatchTouchEvent(AndroidComposeView.android.kt:1246)
+                                                                                                    	at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:3152)
+                                                                                                    	at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:2820)
+                                                                                                    	at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:3152)
+                                                                                                    	at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:2820)
+                                                                                                    	at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:3152)
+2026-04-24 15:51:58.798 23361-23361 AndroidRuntime          com.wuheng.smart                     E  	at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:2820)
+                                                                                                    	at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:3152)
+                                                                                                    	at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:2820)
+                                                                                                    	at com.android.internal.policy.DecorView.superDispatchTouchEvent(DecorView.java:579)
+                                                                                                    	at com.android.internal.policy.PhoneWindow.superDispatchTouchEvent(PhoneWindow.java:1903)
+                                                                                                    	at android.app.Activity.dispatchTouchEvent(Activity.java:4456)
+                                                                                                    	at com.android.internal.policy.DecorView.dispatchTouchEvent(DecorView.java:537)
+                                                                                                    	at android.view.View.dispatchPointerEvent(View.java:15435)
+                                                                                                    	at android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent(ViewRootImpl.java:7316)
+                                                                                                    	at android.view.ViewRootImpl$ViewPostImeInputStage.onProcess(ViewRootImpl.java:7086)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.deliver(ViewRootImpl.java:6505)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.onDeliverToNext(ViewRootImpl.java:6562)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.forward(ViewRootImpl.java:6528)
+                                                                                                    	at android.view.ViewRootImpl$AsyncInputStage.forward(ViewRootImpl.java:6693)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.apply(ViewRootImpl.java:6536)
+                                                                                                    	at android.view.ViewRootImpl$AsyncInputStage.apply(ViewRootImpl.java:6750)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.deliver(ViewRootImpl.java:6509)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.onDeliverToNext(ViewRootImpl.java:6562)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.forward(ViewRootImpl.java:6528)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.apply(ViewRootImpl.java:6536)
+                                                                                                    	at android.view.ViewRootImpl$InputStage.deliver(ViewRootImpl.java:6509)
+                                                                                                    	at android.view.ViewRootImpl.deliverInputEvent(ViewRootImpl.java:9714)
+                                                                                                    	at android.view.ViewRootImpl.doProcessInputEvents(ViewRootImpl.java:9665)
+                                                                                                    	at android.view.ViewRootImpl.enqueueInputEvent(ViewRootImpl.java:9633)
+                                                                                                    	at android.view.ViewRootImpl$WindowInputEventReceiver.onInputEvent(ViewRootImpl.java:9870)
+                                                                                                    	at android.view.InputEventReceiver.dispatchInputEvent(InputEventReceiver.java:298)
+                                                                                                    	at android.os.MessageQueue.nativePollOnce(Native Method)
+                                                                                                    	at android.os.MessageQueue.next(MessageQueue.java:341)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:169)
+                                                                                                    	at android.os.Looper.loop(Looper.java:300)
+                                                                                                    	at android.app.ActivityThread.main(ActivityThread.java:8503)
+                                                                                                    	at java.lang.reflect.Method.invoke(Native Method)
+                                                                                                    	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:561)
+                                                                                                    	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:954)
+                                                                                                    	Suppressed: kotlinx.coroutines.internal.DiagnosticCoroutineContextException: [androidx.compose.ui.platform.MotionDurationScaleImpl@d853155, androidx.compose.runtime.BroadcastFrameClock@37c176a, StandaloneCoroutine{Cancelling}@f4745b, AndroidUiDispatcher@ceb74f8]
+2026-04-24 15:51:58.795 23361-23361 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360118): avc: denied { search } for name="miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:58.795 23361-23361 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360119): avc: denied { search } for name="miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:58.795 23361-23361 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360120): avc: denied { search } for name="miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:58.795 23361-23361 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360121): avc: denied { search } for name="miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:58.795 23361-23361 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360122): avc: denied { search } for name="miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:58.795 23361-23361 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360123): avc: denied { search } for name="miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:58.795 23361-23361 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360124): avc: denied { getattr } for path="/data/miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:58.799 23361-23361 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360125): avc: denied { search } for name="miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:58.799 23361-23361 om.wuheng.smart         com.wuheng.smart                     W  type=1400 audit(0.0:360126): avc: denied { search } for name="miuilog" dev="dm-41" ino=384 scontext=u:r:untrusted_app:s0:c56,c257,c512,c768 tcontext=u:object_r:data_log_file:s0 tclass=dir permissive=0 app=com.wuheng.smart
+2026-04-24 15:51:58.800 23361-23361 OOMEventManagerFK       com.wuheng.smart                     W  Failed to mkdir /data/miuilog/stability/memleak/heapdump/
+2026-04-24 15:51:58.807  1930-5968  ActivityTaskManager     system_server                        W    Force finishing activity com.wuheng.smart/.MainActivity
+2026-04-24 15:51:58.818  4109-4306  DigestGenerator         com.miui.daemon                      D  digest=============com.wuheng.smartjava.lang.IllegalArgumentException: Navigation destination that matches request NavDeepLinkRequest{ uri=android-app://androidx.navigation/water } cannot XX found in the navigation graph NavGraph(XX) startDestination={Destination(XX) route=home}
+                                                                                                    at androidx.navigation.NavController.navigate(NavController.kt:XX)
+                                                                                                    at androidx.navigation.NavController.navigate(NavController.kt:XX)
+                                                                                                    at androidx.navigation.NavController.navigate$default(NavController.kt:XX)
+                                                                                                    at androidx.navigation.NavController.navigate(NavController.kt:XX)
+                                                                                                    at com.wuheng.smart.MainActivityKt$WuHengApp$$$.invoke(MainActivity.kt:XX)
+                                                                                                    at com.wuheng.smart.MainActivityKt$WuHengApp$$$.invoke(MainActivity.kt:XX)
+                                                                                                    at com.wuheng.smart.presentation.theme.WuHengComponentsKt$WuHengBottomNavigation$$$$$.invoke(WuHengComponents.kt:XX)
+                                                                                                    at com.wuheng.smart.presentation.theme.WuHengComponentsKt$WuHengBottomNavigation$$$$$.invoke(WuHengComponents.kt:XX)
+                                                                                                    at androidx.compose.foundation.ClickableKt$clickable$$gesture$$$.invoke-k-lQ(Clickable.kt:XX)
+                                                                                                    at androidx.compose.foundation.ClickableKt$clickable$$gesture$$$.invoke(Clickable.kt:XX)
+                                                                                                    at androidx.compose.foundation.gestures.TapGestureDetectorKt$detectTapAndPress$$.invokeSuspend(TapGestureDetector.kt:XX)
+                                                                                                    at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:XX)
+                                                                                                    at kotlinx.coroutines.DispatchedTaskKt.resume(DispatchedTask.kt:XX)
+                                                                                                    at kotlinx.coroutines.DispatchedTaskKt.dispatch(DispatchedTask.kt:XX)
+                                                                                                    at kotlinx.coroutines.CancellableContinuationImpl.dispatchResume(CancellableContinuationImpl.kt:XX)
+                                                                                                    at kotlinx.coroutines.CancellableContinuationImpl.resumeImpl(CancellableContinuationImpl.kt:XX)
+                                                                                                    at kotlinx.coroutines.CancellableContinuationImpl.resumeImpl$default(CancellableContinuationImpl.kt:XX)
+                                                                                                    at kotlinx.coroutines.CancellableContinuationImpl.resumeWith(CancellableContinuationImpl.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.SuspendingPointerInputFilter$PointerEventHandlerCoroutine.offerPointerEvent(SuspendingPointerInputFilter.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.SuspendingPointerInputFilter.dispatchPointerEvent(SuspendingPointerInputFilter.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.SuspendingPointerInputFilter.onPointerEvent-HpRuoY(SuspendingPointerInputFilter.kt:XX)
+                                                                                                    at androidx.compose.ui.node.BackwardsCompatNode.onPointerEvent-HpRuoY(BackwardsCompatNode.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.Node.dispatchMainEventPass(HitPathTracker.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.NodeParent.dispatchMainEventPass(HitPathTracker.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.HitPathTracker.dispatchChanges(HitPathTracker.kt:XX)
+                                                                                                    at androidx.compose.ui.input.pointer.PointerInputEventProcessor.process-BIzXfog(PointerInputEventProcessor.kt:XX)
+                                                                                                    at androidx.compose.ui.platform.AndroidComposeView.sendMotionEvent-iAsVTc(AndroidComposeView.android.kt:XX)
+                                                                                                    at androidx.compose.ui.platform.AndroidComposeView.handleMotionEvent-iAsVTc(AndroidComposeView.android.kt:XX)
+                                                                                                    at androidx.compose.ui.platform.AndroidComposeView.dispatchTouchEvent(AndroidComposeView.android.kt:XX)
+                                                                                                    at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:XX)
+                                                                                                    at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:XX)
+                                                                                                    at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:XX)
+                                                                                                    at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:XX)
+                                                                                                    at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:XX)
+                                                                                                    at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:XX)
+                                                                                                    at android.view.ViewGroup.dispatchTransformedTouchEvent(ViewGroup.java:XX)
+2026-04-24 15:51:58.824  4109-4306  MQSEventManager         com.miui.daemon                      D  send MSG_JUDGE_TRANSMISSION packageName com.wuheng.smart
+2026-04-24 15:51:58.824  4109-4306  JavaExceptionHandler    com.miui.daemon                      W  Too noisy! skip duplicate java exception report:com.wuheng.smart now=1777017118824 mLastReportTime=1777017112113 interval=60000
+2026-04-24 15:51:58.824  4109-4306  MQSEventManager         com.miui.daemon                      W  Too noisy! Bail the event:com.wuheng.smart type:1
+2026-04-24 15:51:58.835 23361-23361 Process                 com.wuheng.smart                     I  Process is going to kill itself!
+                                                                                                    java.lang.Exception
+                                                                                                    	at android.os.Process.killProcess(Process.java:1344)
+                                                                                                    	at com.android.internal.os.RuntimeInit$KillApplicationHandler.uncaughtException(RuntimeInit.java:174)
+                                                                                                    	at java.lang.ThreadGroup.uncaughtException(ThreadGroup.java:1073)
+                                                                                                    	at java.lang.ThreadGroup.uncaughtException(ThreadGroup.java:1068)
+                                                                                                    	at kotlinx.coroutines.internal.CoroutineExceptionHandlerImplKt.propagateExceptionFinalResort(CoroutineExceptionHandlerImpl.kt:35)
+                                                                                                    	at kotlinx.coroutines.internal.CoroutineExceptionHandlerImpl_commonKt.handleUncaughtCoroutineException(CoroutineExceptionHandlerImpl.common.kt:52)
+                                                                                                    	at kotlinx.coroutines.CoroutineExceptionHandlerKt.handleCoroutineException(CoroutineExceptionHandler.kt:32)
+                                                                                                    	at kotlinx.coroutines.StandaloneCoroutine.handleJobException(Builders.common.kt:194)
+                                                                                                    	at kotlinx.coroutines.JobSupport.finalizeFinishingState(JobSupport.kt:230)
+                                                                                                    	at kotlinx.coroutines.JobSupport.tryMakeCompletingSlowPath(JobSupport.kt:909)
+                                                                                                    	at kotlinx.coroutines.JobSupport.tryMakeCompleting(JobSupport.kt:866)
+                                                                                                    	at kotlinx.coroutines.JobSupport.makeCompletingOnce$kotlinx_coroutines_core(JobSupport.kt:831)
+                                                                                                    	at kotlinx.coroutines.AbstractCoroutine.resumeWith(AbstractCoroutine.kt:100)
+                                                                                                    	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:46)
+                                                                                                    	at kotlinx.coroutines.DispatchedTask.run(DispatchedTask.kt:104)
+                                                                                                    	at androidx.compose.ui.platform.AndroidUiDispatcher.performTrampolineDispatch(AndroidUiDispatcher.android.kt:81)
+                                                                                                    	at androidx.compose.ui.platform.AndroidUiDispatcher.access$performTrampolineDispatch(AndroidUiDispatcher.android.kt:41)
+                                                                                                    	at androidx.compose.ui.platform.AndroidUiDispatcher$dispatchCallback$1.run(AndroidUiDispatcher.android.kt:57)
+                                                                                                    	at android.os.Handler.handleCallback(Handler.java:942)
+                                                                                                    	at android.os.Handler.dispatchMessage(Handler.java:99)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:211)
+                                                                                                    	at android.os.Looper.loop(Looper.java:300)
+                                                                                                    	at android.app.ActivityThread.main(ActivityThread.java:8503)
+                                                                                                    	at java.lang.reflect.Method.invoke(Native Method)
+                                                                                                    	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:561)
+                                                                                                    	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:954)
+2026-04-24 15:51:58.835 23361-23361 Process                 com.wuheng.smart                     I  Sending signal. PID: 23361 SIG: 9
+---------------------------- PROCESS ENDED (23361) for package com.wuheng.smart ----------------------------
+2026-04-24 15:51:58.903  1930-3046  WindowManager           system_server                        I  WIN DEATH: Window{8620a39 u0 com.wuheng.smart/com.wuheng.smart.MainActivity}
+2026-04-24 15:51:58.903  1930-3164  ActivityManager         system_server                        I  Process com.wuheng.smart (pid 23361) has died: fg  TOP 
+2026-04-24 15:51:58.903  1930-3046  InputManager-JNI        system_server                        W  Input channel object '8620a39 com.wuheng.smart/com.wuheng.smart.MainActivity (client)' was disposed without first being removed with the input manager!
+2026-04-24 15:51:58.915  5672-5672  AppLifecycleObserver    com.xiaomi.xmsf                      D  onReceive: com.wuheng.smart DESTROY
+2026-04-24 15:51:58.915  5672-5672  PkgUtils                com.xiaomi.xmsf                      D  getApplicationInfo packageName:com.wuheng.smart, flags:128 applicationInfo:ApplicationInfo{5a55fb9 com.wuheng.smart} needSecondSpace:false
+2026-04-24 15:51:58.934  2686-2736  A2dpLatencyMode         com.android.bluetooth                D  ForegroundInfo{mForegroundPackageName='com.miui.home', mForegroundUid=10124, mForegroundPid=2383, mLastForegroundPackageName='com.wuheng.smart', mLastForegroundUid=10312, mLastForegroundPid=23361, mMultiWindowForegroundPackageName='com.miui.home', mMultiWindowForegroundUid=10124, mFlags=0}
+2026-04-24 15:51:58.934  2383-17517 AppObserver             com.miui.home                        D  ForegroundInfo{mForegroundPackageName='com.miui.home', mForegroundUid=10124, mForegroundPid=2383, mLastForegroundPackageName='com.wuheng.smart', mLastForegroundUid=10312, mLastForegroundPid=23361, mMultiWindowForegroundPackageName='com.miui.home', mMultiWindowForegroundUid=10124, mFlags=0}
+2026-04-24 15:51:58.934  5548-29081 GST                     com.xiaomi.joyose                    I  forePkg: com.miui.home, preForePkg: com.wuheng.smart
+2026-04-24 15:51:58.935  5516-6771  PerfEngineController    com.miui.powerkeeper                 D  ForegroundInfo{mForegroundPackageName='com.miui.home', mForegroundUid=10124, mForegroundPid=2383, mLastForegroundPackageName='com.wuheng.smart', mLastForegroundUid=10312, mLastForegroundPid=23361, mMultiWindowForegroundPackageName='com.miui.home', mMultiWindowForegroundUid=10124, mFlags=0}
+2026-04-24 15:51:58.935  4360-8044  ProcessMonitor          com.miui.securitycenter.remote       I  onForegroundInfoChanged: ForegroundInfo{mForegroundPackageName='com.miui.home', mForegroundUid=10124, mForegroundPid=2383, mLastForegroundPackageName='com.wuheng.smart', mLastForegroundUid=10312, mLastForegroundPid=23361, mMultiWindowForegroundPackageName='com.miui.home', mMultiWindowForegroundUid=10124, mFlags=0}
+2026-04-24 15:51:58.939  4360-8044  GameBoosterService      com.miui.securitycenter.remote       I  onForegroundInfoChanged: Cur=com.miui.home	 last=com.wuheng.smart
+2026-04-24 15:51:58.946  4360-8044  GameBoosterService      com.miui.securitycenter.remote       D  onGameStatusChange foreground:ForegroundInfo{mForegroundPackageName='com.miui.home', mForegroundUid=10124, mForegroundPid=2383, mLastForegroundPackageName='com.wuheng.smart', mLastForegroundUid=10312, mLastForegroundPid=23361, mMultiWindowForegroundPackageName='com.miui.home', mMultiWindowForegroundUid=10124, mFlags=0}
+2026-04-24 15:51:58.950  4360-8044  BeautyService           com.miui.securitycenter.remote       I  onForegroundInfoChanged: Cur=com.miui.home	 last=com.wuheng.smart
+2026-04-24 15:51:58.956  1930-2008  WindowManager           system_server                        W  Failed to deliver inset state change to w=Window{8620a39 u0 com.wuheng.smart/com.wuheng.smart.MainActivity EXITING}
+                                                                                                    android.os.DeadObjectException
+                                                                                                    	at android.os.BinderProxy.transactNative(Native Method)
+                                                                                                    	at android.os.BinderProxy.transact(BinderProxy.java:643)
+                                                                                                    	at android.view.IWindow$Stub$Proxy.insetsControlChanged(IWindow.java:569)
+                                                                                                    	at com.android.server.wm.WindowState.notifyInsetsControlChanged(WindowState.java:4490)
+                                                                                                    	at com.android.server.wm.InsetsStateController.lambda$notifyPendingInsetsControlChanged$5$com-android-server-wm-InsetsStateController(InsetsStateController.java:348)
+                                                                                                    	at com.android.server.wm.InsetsStateController$$ExternalSyntheticLambda4.run(Unknown Source:2)
+                                                                                                    	at com.android.server.wm.WindowAnimator.executeAfterPrepareSurfacesRunnables(WindowAnimator.java:351)
+                                                                                                    	at com.android.server.wm.WindowAnimator.animate(WindowAnimator.java:232)
+                                                                                                    	at com.android.server.wm.WindowAnimator.lambda$new$1$com-android-server-wm-WindowAnimator(WindowAnimator.java:106)
+                                                                                                    	at com.android.server.wm.WindowAnimator$$ExternalSyntheticLambda1.doFrame(Unknown Source:2)
+                                                                                                    	at android.view.Choreographer$CallbackRecord.run(Choreographer.java:1503)
+                                                                                                    	at android.view.Choreographer$CallbackRecord.run(Choreographer.java:1513)
+                                                                                                    	at android.view.Choreographer.doCallbacks(Choreographer.java:1128)
+                                                                                                    	at android.view.Choreographer.doFrame(Choreographer.java:1037)
+                                                                                                    	at android.view.Choreographer$FrameDisplayEventReceiver.run(Choreographer.java:1481)
+                                                                                                    	at android.os.Handler.handleCallback(Handler.java:942)
+                                                                                                    	at android.os.Handler.dispatchMessage(Handler.java:99)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:211)
+                                                                                                    	at android.os.Looper.loop(Looper.java:300)
+                                                                                                    	at android.os.HandlerThread.run(HandlerThread.java:67)
+                                                                                                    	at com.android.server.ServiceThread.run(ServiceThread.java:46)
+2026-04-24 15:51:58.983  1930-2008  WindowManager           system_server                        W  Exception thrown during dispatchAppVisibility Window{8620a39 u0 com.wuheng.smart/com.wuheng.smart.MainActivity EXITING}
+                                                                                                    android.os.DeadObjectException
+                                                                                                    	at android.os.BinderProxy.transactNative(Native Method)
+                                                                                                    	at android.os.BinderProxy.transact(BinderProxy.java:643)
+                                                                                                    	at android.view.IWindow$Stub$Proxy.dispatchAppVisibility(IWindow.java:632)
+                                                                                                    	at com.android.server.wm.WindowState.sendAppVisibilityToClients(WindowState.java:3844)
+                                                                                                    	at com.android.server.wm.WindowContainer.sendAppVisibilityToClients(WindowContainer.java:1298)
+                                                                                                    	at com.android.server.wm.WindowToken.setClientVisible(WindowToken.java:419)
+                                                                                                    	at com.android.server.wm.ActivityRecord.setClientVisible(ActivityRecord.java:7728)
+                                                                                                    	at com.android.server.wm.ActivityRecord.onAnimationFinished(ActivityRecord.java:8644)
+                                                                                                    	at com.android.server.wm.ActivityRecord.postApplyAnimation(ActivityRecord.java:6206)
+                                                                                                    	at com.android.server.wm.ActivityRecord.commitVisibility(ActivityRecord.java:6178)
+                                                                                                    	at com.android.server.wm.ActivityRecord.commitVisibility(ActivityRecord.java:6182)
+                                                                                                    	at com.android.server.wm.AppTransitionController.handleClosingApps(AppTransitionController.java:1207)
+                                                                                                    	at com.android.server.wm.AppTransitionController.handleAppTransitionReady(AppTransitionController.java:295)
+                                                                                                    	at com.android.server.wm.RootWindowContainer.checkAppTransitionReady(RootWindowContainer.java:1070)
+                                                                                                    	at com.android.server.wm.RootWindowContainer.performSurfacePlacementNoTrace(RootWindowContainer.java:937)
+                                                                                                    	at com.android.server.wm.RootWindowContainer.performSurfacePlacement(RootWindowContainer.java:877)
+                                                                                                    	at com.android.server.wm.WindowSurfacePlacer.performSurfacePlacementLoop(WindowSurfacePlacer.java:199)
+                                                                                                    	at com.android.server.wm.WindowSurfacePlacer.performSurfacePlacement(WindowSurfacePlacer.java:148)
+                                                                                                    	at com.android.server.wm.WindowSurfacePlacer.performSurfacePlacement(WindowSurfacePlacer.java:137)
+                                                                                                    	at com.android.server.wm.WindowSurfacePlacer$Traverser.run(WindowSurfacePlacer.java:79)
+                                                                                                    	at android.os.Handler.handleCallback(Handler.java:942)
+                                                                                                    	at android.os.Handler.dispatchMessage(Handler.java:99)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:211)
+                                                                                                    	at android.os.Looper.loop(Looper.java:300)
+                                                                                                    	at android.os.HandlerThread.run(HandlerThread.java:67)
+                                                                                                    	at com.android.server.ServiceThread.run(ServiceThread.java:46)
+2026-04-24 15:51:59.012  2383-3643  ActivityManagerWrapper  com.miui.home                        E  getRecentTasks: mainTaskId=1927   userId=0   windowMode=1   baseIntent=Intent { act=android.intent.action.MAIN flag=270532608 cmp=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} }
+2026-04-24 15:51:59.057   648-717   ThirdAppAssistant       com.miui.thirdappassistant           I  ExceptionManager match exception type failed for com.wuheng.smart
+2026-04-24 15:51:59.058  2383-3643  ActivityManagerWrapper  com.miui.home                        E  getRecentTasks: mainTaskId=1927   userId=0   windowMode=1   baseIntent=Intent { act=android.intent.action.MAIN flag=270532608 cmp=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} }
+2026-04-24 15:51:59.309  1930-2007  ActivityTaskManager     system_server                        W  Activity top resumed state loss timeout for ActivityRecord{eefc7a5 u0 com.wuheng.smart/.MainActivity} t-1 f}}

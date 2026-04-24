@@ -1,6 +1,5 @@
 package com.wuheng.smart;
 
-import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import androidx.activity.ComponentActivity;
@@ -9,8 +8,6 @@ import androidx.compose.runtime.Composable;
 import androidx.compose.ui.Modifier;
 import com.wuheng.smart.data.network.AuthEvent;
 import com.wuheng.smart.data.network.AuthEventManager;
-import com.wuheng.smart.navigation.BottomNavItem;
-import com.wuheng.smart.navigation.NavigationActions;
 import com.wuheng.smart.navigation.NavigationRoutes;
 import com.wuheng.smart.performance.StartupTimer;
 import dagger.hilt.android.AndroidEntryPoint;

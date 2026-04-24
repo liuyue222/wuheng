@@ -1,6 +1,5 @@
 package com.wuheng.smart
 
-import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -15,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -26,8 +24,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.wuheng.smart.data.network.AuthEvent
 import com.wuheng.smart.data.network.AuthEventManager
-import com.wuheng.smart.navigation.BottomNavItem
-import com.wuheng.smart.navigation.NavigationActions
 import com.wuheng.smart.navigation.NavigationRoutes
 import com.wuheng.smart.navigation.NavGraph
 import com.wuheng.smart.navigation.bottomNavRoutes
@@ -95,35 +91,33 @@ class MainActivity : ComponentActivity() {
 
 /**
  * 带主题和语言的应用主 Composable
+ *
+ * 注意：ViewModel必须在原始Activity Context中获取，不能在CompositionLocalProvider修改后的Context中获取
  */
 @Composable
-private fun WuHengAppWithThemeAndLanguage(
-    viewModel: MainViewModel = hiltViewModel()
-) {
+private fun WuHengAppWithThemeAndLanguage() {
+    // 在原始Activity Context中获取ViewModel（必须在任何CompositionLocalProvider之前）
+    val viewModel: MainViewModel = hiltViewModel()
+
     // 获取主题设置
     val darkMode by viewModel.darkMode.collectAsStateWithLifecycle()
     val systemTheme by viewModel.systemTheme.collectAsStateWithLifecycle()
-
-    // 获取语言设置
     val language by viewModel.language.collectAsStateWithLifecycle()
 
-    // 应用语言设置
-    val context = LocalContext.current
-    val configuration = Configuration(context.resources.configuration)
-    configuration.setLocale(Locale(language))
-    val localizedContext = context.createConfigurationContext(configuration)
-
-    CompositionLocalProvider(LocalContext provides localizedContext) {
-        WuHengTheme(
-            darkTheme = darkMode,
-            useSystemTheme = systemTheme
+    // 应用主题
+    WuHengTheme(
+        darkTheme = darkMode,
+        useSystemTheme = systemTheme
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
         ) {
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.background
-            ) {
-                WuHengApp()
-            }
+            // 应用语言设置，但确保NavGraph在原始Context中运行
+            WuHengApp(
+                viewModel = viewModel,
+                language = language
+            )
         }
     }
 }
@@ -136,11 +130,15 @@ private fun WuHengAppWithThemeAndLanguage(
  * - 底部导航栏 (仅在主Tab页面显示)
  * - 登录状态管理
  * - 认证事件监听
+ *
+ * @param viewModel MainViewModel实例，由父组件传入以确保在正确的Context中创建
+ * @param language 当前语言设置，用于应用本地化
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WuHengApp(
-    viewModel: MainViewModel = hiltViewModel()
+    viewModel: MainViewModel,
+    language: String
 ) {
     val navController = rememberNavController()
 
@@ -186,6 +184,14 @@ fun WuHengApp(
         }
     }
 
+    // 应用语言设置 - 创建本地化上下文
+    val context = LocalContext.current
+    val configuration = Configuration(context.resources.configuration)
+    configuration.setLocale(Locale(language))
+    val localizedContext = context.createConfigurationContext(configuration)
+
+    // 关键修复：Scaffold和NavGraph在原始Activity Context中执行
+    // 只有底部导航栏和内容区域使用本地化上下文
     Scaffold(
         bottomBar = {
             // 仅在主Tab页面显示底部导航栏
@@ -199,32 +205,37 @@ fun WuHengApp(
                     else -> 0
                 }
 
-                WuHengBottomNavigation(
-                    selectedItem = selectedIndex,
-                    onItemSelected = { index ->
-                        val route = when (index) {
-                            0 -> NavigationRoutes.HOME
-                            1 -> NavigationRoutes.CLIMATE
-                            2 -> NavigationRoutes.WATER
-                            3 -> NavigationRoutes.PROFILE
-                            else -> NavigationRoutes.HOME
-                        }
-                        navController.navigate(route) {
-                            // 弹出到起始目的地，避免堆栈累积
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
+                // 使用CompositionLocalProvider包装底部导航栏，应用语言设置
+                CompositionLocalProvider(LocalContext provides localizedContext) {
+                    WuHengBottomNavigation(
+                        selectedItem = selectedIndex,
+                        onItemSelected = { index ->
+                            val route = when (index) {
+                                0 -> NavigationRoutes.HOME
+                                1 -> NavigationRoutes.CLIMATE
+                                2 -> NavigationRoutes.WATER
+                                3 -> NavigationRoutes.PROFILE
+                                else -> NavigationRoutes.HOME
                             }
-                            // 避免重复导航到同一页面
-                            launchSingleTop = true
-                            // 恢复之前保存的状态
-                            restoreState = true
+                            navController.navigate(route) {
+                                // 弹出到起始目的地，避免堆栈累积
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                // 避免重复导航到同一页面
+                                launchSingleTop = true
+                                // 恢复之前保存的状态
+                                restoreState = true
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
+        // NavGraph在原始Activity Context中执行，确保hiltViewModel()能正确创建ViewModel
+        // 注意：这里不使用CompositionLocalProvider，保持原始Context
         NavGraph(
             navController = navController,
             modifier = Modifier.padding(innerPadding),

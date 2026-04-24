@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.wuheng.smart.presentation.base.UiDataState
 import com.wuheng.smart.presentation.components.ErrorRetryView
 import com.wuheng.smart.presentation.components.LoadingIndicator
 import com.wuheng.smart.presentation.components.ResponsiveContainer
@@ -30,14 +31,17 @@ fun WaterScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val sterilizationState by viewModel.sterilizationState.collectAsStateWithLifecycle()
+    val filterReplaceState by viewModel.filterReplaceState.collectAsStateWithLifecycle()
 
     // 弹窗状态
     var showSterilizationDialog by remember { mutableStateOf(false) }
+    var showFilterReplaceDialog by remember { mutableStateOf(false) }
+    var showSuccessSnackbar by remember { mutableStateOf(false) }
 
     // 处理杀菌预约结果
     LaunchedEffect(sterilizationState) {
         when (sterilizationState) {
-            is com.wuheng.smart.presentation.base.UiDataState.Success -> {
+            is UiDataState.Success -> {
                 showSterilizationDialog = false
                 viewModel.resetSterilizationState()
             }
@@ -45,27 +49,108 @@ fun WaterScreen(
         }
     }
 
-    WaterScreenContent(
-        uiState = uiState,
-        onHotWaterModeSelected = { viewModel.onHotWaterModeSelected(it) },
-        onDurationClick = onNavigateToDurationPicker,
-        onSterilizationEdit = { showSterilizationDialog = true },
-        onFilterReplaceClick = onNavigateToFilterReplace,
-        onRefresh = { viewModel.refreshData() }
-    )
+    // 处理滤芯预约结果
+    LaunchedEffect(filterReplaceState) {
+        when (filterReplaceState) {
+            is UiDataState.Success -> {
+                showFilterReplaceDialog = false
+                showSuccessSnackbar = true
+                viewModel.resetFilterReplaceState()
+            }
+            else -> {}
+        }
+    }
+
+    // 成功提示 Snackbar
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(showSuccessSnackbar) {
+        if (showSuccessSnackbar) {
+            snackbarHostState.showSnackbar(
+                message = "滤芯更换预约成功",
+                duration = SnackbarDuration.Short
+            )
+            showSuccessSnackbar = false
+        }
+    }
+
+    // 使用remember缓存回调函数，避免每次重组都创建新的lambda导致重组闪烁
+    val onHotWaterModeSelected by remember(viewModel) {
+        mutableStateOf<(HotWaterMode) -> Unit>({ mode ->
+            viewModel.onHotWaterModeSelected(mode)
+        })
+    }
+
+    val onSterilizationEdit by remember { mutableStateOf<() -> Unit>({ showSterilizationDialog = true }) }
+    val onFilterReplaceClick by remember { mutableStateOf<() -> Unit>({ showFilterReplaceDialog = true }) }
+    val onRefresh by remember(viewModel) {
+        mutableStateOf<() -> Unit>({ viewModel.refreshData() })
+    }
+
+    val onConfirmSterilization by remember(viewModel) {
+        mutableStateOf<(Int, Int, Int) -> Unit>({ dayOfWeek, hour, minute ->
+            viewModel.updateSterilizationSchedule(dayOfWeek, hour, minute)
+        })
+    }
+
+    val onDismissSterilization by remember(viewModel) {
+        mutableStateOf<() -> Unit>({
+            showSterilizationDialog = false
+            viewModel.resetSterilizationState()
+        })
+    }
+
+    val onConfirmFilterReplace by remember(viewModel) {
+        mutableStateOf<(String, String, String, String) -> Unit>({ filterId, contactName, contactPhone, appointmentDate ->
+            viewModel.bookFilterReplaceWithState(
+                filterId = filterId,
+                contactName = contactName,
+                contactPhone = contactPhone,
+                appointmentDate = appointmentDate
+            )
+        })
+    }
+
+    val onDismissFilterReplace by remember(viewModel) {
+        mutableStateOf<() -> Unit>({
+            showFilterReplaceDialog = false
+            viewModel.resetFilterReplaceState()
+        })
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues)) {
+            WaterScreenContent(
+                uiState = uiState,
+                onHotWaterModeSelected = onHotWaterModeSelected,
+                onDurationClick = onNavigateToDurationPicker,
+                onSterilizationEdit = onSterilizationEdit,
+                onFilterReplaceClick = onFilterReplaceClick,
+                onRefresh = onRefresh
+            )
+        }
+    }
 
     // 热力杀菌时间选择弹窗
     if (showSterilizationDialog) {
         SterilizationTimePickerDialog(
             currentSchedule = uiState.sterilizationSchedule,
             sterilizationState = sterilizationState,
-            onConfirm = { dayOfWeek, hour, minute ->
-                viewModel.updateSterilizationSchedule(dayOfWeek, hour, minute)
-            },
-            onDismiss = {
-                showSterilizationDialog = false
-                viewModel.resetSterilizationState()
-            }
+            onConfirm = onConfirmSterilization,
+            onDismiss = onDismissSterilization
+        )
+    }
+
+    // 滤芯预约更换弹窗
+    if (showFilterReplaceDialog) {
+        FilterReplaceDialog(
+            filters = uiState.filters,
+            filterReplaceState = filterReplaceState,
+            onConfirm = onConfirmFilterReplace,
+            onDismiss = onDismissFilterReplace
         )
     }
 }

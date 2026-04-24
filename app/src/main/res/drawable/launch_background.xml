@@ -4,11 +4,22 @@
     <!-- 背景色 -->
     <item android:drawable="@color/splash_background" />
 
-    <!-- 启动图标（居中） -->
+    <!-- 启动图标（居中）- 使用vector drawable避免bitmap src问题 -->
     <item
         android:width="120dp"
         android:height="120dp"
         android:gravity="center">
-        <bitmap android:src="@mipmap/ic_launcher" />
+        <vector xmlns:android="http://schemas.android.com/apk/res/android"
+            android:width="120dp"
+            android:height="120dp"
+            android:viewportWidth="288"
+            android:viewportHeight="288">
+            <path
+                android:fillColor="#FF2196F3"
+                android:pathData="M144,80C108.7,80 80,108.7 80,144C80,179.3 108.7,208 144,208C179.3,208 208,179.3 208,144C208,108.7 179.3,80 144,80ZM144,192C117.5,192 96,170.5 96,144C96,117.5 117.5,96 144,96C170.5,96 192,117.5 192,144C192,170.5 170.5,192 144,192Z" />
+            <path
+                android:fillColor="#FF2196F3"
+                android:pathData="M144,112C126.3,112 112,126.3 112,144C112,161.7 126.3,176 144,176C161.7,176 176,161.7 176,144C176,126.3 161.7,112 144,112ZM144,160C135.2,160 128,152.8 128,144C128,135.2 135.2,128 144,128C152.8,128 160,135.2 160,144C160,152.8 152.8,160 144,160Z" />
+        </vector>
     </item>
 </layer-list>

@@ -10,11 +10,30 @@ INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:100:9-108:20
 		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:103:13-37
 	android:name
 		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:101:13-62
+provider#androidx.startup.InitializationProvider
+INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:159:9-180:20
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Administrator\.gradle\caches\transforms-3\8c7da597eeb784e13365372e106d25ab\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Administrator\.gradle\caches\transforms-3\8c7da597eeb784e13365372e106d25ab\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Administrator\.gradle\caches\transforms-3\72aa82521bc5c4dbf3cff25dd535d8d0\transformed\jetified-lifecycle-process-2.6.1\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Administrator\.gradle\caches\transforms-3\72aa82521bc5c4dbf3cff25dd535d8d0\transformed\jetified-lifecycle-process-2.6.1\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Administrator\.gradle\caches\transforms-3\86363e878ba9597ad09d8db7c6fba14e\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Administrator\.gradle\caches\transforms-3\86363e878ba9597ad09d8db7c6fba14e\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Administrator\.gradle\caches\transforms-3\80c3f02fd34b790691a050c52c47f530\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Administrator\.gradle\caches\transforms-3\80c3f02fd34b790691a050c52c47f530\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
+	tools:node
+		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:163:13-31
+	android:authorities
+		INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml
+		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:161:13-68
+	android:exported
+		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:162:13-37
+	android:name
+		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:160:13-67
 manifest
-ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-157:12
-INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-157:12
-INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-157:12
-INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-157:12
+ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-184:12
+INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-184:12
+INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-184:12
+INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-184:12
 MERGED from [io.coil-kt:coil-compose:2.4.0] C:\Users\Administrator\.gradle\caches\transforms-3\c24eae8578c6abe0957b69e950259fc8\transformed\jetified-coil-compose-2.4.0\AndroidManifest.xml:2:1-7:12
 MERGED from [io.coil-kt:coil-svg:2.4.0] C:\Users\Administrator\.gradle\caches\transforms-3\d85f1456108e2b96bb341f713c242575\transformed\jetified-coil-svg-2.4.0\AndroidManifest.xml:2:1-7:12
 MERGED from [io.coil-kt:coil-gif:2.4.0] C:\Users\Administrator\.gradle\caches\transforms-3\7528d08ad1e2f3b4259d2cbb9542e26b\transformed\jetified-coil-gif-2.4.0\AndroidManifest.xml:2:1-7:12
@@ -97,22 +116,22 @@ MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\Administrator\.g
 MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\Administrator\.gradle\caches\transforms-3\567cf21385dc0ad1fb739798af9e8ceb\transformed\core-runtime-2.2.0\AndroidManifest.xml:17:1-22:12
 MERGED from [com.google.dagger:dagger-lint-aar:2.44] C:\Users\Administrator\.gradle\caches\transforms-3\0e60727adbb8aa87022f58ffbaee399a\transformed\jetified-dagger-lint-aar-2.44\AndroidManifest.xml:16:1-19:12
 MERGED from [com.caverock:androidsvg-aar:1.4] C:\Users\Administrator\.gradle\caches\transforms-3\a8dd81af5818611ab352a8de3b67f415\transformed\jetified-androidsvg-aar-1.4\AndroidManifest.xml:2:1-11:12
-INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-157:12
-INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-157:12
-INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-157:12
+INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-184:12
+INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-184:12
+INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-184:12
 	package
 		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:17:5-31
 		INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml
 		INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml
 	android:versionName
 		INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml
-		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-157:12
+		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-184:12
 		INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml
 	xmlns:tools
 		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:16:5-51
 	android:versionCode
 		INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml
-		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-157:12
+		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:1-184:12
 		INJECTED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml
 	xmlns:android
 		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:15:11-69
@@ -159,7 +178,7 @@ ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:48:5-50:36
 	android:name
 		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:49:9-57
 application
-ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:52:5-155:19
+ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:52:5-182:19
 MERGED from [com.google.android.gms:play-services-location:21.0.1] C:\Users\Administrator\.gradle\caches\transforms-3\fe0f8741b2de0d8230d697a961ba4c76\transformed\jetified-play-services-location-21.0.1\AndroidManifest.xml:7:5-20
 MERGED from [com.google.android.gms:play-services-location:21.0.1] C:\Users\Administrator\.gradle\caches\transforms-3\fe0f8741b2de0d8230d697a961ba4c76\transformed\jetified-play-services-location-21.0.1\AndroidManifest.xml:7:5-20
 MERGED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\Administrator\.gradle\caches\transforms-3\ca3154c96cd6d49446711c9849dd5c24\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:19:5-23:19
@@ -424,6 +443,30 @@ ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:105:13-107:54
 		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:107:17-51
 	android:name
 		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:106:17-67
+meta-data#com.wuheng.smart.initializer.TimberInitializer
+ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:165:13-167:52
+	android:value
+		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:167:17-49
+	android:name
+		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:166:17-78
+meta-data#com.wuheng.smart.initializer.LocationSdkInitializer
+ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:169:13-171:52
+	android:value
+		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:171:17-49
+	android:name
+		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:170:17-83
+meta-data#com.wuheng.smart.initializer.AnalyticsInitializer
+ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:173:13-175:52
+	android:value
+		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:175:17-49
+	android:name
+		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:174:17-81
+meta-data#com.wuheng.smart.initializer.PushInitializer
+ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:177:13-179:52
+	android:value
+		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:179:17-49
+	android:name
+		ADDED from D:\AndroidDev\WuHeng\app\src\main\AndroidManifest.xml:178:17-76
 activity#com.google.android.gms.common.api.GoogleApiActivity
 ADDED from [com.google.android.gms:play-services-base:18.1.0] C:\Users\Administrator\.gradle\caches\transforms-3\ca3154c96cd6d49446711c9849dd5c24\transformed\jetified-play-services-base-18.1.0\AndroidManifest.xml:20:9-22:45
 	android:exported
@@ -444,22 +487,6 @@ ADDED from [androidx.compose.ui:ui-test-manifest:1.4.3] C:\Users\Administrator\.
 		ADDED from [androidx.compose.ui:ui-test-manifest:1.4.3] C:\Users\Administrator\.gradle\caches\transforms-3\e98e00a494b23a3a26c07faf9dc32bd1\transformed\jetified-ui-test-manifest-1.4.3\AndroidManifest.xml:25:13-36
 	android:name
 		ADDED from [androidx.compose.ui:ui-test-manifest:1.4.3] C:\Users\Administrator\.gradle\caches\transforms-3\e98e00a494b23a3a26c07faf9dc32bd1\transformed\jetified-ui-test-manifest-1.4.3\AndroidManifest.xml:24:13-63
-provider#androidx.startup.InitializationProvider
-ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Administrator\.gradle\caches\transforms-3\8c7da597eeb784e13365372e106d25ab\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
-MERGED from [androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Administrator\.gradle\caches\transforms-3\72aa82521bc5c4dbf3cff25dd535d8d0\transformed\jetified-lifecycle-process-2.6.1\AndroidManifest.xml:24:9-32:20
-MERGED from [androidx.lifecycle:lifecycle-process:2.6.1] C:\Users\Administrator\.gradle\caches\transforms-3\72aa82521bc5c4dbf3cff25dd535d8d0\transformed\jetified-lifecycle-process-2.6.1\AndroidManifest.xml:24:9-32:20
-MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Administrator\.gradle\caches\transforms-3\86363e878ba9597ad09d8db7c6fba14e\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:24:9-32:20
-MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\Administrator\.gradle\caches\transforms-3\86363e878ba9597ad09d8db7c6fba14e\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:24:9-32:20
-MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Administrator\.gradle\caches\transforms-3\80c3f02fd34b790691a050c52c47f530\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
-MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\Administrator\.gradle\caches\transforms-3\80c3f02fd34b790691a050c52c47f530\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
-	tools:node
-		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Administrator\.gradle\caches\transforms-3\8c7da597eeb784e13365372e106d25ab\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:28:13-31
-	android:authorities
-		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Administrator\.gradle\caches\transforms-3\8c7da597eeb784e13365372e106d25ab\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:26:13-68
-	android:exported
-		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Administrator\.gradle\caches\transforms-3\8c7da597eeb784e13365372e106d25ab\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:27:13-37
-	android:name
-		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Administrator\.gradle\caches\transforms-3\8c7da597eeb784e13365372e106d25ab\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:25:13-67
 meta-data#androidx.emoji2.text.EmojiCompatInitializer
 ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\Administrator\.gradle\caches\transforms-3\8c7da597eeb784e13365372e106d25ab\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
 	android:value

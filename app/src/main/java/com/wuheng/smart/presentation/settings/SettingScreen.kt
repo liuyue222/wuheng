@@ -50,6 +50,8 @@ fun SettingScreen(
     onNavigateToUserAgreement: () -> Unit = {},
     onNavigateToFeedback: () -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
+    onNavigateToChangePassword: () -> Unit = {},
+    onNavigateToCustomerService: () -> Unit = {},
     onLogout: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -81,6 +83,8 @@ fun SettingScreen(
         onNavigateToUserAgreement = onNavigateToUserAgreement,
         onNavigateToFeedback = onNavigateToFeedback,
         onNavigateToAbout = onNavigateToAbout,
+        onNavigateToChangePassword = onNavigateToChangePassword,
+        onNavigateToCustomerService = onNavigateToCustomerService,
         onLogout = onLogout,
         onPushNotificationChange = { viewModel.setPushNotificationEnabled(it) },
         onSoundChange = { viewModel.setSoundEnabled(it) },
@@ -103,6 +107,8 @@ fun SettingContent(
     onNavigateToUserAgreement: () -> Unit = {},
     onNavigateToFeedback: () -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
+    onNavigateToChangePassword: () -> Unit = {},
+    onNavigateToCustomerService: () -> Unit = {},
     onLogout: () -> Unit = {},
     onPushNotificationChange: (Boolean) -> Unit = {},
     onSoundChange: (Boolean) -> Unit = {},
@@ -168,7 +174,7 @@ fun SettingContent(
                     SettingItem(
                         icon = Icons.Filled.Lock,
                         title = "修改密码",
-                        onClick = { /* TODO: 导航到修改密码页面 */ }
+                        onClick = onNavigateToChangePassword
                     )
                 }
             }
@@ -254,7 +260,7 @@ fun SettingContent(
                     SettingItem(
                         icon = Icons.Filled.SupportAgent,
                         title = "联系客服",
-                        onClick = { /* TODO: 打开客服 */ }
+                        onClick = onNavigateToCustomerService
                     )
 
                     SettingItem(

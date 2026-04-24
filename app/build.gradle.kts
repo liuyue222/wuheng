@@ -222,3 +222,12 @@ kapt {
     // 增量注解处理
     useBuildCache = true
 }
+
+// JUnit 5 配置
+tasks.withType<Test> {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+        showStandardStreams = true
+    }
+}

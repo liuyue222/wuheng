@@ -13,8 +13,8 @@
 -->
 <network-security-config xmlns:android="http://schemas.android.com/apk/res/android">
     
-    <!-- 
-        基础安全配置 
+    <!--
+        基础安全配置
         生产环境必须禁用明文流量传输
     -->
     <base-config cleartextTrafficPermitted="false">
@@ -24,29 +24,6 @@
             <!-- 信任用户添加的CA证书（仅用于调试） -->
             <!-- <certificates src="user"/> -->
         </trust-anchors>
-        
-        <!-- 禁用旧版TLS版本 -->
-        <pin-set expiration="2030-01-01">
-            <!-- 
-                证书固定配置 (Certificate Pinning)
-                配置API服务器证书的SHA-256哈希值
-                
-                注意: 需要替换为实际的服务器证书哈希值
-                可使用以下命令获取证书哈希:
-                openssl s_client -connect api.wuheng.com:443 -servername api.wuheng.com < /dev/null 2>/dev/null | openssl x509 -in /dev/stdin -pubkey -noout | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | openssl enc -base64
-                
-                备用证书哈希（用于证书轮换）:
-                <pin digest="SHA-256">备用证书哈希值</pin>
-            -->
-            <!-- 示例哈希值，需要替换为实际值 -->
-            <!-- <pin digest="SHA-256">sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</pin> -->
-            
-            <!-- 证书固定失败后的备用配置 -->
-            <!-- <pin digest="SHA-256">sha256/BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=</pin> -->
-        </pin-set>
-        
-        <!-- 证书固定失败时是否允许连接（生产环境应设为false） -->
-        <cleartextTrafficPermitted>false</cleartextTrafficPermitted>
     </base-config>
     
     <!-- 
@@ -61,7 +38,7 @@
         </trust-anchors>
     </debug-overrides>
     
-    <!-- 
+    <!--
         特定域名配置
         为特定API服务器配置独立的安全策略
     -->
@@ -69,58 +46,43 @@
         <!-- 生产API服务器 -->
         <domain includeSubdomains="true">api.wuheng.com</domain>
         <domain includeSubdomains="true">wuheng.com</domain>
-        
-        <pin-set expiration="2030-01-01">
-            <!-- 主证书哈希 -->
-            <!-- <pin digest="SHA-256">sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</pin> -->
-            <!-- 备用证书哈希 -->
-            <!-- <pin digest="SHA-256">sha256/BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=</pin> -->
-        </pin-set>
-        
-        <!-- 证书固定失败时禁止连接 -->
-        <pin-set>
-            <!-- 配置后取消注释 -->
-            <!-- <pin digest="SHA-256">实际证书哈希值</pin> -->
-        </pin-set>
-        
+
         <trust-anchors>
             <certificates src="system"/>
         </trust-anchors>
     </domain-config>
     
-    <!-- 
+    <!--
         本地开发服务器配置 (仅开发环境使用)
         10.0.2.2: Android模拟器访问宿主机
         192.168.x.x: 局域网测试服务器
+        116.62.51.112: 五恒测试服务器
     -->
     <domain-config cleartextTrafficPermitted="true">
         <!-- Android模拟器宿主机 -->
-        <domain>10.0.2.2</domain>
+        <domain includeSubdomains="false">10.0.2.2</domain>
         <!-- 本地回环 -->
-        <domain>127.0.0.1</domain>
-        <domain>localhost</domain>
+        <domain includeSubdomains="false">127.0.0.1</domain>
+        <domain includeSubdomains="false">localhost</domain>
         <!-- 局域网测试服务器（根据实际情况调整） -->
-        <domain>192.168.1.100</domain>
-        <domain>192.168.0.100</domain>
-        
+        <domain includeSubdomains="false">192.168.1.100</domain>
+        <domain includeSubdomains="false">192.168.0.100</domain>
+        <!-- 五恒测试服务器 (HTTP明文通信) -->
+        <domain includeSubdomains="false">116.62.51.112</domain>
+
         <trust-anchors>
             <certificates src="system"/>
             <certificates src="user"/>
         </trust-anchors>
     </domain-config>
     
-    <!-- 
+    <!--
         MQTT服务器配置（如使用TLS）
         配置MQTT over TLS的安全连接
     -->
     <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="true">mqtt.wuheng.com</domain>
-        
-        <pin-set expiration="2030-01-01">
-            <!-- MQTT服务器证书哈希 -->
-            <!-- <pin digest="SHA-256">sha256/MQTT服务器证书哈希</pin> -->
-        </pin-set>
-        
+
         <trust-anchors>
             <certificates src="system"/>
         </trust-anchors>

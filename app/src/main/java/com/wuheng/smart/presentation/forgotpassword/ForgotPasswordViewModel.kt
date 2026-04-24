@@ -2,13 +2,16 @@ package com.wuheng.smart.presentation.forgotpassword
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.wuheng.smart.data.network.ApiResult
 import com.wuheng.smart.data.network.AppException
+import com.wuheng.smart.data.repository.UserRepository
 import com.wuheng.smart.presentation.base.UiDataState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -19,14 +22,11 @@ import javax.inject.Inject
  * - 验证验证码
  * - 重置密码
  *
- * @property resetState 重置密码状态流
- * @property validationError 验证错误信息流
+ * @property userRepository 用户数据仓库
  */
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
-    // TODO: 注入忘记密码相关的 UseCase 或 Repository
-    // private val forgotPasswordUseCase: ForgotPasswordUseCase,
-    // private val sendVerificationCodeUseCase: SendVerificationCodeUseCase
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     /**
@@ -54,14 +54,10 @@ class ForgotPasswordViewModel @Inject constructor(
                 return@launch
             }
 
-            // TODO: 调用发送验证码的 UseCase
-            // sendVerificationCodeUseCase(phone)
-            //     .onSuccess { }
-            //     .onFailure { error ->
-            //         _validationError.value = error.message
-            //     }
+            // TODO: 调用发送验证码的 API（如果后端有提供）
+            // 目前接口文档中忘记密码只需要 mobile 和 new_password
+            // 如有需要可在此处调用发送验证码接口
 
-            // 模拟发送成功
             _validationError.value = null
         }
     }
@@ -70,7 +66,7 @@ class ForgotPasswordViewModel @Inject constructor(
      * 重置密码
      *
      * @param phone 手机号
-     * @param code 验证码
+     * @param code 验证码（当前接口未使用，预留）
      * @param newPassword 新密码
      */
     fun resetPassword(phone: String, code: String, newPassword: String) {
@@ -83,26 +79,25 @@ class ForgotPasswordViewModel @Inject constructor(
             }
 
             _resetState.value = UiDataState.Loading
+            _validationError.value = null
 
-            // TODO: 调用重置密码的 UseCase
-            // forgotPasswordUseCase(phone, code, newPassword)
-            //     .onSuccess {
-            //         _resetState.value = UiDataState.Success(Unit)
-            //     }
-            //     .onFailure { error ->
-            //         _resetState.value = UiDataState.Error(error as AppException)
-            //     }
-
-            // 模拟网络请求
-            kotlinx.coroutines.delay(1500)
-
-            // 模拟成功（实际项目中应该调用真实的API）
-            _resetState.value = UiDataState.Success(Unit)
-
-            // 模拟错误情况（用于测试）
-            // _resetState.value = UiDataState.Error(
-            //     AppException.BusinessError(-1, "验证码错误或已过期")
-            // )
+            // 调用忘记密码 API
+            userRepository.forgotPassword(phone, newPassword)
+                .collect { result ->
+                    when (result) {
+                        is ApiResult.Success -> {
+                            Timber.d("Forgot password success: phone=$phone")
+                            _resetState.value = UiDataState.Success(Unit)
+                        }
+                        is ApiResult.Error -> {
+                            Timber.e("Forgot password failed: ${result.exception.message}")
+                            _resetState.value = UiDataState.Error(result.exception)
+                        }
+                        is ApiResult.Loading -> {
+                            // 已在前面设置为 Loading 状态
+                        }
+                    }
+                }
         }
     }
 

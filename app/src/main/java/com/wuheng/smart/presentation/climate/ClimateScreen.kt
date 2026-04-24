@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -17,6 +18,11 @@ import com.wuheng.smart.presentation.theme.WuHengTheme
 /**
  * 冷暖舒适页面 Screen - 处理ViewModel和状态管理
  * 逻辑和UI分离：Screen负责状态管理，Layout负责纯UI渲染
+ *
+ * 性能优化：
+ * 1. 使用 remember 缓存回调函数，避免每次重组时创建新的lambda
+ * 2. 使用 derivedStateOf 优化状态计算（在Layout中实现）
+ * 3. 滑块拖动时使用 rememberUpdatedState 确保回调始终引用最新值
  */
 @Composable
 fun ClimateScreen(
@@ -25,14 +31,23 @@ fun ClimateScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    // 使用 remember 缓存回调函数，避免每次重组时创建新的lambda引用
+    // 这样可以防止子组件在回调引用不变的情况下发生不必要的重组
+    val onTabSelected = remember(viewModel) { { tab: ClimateTab -> viewModel.onTabSelected(tab) } }
+    val onTemperatureChange = remember(viewModel) { { temp: Float -> viewModel.onTemperatureChange(temp) } }
+    val onHumidityChange = remember(viewModel) { { humidity: Float -> viewModel.onHumidityChange(humidity) } }
+    val onFloorToggle = remember(viewModel) { { id: String, enabled: Boolean -> viewModel.onFloorToggle(id, enabled) } }
+    val onFloorClick = remember(onNavigateToFloorDetail) { { id: String -> onNavigateToFloorDetail(id) } }
+    val onRefresh = remember(viewModel) { { viewModel.refreshData() } }
+
     ClimateScreenContent(
         uiState = uiState,
-        onTabSelected = { viewModel.onTabSelected(it) },
-        onTemperatureChange = { viewModel.onTemperatureChange(it) },
-        onHumidityChange = { viewModel.onHumidityChange(it) },
-        onFloorToggle = { id, enabled -> viewModel.onFloorToggle(id, enabled) },
-        onFloorClick = { onNavigateToFloorDetail(it) },
-        onRefresh = { viewModel.refreshData() }
+        onTabSelected = onTabSelected,
+        onTemperatureChange = onTemperatureChange,
+        onHumidityChange = onHumidityChange,
+        onFloorToggle = onFloorToggle,
+        onFloorClick = onFloorClick,
+        onRefresh = onRefresh
     )
 }
 

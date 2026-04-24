@@ -264,6 +264,14 @@ val text_temperature_decimal_size = 32.sp
  */
 val text_outdoor_temp_size = 40.sp
 
+// ==================== 行高定义 ====================
+
+/**
+ * 正文行高 - 22sp
+ * 用于：隐私协议、长文本内容
+ */
+val text_line_height_body = 22.sp
+
 // ==================== 组件尺寸 ====================
 
 /**

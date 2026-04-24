@@ -441,4 +441,5 @@ styleable StateListDrawableItem android_drawable
 xml backup_rules
 xml data_extraction_rules
 xml file_paths
+xml lint
 xml network_security_config

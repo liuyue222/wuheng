@@ -6,8 +6,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.*
@@ -24,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -105,6 +109,21 @@ private fun HotWaterCirculationCard(
     onModeSelected: (HotWaterMode) -> Unit,
     onDurationClick: () -> Unit
 ) {
+    // 使用remember缓存模式列表，避免每次重组都创建新的列表
+    val modes = remember {
+        listOf(
+            HotWaterMode.ALL_DAY to "全天循环",
+            HotWaterMode.TIMED to "定时循环",
+            HotWaterMode.TEMPORARY to "临时循环",
+            HotWaterMode.OFF to "关闭循环"
+        )
+    }
+
+    // 使用remember优化状态计算，只在currentMode变化时重新计算
+    val isTemporaryMode = remember(currentMode) {
+        currentMode == HotWaterMode.TEMPORARY
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -176,13 +195,6 @@ private fun HotWaterCirculationCard(
             Spacer(modifier = Modifier.height(16.dp))
 
             // 模式选择网格 - 2x2布局
-            val modes = listOf(
-                HotWaterMode.ALL_DAY to "全天循环",
-                HotWaterMode.TIMED to "定时循环",
-                HotWaterMode.TEMPORARY to "临时循环",
-                HotWaterMode.OFF to "关闭循环"
-            )
-
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 modes.chunked(2).forEach { rowModes ->
                     Row(
@@ -190,10 +202,16 @@ private fun HotWaterCirculationCard(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         rowModes.forEach { (mode, label) ->
+                            // 使用key来确保每个按钮的稳定性
+                            val isSelected = currentMode == mode
+                            // 缓存点击回调，避免每次重组都创建新的lambda
+                            val onClick by remember(onModeSelected, mode) {
+                                mutableStateOf<() -> Unit>({ onModeSelected(mode) })
+                            }
                             ModeButton(
                                 label = label,
-                                isSelected = currentMode == mode,
-                                onClick = { onModeSelected(mode) },
+                                isSelected = isSelected,
+                                onClick = onClick,
                                 modifier = Modifier.weight(1f)
                             )
                         }
@@ -202,7 +220,7 @@ private fun HotWaterCirculationCard(
             }
 
             // 临时运行时长（仅在临时循环模式显示）
-            if (currentMode == HotWaterMode.TEMPORARY) {
+            if (isTemporaryMode) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Row(
                     modifier = Modifier
@@ -651,4 +669,250 @@ private fun NumberPicker(
             Text("+", style = MaterialTheme.typography.headlineSmall)
         }
     }
+}
+
+// ==================== 滤芯预约更换弹窗 ====================
+
+/**
+ * 滤芯预约更换弹窗
+ *
+ * @param filters 滤芯列表
+ * @param filterReplaceState 预约状态
+ * @param onConfirm 确认回调 (filterId, contactName, contactPhone, appointmentDate)
+ * @param onDismiss 取消/关闭回调
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FilterReplaceDialog(
+    filters: List<FilterItem>,
+    filterReplaceState: com.wuheng.smart.presentation.base.UiDataState<Unit>,
+    onConfirm: (filterId: String, contactName: String, contactPhone: String, appointmentDate: String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var selectedFilterIndex by remember { mutableStateOf(0) }
+    var contactName by remember { mutableStateOf("") }
+    var contactPhone by remember { mutableStateOf("") }
+    var appointmentDate by remember { mutableStateOf("") }
+
+    // 表单验证
+    val isFormValid by remember(contactName, contactPhone, appointmentDate) {
+        mutableStateOf(
+            contactName.isNotBlank() &&
+            contactPhone.isNotBlank() &&
+            appointmentDate.isNotBlank()
+        )
+    }
+
+    AlertDialog(
+        onDismissRequest = {
+            if (filterReplaceState !is com.wuheng.smart.presentation.base.UiDataState.Loading) {
+                onDismiss()
+            }
+        },
+        title = {
+            Text(
+                text = "预约滤芯更换",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // 选择滤芯
+                Text(
+                    text = "选择滤芯",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondaryLight,
+                    fontWeight = FontWeight.Medium
+                )
+
+                if (filters.isNotEmpty()) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        filters.forEachIndexed { index, filter ->
+                            val isSelected = selectedFilterIndex == index
+                            val statusText = when (filter.status) {
+                                FilterUiStatus.NORMAL -> "正常"
+                                FilterUiStatus.WARNING -> "需更换"
+                                FilterUiStatus.EXPIRED -> "已过期"
+                            }
+                            val statusColor = when (filter.status) {
+                                FilterUiStatus.NORMAL -> SuccessGreen
+                                FilterUiStatus.WARNING -> WarningYellow
+                                FilterUiStatus.EXPIRED -> ErrorRed
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(
+                                        if (isSelected) PrimaryBlue.copy(alpha = 0.1f) else SurfaceLight
+                                    )
+                                    .border(
+                                        width = if (isSelected) 2.dp else 1.dp,
+                                        color = if (isSelected) PrimaryBlue else DividerLight,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                    .clickable { selectedFilterIndex = index }
+                                    .padding(12.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    RadioButton(
+                                        selected = isSelected,
+                                        onClick = { selectedFilterIndex = index },
+                                        colors = RadioButtonDefaults.colors(
+                                            selectedColor = PrimaryBlue,
+                                            unselectedColor = TextTertiaryLight
+                                        )
+                                    )
+                                    Text(
+                                        text = filter.name,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = TextPrimaryLight,
+                                        fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
+                                    )
+                                }
+                                Text(
+                                    text = statusText,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = statusColor,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    Text(
+                        text = "暂无滤芯信息",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondaryLight
+                    )
+                }
+
+                Divider(color = DividerLight)
+
+                // 联系人姓名
+                TextField(
+                    value = contactName,
+                    onValueChange = { contactName = it },
+                    label = { Text("联系人姓名") },
+                    placeholder = { Text("请输入联系人姓名") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = SurfaceLight,
+                        focusedIndicatorColor = PrimaryBlue,
+                        focusedLabelColor = PrimaryBlue
+                    ),
+                    enabled = filterReplaceState !is com.wuheng.smart.presentation.base.UiDataState.Loading
+                )
+
+                // 联系人电话
+                TextField(
+                    value = contactPhone,
+                    onValueChange = { contactPhone = it },
+                    label = { Text("联系人电话") },
+                    placeholder = { Text("请输入联系人电话") },
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = SurfaceLight,
+                        focusedIndicatorColor = PrimaryBlue,
+                        focusedLabelColor = PrimaryBlue
+                    ),
+                    enabled = filterReplaceState !is com.wuheng.smart.presentation.base.UiDataState.Loading
+                )
+
+                // 预约日期
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TextField(
+                        value = appointmentDate,
+                        onValueChange = { },
+                        label = { Text("预约日期") },
+                        placeholder = { Text("请选择预约日期 (yyyy-MM-dd)") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = SurfaceLight,
+                            focusedIndicatorColor = PrimaryBlue,
+                            focusedLabelColor = PrimaryBlue
+                        ),
+                        enabled = filterReplaceState !is com.wuheng.smart.presentation.base.UiDataState.Loading
+                    )
+                }
+
+                // 加载状态
+                if (filterReplaceState is com.wuheng.smart.presentation.base.UiDataState.Loading) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = PrimaryBlue,
+                            strokeWidth = 2.dp
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "提交中...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondaryLight
+                        )
+                    }
+                }
+
+                // 错误状态
+                if (filterReplaceState is com.wuheng.smart.presentation.base.UiDataState.Error) {
+                    Text(
+                        text = "预约失败，请检查网络后重试",
+                        color = ErrorRed,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    val selectedFilter = filters.getOrNull(selectedFilterIndex)
+                    if (selectedFilter != null && isFormValid) {
+                        // 使用索引+1作为filterId（因为FilterItem中没有id字段，需要从原始数据映射）
+                        onConfirm(
+                            (selectedFilterIndex + 1).toString(),
+                            contactName.trim(),
+                            contactPhone.trim(),
+                            appointmentDate
+                        )
+                    }
+                },
+                enabled = isFormValid &&
+                    filterReplaceState !is com.wuheng.smart.presentation.base.UiDataState.Loading,
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue)
+            ) {
+                Text("确认预约")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss,
+                enabled = filterReplaceState !is com.wuheng.smart.presentation.base.UiDataState.Loading
+            ) {
+                Text("取消")
+            }
+        }
+    )
 }

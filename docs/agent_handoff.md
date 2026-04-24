@@ -1347,6 +1347,35 @@ class MainDispatcherRule(
 
 ---
 
+## 🎨 UI设计更新记录 (2026-04-24)
+
+### 首页AQI数据展示美化
+
+**修改文件**: `app/src/main/java/com/wuheng/smart/presentation/home/HomeLayout.kt`
+
+**设计变更**:
+1. AQI数值字体增大：16sp → 36sp，Bold字重
+2. 新增AqiLevelBadge组件：圆角胶囊标签展示AQI等级
+3. 标签使用对应颜色的浅色背景（15%透明度）+ 深色文字（90%透明度）
+4. PM2.5和湿度改为水平排列，中间圆点分隔
+
+**新增组件**:
+- `AqiLevelBadge(aqi: Int)` - AQI等级标签组件
+- `getAqiBadgeColors(aqi: Int)` - 获取标签颜色组合
+
+**参考设计**: Apple Weather、小米天气
+
+**颜色方案**:
+| AQI范围 | 等级 | 颜色 |
+|---------|------|------|
+| <=50 | 优 | #52C41A (绿) |
+| <=100 | 良 | #95DE64 (浅绿) |
+| <=150 | 轻度 | #FFA940 (橙) |
+| <=200 | 中度 | #FF7875 (红) |
+| >200 | 重度 | #FF4D4F (深红) |
+
+---
+
 ## 🔄 文档更新记录
 
 | 日期 | 更新内容 | 更新者 |
@@ -1357,3 +1386,4 @@ class MainDispatcherRule(
 | 2026-04-23 | 添加功能完整性审查报告 | CodeReviewer |
 | 2026-04-23 | 添加测试修复报告 | 测试与调试 Agent |
 | 2026-04-23 | 添加编译修复报告 | Backend |
+| 2026-04-24 | 添加首页AQI展示美化 | 设计 Agent |

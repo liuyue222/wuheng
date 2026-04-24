@@ -12,6 +12,11 @@ public final class ClimateScreenKt {
     /**
      * 冷暖舒适页面 Screen - 处理ViewModel和状态管理
      * 逻辑和UI分离：Screen负责状态管理，Layout负责纯UI渲染
+     *
+     * 性能优化：
+     * 1. 使用 remember 缓存回调函数，避免每次重组时创建新的lambda
+     * 2. 使用 derivedStateOf 优化状态计算（在Layout中实现）
+     * 3. 滑块拖动时使用 rememberUpdatedState 确保回调始终引用最新值
      */
     @androidx.compose.runtime.Composable()
     public static final void ClimateScreen(@org.jetbrains.annotations.NotNull()

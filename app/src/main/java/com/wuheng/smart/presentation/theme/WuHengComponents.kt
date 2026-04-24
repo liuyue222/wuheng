@@ -80,13 +80,15 @@ fun WuHengBottomNavigation(selectedItem: Int, onItemSelected: (Int) -> Unit) {
                     selected = isSelected,
                     onClick = { onItemSelected(index) },
                     colors = NavigationBarItemDefaults.colors(
-                        // 核心优化：所有背景色都使用设计令牌中的透明色
+                        // 核心优化：所有背景色都使用完全透明
                         selectedIconColor = NavSelectedColor,
                         selectedTextColor = NavSelectedColor,
                         unselectedIconColor = NavUnselectedColor,
                         unselectedTextColor = NavUnselectedColor,
-                        indicatorColor = NavIndicatorColor  // 完全透明，无背景指示器
-                    )
+                        indicatorColor = Color.Transparent  // 强制完全透明，无背景指示器
+                    ),
+                    // 禁用默认选中指示器动画效果
+                    alwaysShowLabel = true
                 )
             }
         }

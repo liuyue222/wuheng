@@ -31,6 +31,11 @@ public final class ClimateLayoutKt {
     
     /**
      * 温度设定卡片 - 像素级还原设计图
+     *
+     * 性能优化：
+     * 1. 使用 remember 缓存本地滑块状态，避免拖动时触发父组件重组
+     * 2. 使用 interactionSource 监听滑块交互状态
+     * 3. 只有在滑块拖动结束时才触发 onTemperatureChange 回调
      */
     @androidx.compose.runtime.Composable()
     private static final void TemperatureSettingCard(float temperature, kotlin.jvm.functions.Function1<? super java.lang.Float, kotlin.Unit> onTemperatureChange) {
@@ -38,6 +43,11 @@ public final class ClimateLayoutKt {
     
     /**
      * 湿度设定卡片 - 像素级还原设计图
+     *
+     * 性能优化：
+     * 1. 使用 remember 缓存本地滑块状态，避免拖动时触发父组件重组
+     * 2. 使用 interactionSource 监听滑块交互状态
+     * 3. 只有在滑块拖动结束时才触发 onHumidityChange 回调
      */
     @androidx.compose.runtime.Composable()
     private static final void HumiditySettingCard(float humidity, kotlin.jvm.functions.Function1<? super java.lang.Float, kotlin.Unit> onHumidityChange) {

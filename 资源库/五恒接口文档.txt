@@ -2,8 +2,8 @@
 
 ## 📋 文档信息
 
-- **版本**: v1.0
-- **更新日期**: 2026-04-20
+- **版本**: v1.1
+- **更新日期**: 2026-04-24
 - **Base URL**: `http://116.62.51.112/wuheng_iot/index.php`
 - **接口测试地址**: `http://116.62.51.112/wuheng_iot/index.php/home/test/run`
 - **接口列表地址**: `http://116.62.51.112/wuheng_iot/index.php/home/test/apiList`
@@ -168,7 +168,27 @@ Authorization: Bearer {token}
 | old_password | string | 是 | 旧密码 |
 | new_password | string | 是 | 新密码（至少6位） |
 
-### 7. 绑定房屋
+### 7. 忘记密码
+- **URL**: `/home/user/forgotPassword`
+- **Method**: POST
+- **认证**: 否
+- **参数**:
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| mobile | string | 是 | 手机号 |
+| new_password | string | 是 | 新密码（至少6位） |
+
+- **响应示例**:
+```json
+{
+    "code": 200,
+    "msg": "密码重置成功",
+    "data": null
+}
+```
+
+### 8. 绑定房屋
 - **URL**: `/home/user/bindHouse`
 - **Method**: POST
 - **认证**: 是
@@ -702,13 +722,13 @@ Authorization: Bearer {token}
 
 | 模块 | 接口数量 | 测试状态 |
 |------|---------|---------|
-| 用户模块 | 8个 | ✅ 通过 |
+| 用户模块 | 9个 | ✅ 通过 |
 | 房屋模块 | 3个 | ✅ 通过 |
 | 设备模块 | 4个 | ✅ 通过 |
 | 场景模块 | 3个 | ✅ 通过 |
 | 系统模块 | 4个 | ✅ 通过 |
 | 水系统模块 | 4个 | ✅ 通过 |
-| **总计** | **26个** | **✅ 100%** |
+| **总计** | **27个** | **✅ 100%** |
 
 ---
 

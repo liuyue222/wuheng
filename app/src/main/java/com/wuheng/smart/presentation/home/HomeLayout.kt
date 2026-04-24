@@ -3,6 +3,8 @@ package com.wuheng.smart.presentation.home
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,6 +16,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material.icons.filled.WbCloudy
+import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material.icons.filled.AcUnit
+import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.Grain
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -23,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -148,6 +158,30 @@ fun HomeLayout(
     }
 }
 
+/**
+ * 获取天气图标
+ */
+@Composable
+private fun WeatherIcon(weather: String, modifier: Modifier = Modifier) {
+    val (icon, tint) = when {
+        weather.contains("晴") -> Icons.Filled.WbSunny to Color(0xFFFFA726) // 橙色
+        weather.contains("多云") -> Icons.Filled.WbCloudy to Color(0xFF90A4AE) // 蓝灰色
+        weather.contains("阴") -> Icons.Filled.Cloud to Color(0xFFB0BEC5) // 灰色
+        weather.contains("雨") && weather.contains("雷") -> Icons.Filled.FlashOn to Color(0xFF7E57C2) // 紫色
+        weather.contains("雨") -> Icons.Filled.WaterDrop to Color(0xFF42A5F5) // 蓝色
+        weather.contains("雪") -> Icons.Filled.AcUnit to Color(0xFF81D4FA) // 浅蓝色
+        weather.contains("雾") || weather.contains("霾") -> Icons.Filled.Grain to Color(0xFFBDBDBD) // 灰色
+        else -> Icons.Filled.WbCloudy to Color(0xFF90A4AE) // 默认多云
+    }
+
+    Icon(
+        imageVector = icon,
+        contentDescription = weather,
+        modifier = modifier,
+        tint = tint
+    )
+}
+
 @Composable
 private fun WeatherHeader(
     location: String,
@@ -195,58 +229,105 @@ private fun WeatherHeader(
                     modifier = Modifier.padding(top = 4.dp)
                 )
                 Spacer(modifier = Modifier.width(spacing_sm))
-                Text(
-                    text = weather,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = TextSecondaryLight,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    // 天气图标
+                    if (weather.isNotEmpty()) {
+                        WeatherIcon(
+                            weather = weather,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+                    Text(
+                        text = weather.ifEmpty { "--" },
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = TextSecondaryLight,
+                        fontSize = 16.sp
+                    )
+                }
             }
         }
 
-        Column(horizontalAlignment = Alignment.End) {
+        Column(
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.Top
+        ) {
+            // AQI 主显示区域 - 大数字 + 等级标签
+            Row(
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.End
+            ) {
+                // AQI 数值 - 大号字体，醒目显示
+                Text(
+                    text = "$aqi",
+                    style = MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = getAqiColor(aqi),
+                    fontSize = 36.sp,
+                    lineHeight = 36.sp
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                // AQI 等级标签 - 圆角背景
+                AqiLevelBadge(aqi = aqi)
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // PM2.5 和湿度 - 水平排列，更紧凑
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End
             ) {
-                Text(
-                    text = "AQI ",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextTertiaryLight,
-                    fontSize = 12.sp
+                // PM2.5
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "PM2.5",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextTertiaryLight,
+                        fontSize = 11.sp
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
+                    Text(
+                        text = "$pm25",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium,
+                        color = TextSecondaryLight,
+                        fontSize = 13.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(10.dp))
+
+                // 分隔点
+                Box(
+                    modifier = Modifier
+                        .size(3.dp)
+                        .background(TextTertiaryLight.copy(alpha = 0.5f), CircleShape)
                 )
-                Text(
-                    text = "$aqi",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = getAqiColor(aqi),
-                    fontSize = 16.sp
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = getAqiLevel(aqi),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = getAqiColor(aqi),
-                    fontSize = 12.sp
-                )
+
+                Spacer(modifier = Modifier.width(10.dp))
+
+                // 湿度
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "湿度",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextTertiaryLight,
+                        fontSize = 11.sp
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
+                    Text(
+                        text = "$humidity%",
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium,
+                        color = TextSecondaryLight,
+                        fontSize = 13.sp
+                    )
+                }
             }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = "PM2.5 $pm25",
-                style = MaterialTheme.typography.bodySmall,
-                color = TextTertiaryLight,
-                fontSize = 12.sp
-            )
-
-            Text(
-                text = "湿度 ${humidity}%",
-                style = MaterialTheme.typography.bodySmall,
-                color = TextTertiaryLight,
-                fontSize = 12.sp
-            )
         }
     }
 }
@@ -280,7 +361,7 @@ private fun ResidenceCard(
                 shape = RoundedCornerShape(20.dp)
             )
             .clickable(onClick = onClick)
-            .padding(20.dp)
+            .padding(horizontal = 24.dp, vertical = 28.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -295,7 +376,7 @@ private fun ResidenceCard(
                     fontSize = 11.sp,
                     letterSpacing = 1.sp
                 )
-                Spacer(modifier = Modifier.height(spacing_xs))
+                Spacer(modifier = Modifier.height(12.dp))
                 Text(
                     text = residenceName,
                     style = MaterialTheme.typography.titleLarge,
@@ -382,12 +463,20 @@ private fun ModeTab(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val scale by animateFloatAsState(
+        targetValue = if (selected) 0.95f else 1f,
+        animationSpec = tween(durationMillis = 200),
+        label = "scale"
+    )
+
     Box(
         modifier = modifier
+            .scale(scale)
             .shadow(
-                elevation = if (selected) 4.dp else 0.dp,
+                elevation = if (selected) 8.dp else 0.dp,
                 shape = RoundedCornerShape(24.dp),
-                spotColor = if (selected) PrimaryBlue.copy(alpha = 0.2f) else Color.Transparent
+                spotColor = if (selected) PrimaryBlue.copy(alpha = 0.35f) else Color.Transparent,
+                ambientColor = if (selected) PrimaryBlue.copy(alpha = 0.15f) else Color.Transparent
             )
             .clip(RoundedCornerShape(24.dp))
             .background(if (selected) Color.White else Color.Transparent)
@@ -489,7 +578,7 @@ private fun EnvironmentDataCard(
             
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 第二行：PM2.5、TOVC
+            // 第二行：PM2.5、TOVC（平分宽度，各自居中）
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -513,15 +602,6 @@ private fun EnvironmentDataCard(
                     unit = "mg/m³",
                     modifier = Modifier.weight(1f)
                 )
-                // 占位，保持三列布局
-                Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .height(50.dp)
-                        .background(Color.Transparent)
-                        .align(Alignment.CenterVertically)
-                )
-                Box(modifier = Modifier.weight(1f))
             }
         }
     }
@@ -742,6 +822,60 @@ private fun VacationModeCard(
                 tint = TextTertiaryLight
             )
         }
+    }
+}
+
+/**
+ * AQI 等级标签组件 - 带圆角背景和对应颜色
+ * 参考 Apple Weather 和小米天气的设计风格
+ */
+@Composable
+private fun AqiLevelBadge(aqi: Int) {
+    val (backgroundColor, textColor) = getAqiBadgeColors(aqi)
+    val levelText = getAqiLevel(aqi)
+
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(10.dp))
+            .background(backgroundColor)
+            .padding(horizontal = 8.dp, vertical = 3.dp)
+    ) {
+        Text(
+            text = levelText,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.SemiBold,
+            color = textColor,
+            fontSize = 12.sp
+        )
+    }
+}
+
+/**
+ * 获取 AQI 标签的背景色和文字色
+ * 背景使用对应颜色的浅色版本，文字使用深色版本以确保可读性
+ */
+private fun getAqiBadgeColors(aqi: Int): Pair<Color, Color> {
+    return when {
+        aqi <= 50 -> Pair(
+            AirQualityExcellent.copy(alpha = 0.15f),
+            AirQualityExcellent.copy(alpha = 0.9f)
+        )
+        aqi <= 100 -> Pair(
+            AirQualityGood.copy(alpha = 0.15f),
+            AirQualityGood.copy(alpha = 0.9f)
+        )
+        aqi <= 150 -> Pair(
+            AirQualityModerate.copy(alpha = 0.15f),
+            AirQualityModerate.copy(alpha = 0.9f)
+        )
+        aqi <= 200 -> Pair(
+            AirQualityPoor.copy(alpha = 0.15f),
+            AirQualityPoor.copy(alpha = 0.9f)
+        )
+        else -> Pair(
+            AirQualityBad.copy(alpha = 0.15f),
+            AirQualityBad.copy(alpha = 0.9f)
+        )
     }
 }
 

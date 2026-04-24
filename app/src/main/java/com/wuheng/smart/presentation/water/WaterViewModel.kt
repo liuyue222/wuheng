@@ -97,6 +97,12 @@ class WaterViewModel @Inject constructor(
     private val _sterilizationState = MutableStateFlow<UiDataState<Unit>>(UiDataState.Idle)
     val sterilizationState: StateFlow<UiDataState<Unit>> = _sterilizationState.asStateFlow()
 
+    /**
+     * 滤芯预约更换状态
+     */
+    private val _filterReplaceState = MutableStateFlow<UiDataState<Unit>>(UiDataState.Idle)
+    val filterReplaceState: StateFlow<UiDataState<Unit>> = _filterReplaceState.asStateFlow()
+
     // ==================== 初始化 ====================
 
     init {
@@ -286,7 +292,7 @@ class WaterViewModel @Inject constructor(
      * @param duration 临时模式的运行时长(分钟)，仅TEMP模式需要
      */
     fun setCirculationMode(houseId: String, mode: CirculationMode, duration: Int? = null) {
-        // 先更新UI状态（乐观更新）
+        // 先更新UI状态（乐观更新）- 只更新模式状态，不触发isLoading避免页面闪烁
         _cycleModeState.value = when (mode) {
             CirculationMode.ALL_DAY -> CycleMode.ALWAYS
             CirculationMode.TIMER -> CycleMode.SCHEDULE
@@ -296,7 +302,7 @@ class WaterViewModel @Inject constructor(
         if (duration != null) {
             _temporaryDurationState.value = duration
         }
-        // 乐观更新统一UI State
+        // 乐观更新统一UI State - 不设置isLoading，避免触发整个页面的重组和闪烁
         _uiState.value = _uiState.value.copy(
             hotWaterMode = when (mode) {
                 CirculationMode.ALL_DAY -> HotWaterMode.ALL_DAY
@@ -309,7 +315,7 @@ class WaterViewModel @Inject constructor(
 
         viewModelScope.launch {
             _operationState.value = UiDataState.Loading
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            // 注意：不在_uiState中设置isLoading，避免触发整个页面的重组
 
             try {
                 val houseIdInt = houseId.toIntOrNull()
@@ -324,21 +330,16 @@ class WaterViewModel @Inject constructor(
                     when (result) {
                         is ApiResult.Loading -> {
                             _operationState.value = UiDataState.Loading
-                            _uiState.value = _uiState.value.copy(isLoading = true)
+                            // 不在_uiState中设置isLoading，避免页面闪烁
                         }
                         is ApiResult.Success -> {
                             _operationState.value = UiDataState.Success(Unit)
-                            _uiState.value = _uiState.value.copy(
-                                isLoading = false,
-                                errorMessage = null
-                            )
-                            // 成功后刷新热水状态
+                            // 成功后刷新热水状态，但不改变isLoading状态
                             loadHotWaterStatus(houseId)
                         }
                         is ApiResult.Error -> {
                             _operationState.value = UiDataState.Error(result.exception)
                             _uiState.value = _uiState.value.copy(
-                                isLoading = false,
                                 errorMessage = result.exception.message
                             )
                             // 失败时回滚UI状态
@@ -507,9 +508,82 @@ class WaterViewModel @Inject constructor(
     }
 
     /**
+     * 重置滤芯预约状态
+     */
+    fun resetFilterReplaceState() {
+        _filterReplaceState.value = UiDataState.Idle
+    }
+
+    /**
      * 重置操作状态
      */
     fun resetOperationState() {
         _operationState.value = UiDataState.Idle
+    }
+
+    /**
+     * 预约滤芯更换（带状态管理）
+     *
+     * @param filterId 滤芯ID
+     * @param contactName 联系人姓名
+     * @param contactPhone 联系人电话
+     * @param appointmentDate 预约日期 (格式: yyyy-MM-dd)
+     */
+    fun bookFilterReplaceWithState(
+        filterId: String,
+        contactName: String,
+        contactPhone: String,
+        appointmentDate: String
+    ) {
+        val houseId = tokenManager.getCurrentHouseId()
+        if (houseId.isEmpty()) {
+            _filterReplaceState.value = UiDataState.Error(
+                com.wuheng.smart.data.network.AppException.BusinessError(-1, "未选择房屋")
+            )
+            return
+        }
+
+        viewModelScope.launch {
+            _filterReplaceState.value = UiDataState.Loading
+
+            try {
+                val houseIdInt = houseId.toIntOrNull()
+                val filterIdInt = filterId.toIntOrNull()
+
+                if (houseIdInt == null || filterIdInt == null) {
+                    _filterReplaceState.value = UiDataState.Error(
+                        com.wuheng.smart.data.network.AppException.BusinessError(-1, "无效的ID参数")
+                    )
+                    return@launch
+                }
+
+                waterRepository.bookFilterReplace(
+                    houseIdInt,
+                    filterIdInt,
+                    contactName.takeIf { it.isNotBlank() },
+                    contactPhone.takeIf { it.isNotBlank() },
+                    appointmentDate.takeIf { it.isNotBlank() }
+                ).collectLatest { result ->
+                    when (result) {
+                        is ApiResult.Loading -> {
+                            _filterReplaceState.value = UiDataState.Loading
+                        }
+                        is ApiResult.Success -> {
+                            _filterReplaceState.value = UiDataState.Success(Unit)
+                            // 刷新滤芯状态
+                            loadFilterStatus(houseId)
+                        }
+                        is ApiResult.Error -> {
+                            _filterReplaceState.value = UiDataState.Error(result.exception)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Error booking filter replacement")
+                _filterReplaceState.value = UiDataState.Error(
+                    com.wuheng.smart.data.network.AppException.UnknownError(e.message ?: "预约失败")
+                )
+            }
+        }
     }
 }

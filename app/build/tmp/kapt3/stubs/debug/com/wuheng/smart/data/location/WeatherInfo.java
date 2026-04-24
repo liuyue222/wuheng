@@ -8,6 +8,7 @@ import android.location.Location;
 import android.os.Looper;
 import androidx.core.content.ContextCompat;
 import com.google.android.gms.location.*;
+import kotlinx.coroutines.*;
 import timber.log.Timber;
 import java.util.Locale;
 

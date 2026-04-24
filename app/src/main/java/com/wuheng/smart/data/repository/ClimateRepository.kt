@@ -14,6 +14,7 @@ import javax.inject.Singleton
  *
  * 提供冷暖系统相关的所有数据操作方法，包括：
  * - 系统状态管理（获取、设置系统模式/温度/湿度）
+ * - 楼层数据管理（获取楼层列表、房间列表）
  */
 interface ClimateRepository {
 
@@ -51,6 +52,25 @@ interface ClimateRepository {
      * @param humidity 湿度值
      */
     suspend fun setGlobalHumidity(houseId: Int, humidity: String): Flow<ApiResult<Unit>>
+
+    // ==================== 房屋模块 - 楼层/房间数据 ====================
+
+    /**
+     * 获取楼层信息
+     *
+     * @param houseId 房屋ID
+     * @return 楼层列表
+     */
+    suspend fun getFloorInfo(houseId: Int): Flow<ApiResult<List<FloorInfo>>>
+
+    /**
+     * 获取房间信息
+     *
+     * @param houseId 房屋ID
+     * @param floorId 楼层ID（可选，不传则返回所有房间）
+     * @return 房间列表
+     */
+    suspend fun getRoomInfo(houseId: Int, floorId: Int? = null): Flow<ApiResult<List<RoomInfo>>>
 }
 
 /**
@@ -128,6 +148,46 @@ class ClimateRepositoryImpl @Inject constructor(
             ApiResult.Success(Unit)
         } else {
             apiCall { apiService.setGlobalHumidity(SetGlobalHumidityRequest(houseId, humidity)) }
+        }
+        emit(result)
+    }
+
+    // ==================== 房屋模块实现 - 楼层/房间数据 ====================
+
+    override suspend fun getFloorInfo(houseId: Int): Flow<ApiResult<List<FloorInfo>>> = flow {
+        logOperation("getFloorInfo", "houseId=$houseId")
+        emit(ApiResult.Loading)
+
+        val result = if (useMock) {
+            kotlinx.coroutines.delay(300)
+            val mockFloors = listOf(
+                FloorInfo(1, "FLOOR202604190001", "地下一层", -1, "80.00", 0),
+                FloorInfo(2, "FLOOR202604190002", "一层", 1, "100.00", 3),
+                FloorInfo(3, "FLOOR202604190003", "二层", 2, "100.00", 2)
+            )
+            ApiResult.Success(mockFloors)
+        } else {
+            apiCall { apiService.getFloorInfo(houseId) }
+        }
+        emit(result)
+    }
+
+    override suspend fun getRoomInfo(houseId: Int, floorId: Int?): Flow<ApiResult<List<RoomInfo>>> = flow {
+        logOperation("getRoomInfo", "houseId=$houseId, floorId=$floorId")
+        emit(ApiResult.Loading)
+
+        val result = if (useMock) {
+            kotlinx.coroutines.delay(300)
+            val mockRooms = listOf(
+                RoomInfo(1, "ROOM202604190001", "客厅", "living", "45.00", 2),
+                RoomInfo(2, "ROOM202604190002", "主卧", "bedroom", "25.00", 1),
+                RoomInfo(3, "ROOM202604190003", "厨房", "kitchen", "15.00", 1),
+                RoomInfo(4, "ROOM202604190004", "次卧", "bedroom", "20.00", 1),
+                RoomInfo(5, "ROOM202604190005", "书房", "study", "18.00", 1)
+            )
+            ApiResult.Success(mockRooms)
+        } else {
+            apiCall { apiService.getRoomInfo(houseId, floorId) }
         }
         emit(result)
     }

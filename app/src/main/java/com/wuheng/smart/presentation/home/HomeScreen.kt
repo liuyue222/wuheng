@@ -26,6 +26,7 @@ import com.wuheng.smart.presentation.components.LoadingIndicator
 import com.wuheng.smart.presentation.components.ResponsiveContainer
 import com.wuheng.smart.presentation.theme.WuHengTheme
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * 首页 Screen - 处理ViewModel和状态管理
@@ -263,16 +264,11 @@ private suspend fun updateLocationAndWeather(
         // 先显示定位中
         viewModel.updateLocation("定位中...")
 
-        // 获取位置
+        // 获取位置（现在总是返回有效地址，不会失败）
         val (address, location) = locationManager.getFormattedLocation()
 
-        // 如果定位成功，更新位置，否则使用默认地址
-        if (address != "定位失败" && address != "未知位置") {
-            viewModel.updateLocation(address)
-        } else {
-            // 定位失败时使用默认地址
-            viewModel.updateLocation("杭州市 · 余杭区")
-        }
+        // 更新位置
+        viewModel.updateLocation(address)
 
         // 强制模拟雨天
         viewModel.updateWeather(
@@ -283,7 +279,8 @@ private suspend fun updateLocationAndWeather(
             humidity = 85
         )
     } catch (e: Exception) {
-        // 异常时使用默认地址
+        // 异常时使用默认地址（理论上不会走到这里，因为LocationManager已处理）
+        Timber.e(e, "更新位置和天气异常")
         viewModel.updateLocation("杭州市 · 余杭区")
         viewModel.updateWeather(
             temperature = 22,

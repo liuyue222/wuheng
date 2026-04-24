@@ -83,6 +83,15 @@ interface ApiService {
     @GET("home/user/getMyHouses")
     suspend fun getMyHouses(): BaseResponse<List<MyHouse>>
 
+    /**
+     * 9. 忘记密码
+     * URL: /home/user/forgotPassword
+     * Method: POST
+     * 认证: 否
+     */
+    @POST("home/user/forgotPassword")
+    suspend fun forgotPassword(@Body request: ForgotPasswordRequest): BaseResponse<Unit>
+
     // ==================== 二、房屋模块 (3个接口) ====================
 
     /**
@@ -133,20 +142,20 @@ interface ApiService {
 
     /**
      * 2. 获取设备详情
-     * URL: /home/device/getDeviceDetail
+     * URL: /home/device/getDeviceInfo
      * Method: GET
      * 认证: 是
      */
-    @GET("home/device/getDeviceDetail")
+    @GET("home/device/getDeviceInfo")
     suspend fun getDeviceDetail(@Query("device_id") deviceId: Int): BaseResponse<DeviceInfo>
 
     /**
-     * 3. 获取设备状态
-     * URL: /home/device/getDeviceStatus
+     * 3. 获取设备实时数据
+     * URL: /home/device/getDeviceData
      * Method: GET
      * 认证: 是
      */
-    @GET("home/device/getDeviceStatus")
+    @GET("home/device/getDeviceData")
     suspend fun getDeviceStatus(@Query("device_id") deviceId: Int): BaseResponse<DeviceStatus>
 
     /**
@@ -247,11 +256,11 @@ interface ApiService {
 
     /**
      * 1. 获取热水循环状态
-     * URL: /home/water/getHotWaterStatus
+     * URL: /home/water/getHeaterStatus
      * Method: GET
      * 认证: 是
      */
-    @GET("home/water/getHotWaterStatus")
+    @GET("home/water/getHeaterStatus")
     suspend fun getHotWaterStatus(@Query("house_id") houseId: Int): BaseResponse<HotWaterStatusResponse>
 
     /**

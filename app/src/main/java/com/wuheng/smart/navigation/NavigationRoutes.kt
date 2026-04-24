@@ -43,6 +43,9 @@ object NavigationRoutes {
     const val CLIMATE = "climate"
     const val WATER = "water"
 
+    // ==================== 耗材管理模块 ====================
+    const val CONSUMABLES = "consumables"
+
     // ==================== 帮助模块 ====================
     const val HELP = "help"
     const val FAQ = "faq"

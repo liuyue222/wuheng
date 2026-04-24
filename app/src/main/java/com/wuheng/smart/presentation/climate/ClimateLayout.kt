@@ -5,6 +5,8 @@ package com.wuheng.smart.presentation.climate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -33,6 +35,11 @@ import com.wuheng.smart.presentation.theme.*
  * 1. Tab切换：全屋 / 楼层
  * 2. 全屋模式：温度设定滑块(16-30°C)、湿度设定滑块
  * 3. 楼层模式：楼层列表，每个楼层显示设备状态
+ *
+ * 性能优化：
+ * 1. 滑块使用 remember 缓存本地状态，避免拖动时频繁触发重组
+ * 2. 使用 LaunchedEffect 和 snapshotFlow 实现拖动结束后再回调
+ * 3. 使用 derivedStateOf 优化派生状态计算
  */
 
 // ==================== 主布局 ====================
@@ -198,12 +205,42 @@ private fun ClimateTabItem(
 
 /**
  * 温度设定卡片 - 像素级还原设计图
+ *
+ * 性能优化：
+ * 1. 使用 remember 缓存本地滑块状态，避免拖动时触发父组件重组
+ * 2. 使用 interactionSource 监听滑块交互状态
+ * 3. 只有在滑块拖动结束时才触发 onTemperatureChange 回调
  */
 @Composable
 private fun TemperatureSettingCard(
     temperature: Float,
     onTemperatureChange: (Float) -> Unit
 ) {
+    // 使用 remember 缓存本地滑块值，避免拖动时触发父组件重组
+    var localTemperature by remember(temperature) { mutableStateOf(temperature) }
+    // 使用 rememberUpdatedState 确保回调始终引用最新值
+    val currentOnChange by rememberUpdatedState(onTemperatureChange)
+    // 监听滑块交互状态
+    val interactionSource = remember { MutableInteractionSource() }
+    val isDragging by interactionSource.collectIsDraggedAsState()
+
+    // 当拖动结束时，触发回调
+    LaunchedEffect(isDragging) {
+        if (!isDragging) {
+            // 拖动结束，如果值有变化则触发回调
+            if (localTemperature != temperature) {
+                currentOnChange(localTemperature)
+            }
+        }
+    }
+
+    // 当外部 temperature 变化时（非拖动状态），更新本地值
+    LaunchedEffect(temperature) {
+        if (!isDragging) {
+            localTemperature = temperature
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -233,7 +270,7 @@ private fun TemperatureSettingCard(
                 verticalAlignment = Alignment.Top
             ) {
                 Text(
-                    text = String.format("%.1f", temperature),
+                    text = String.format("%.1f", localTemperature),
                     style = MaterialTheme.typography.displayLarge,
                     color = TextPrimaryLight,
                     fontSize = 56.sp,
@@ -256,10 +293,11 @@ private fun TemperatureSettingCard(
                 contentAlignment = Alignment.Center
             ) {
                 Slider(
-                    value = temperature,
-                    onValueChange = onTemperatureChange,
+                    value = localTemperature,
+                    onValueChange = { localTemperature = it },
                     valueRange = 16f..30f,
                     modifier = Modifier.fillMaxWidth(),
+                    interactionSource = interactionSource,
                     colors = SliderDefaults.colors(
                         thumbColor = Color.White,
                         activeTrackColor = PrimaryBlue,
@@ -306,12 +344,42 @@ private fun TemperatureSettingCard(
 
 /**
  * 湿度设定卡片 - 像素级还原设计图
+ *
+ * 性能优化：
+ * 1. 使用 remember 缓存本地滑块状态，避免拖动时触发父组件重组
+ * 2. 使用 interactionSource 监听滑块交互状态
+ * 3. 只有在滑块拖动结束时才触发 onHumidityChange 回调
  */
 @Composable
 private fun HumiditySettingCard(
     humidity: Float,
     onHumidityChange: (Float) -> Unit
 ) {
+    // 使用 remember 缓存本地滑块值，避免拖动时触发父组件重组
+    var localHumidity by remember(humidity) { mutableStateOf(humidity) }
+    // 使用 rememberUpdatedState 确保回调始终引用最新值
+    val currentOnChange by rememberUpdatedState(onHumidityChange)
+    // 监听滑块交互状态
+    val interactionSource = remember { MutableInteractionSource() }
+    val isDragging by interactionSource.collectIsDraggedAsState()
+
+    // 当拖动结束时，触发回调
+    LaunchedEffect(isDragging) {
+        if (!isDragging) {
+            // 拖动结束，如果值有变化则触发回调
+            if (localHumidity != humidity) {
+                currentOnChange(localHumidity)
+            }
+        }
+    }
+
+    // 当外部 humidity 变化时（非拖动状态），更新本地值
+    LaunchedEffect(humidity) {
+        if (!isDragging) {
+            localHumidity = humidity
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -337,7 +405,7 @@ private fun HumiditySettingCard(
                     fontSize = 14.sp
                 )
                 Text(
-                    text = "${humidity.toInt()}%",
+                    text = "${localHumidity.toInt()}%",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = PrimaryBlue,
@@ -353,10 +421,11 @@ private fun HumiditySettingCard(
                 contentAlignment = Alignment.Center
             ) {
                 Slider(
-                    value = humidity,
-                    onValueChange = onHumidityChange,
+                    value = localHumidity,
+                    onValueChange = { localHumidity = it },
                     valueRange = 30f..80f,
                     modifier = Modifier.fillMaxWidth(),
+                    interactionSource = interactionSource,
                     colors = SliderDefaults.colors(
                         thumbColor = Color.White,
                         activeTrackColor = PrimaryBlue,

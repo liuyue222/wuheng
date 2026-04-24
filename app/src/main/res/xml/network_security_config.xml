@@ -56,6 +56,7 @@
         本地开发服务器配置 (仅开发环境使用)
         10.0.2.2: Android模拟器访问宿主机
         192.168.x.x: 局域网测试服务器
+        116.62.51.112: 五恒测试服务器
     -->
     <domain-config cleartextTrafficPermitted="true">
         <!-- Android模拟器宿主机 -->
@@ -66,6 +67,8 @@
         <!-- 局域网测试服务器（根据实际情况调整） -->
         <domain includeSubdomains="false">192.168.1.100</domain>
         <domain includeSubdomains="false">192.168.0.100</domain>
+        <!-- 五恒测试服务器 (HTTP明文通信) -->
+        <domain includeSubdomains="false">116.62.51.112</domain>
 
         <trust-anchors>
             <certificates src="system"/>
