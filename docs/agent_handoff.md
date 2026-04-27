@@ -1387,3 +1387,56 @@ class MainDispatcherRule(
 | 2026-04-23 | 添加测试修复报告 | 测试与调试 Agent |
 | 2026-04-23 | 添加编译修复报告 | Backend |
 | 2026-04-24 | 添加首页AQI展示美化 | 设计 Agent |
+| 2026-04-24 | 添加水系统滤芯预约更换功能 | Backend |
+
+---
+
+## 🚰 水系统滤芯预约更换功能 (2026-04-24)
+
+### 功能概述
+实现水系统页面滤芯预约更换功能，用户点击"预约更换"按钮后弹出预约弹窗，填写信息后提交预约请求。
+
+### 实现文件
+
+| 文件 | 修改内容 |
+|------|----------|
+| `WaterViewModel.kt` | 添加filterReplaceState状态管理，bookFilterReplaceWithState()方法 |
+| `WaterLayout.kt` | 添加FilterReplaceDialog弹窗组件 |
+| `WaterScreen.kt` | 集成弹窗显示和状态处理，添加成功Snackbar提示 |
+
+### 弹窗功能
+
+- **滤芯选择**: 单选列表，显示滤芯名称和状态标签（正常/需更换/已过期）
+- **联系人姓名**: 必填文本输入
+- **联系人电话**: 必填，数字键盘输入
+- **预约日期**: 必填，格式yyyy-MM-dd
+- **表单验证**: 所有字段必填，确认按钮根据验证状态启用/禁用
+- **加载状态**: 提交时显示CircularProgressIndicator和"提交中..."文本
+- **错误处理**: 预约失败显示错误提示
+- **成功提示**: Snackbar显示"滤芯更换预约成功"
+
+### API调用
+
+```
+POST /home/water/bookFilterReplace
+参数: house_id, filter_id, contact_name, contact_phone, appointment_date
+响应: BaseResponse<Unit>
+```
+
+### 使用方式
+
+弹窗已在WaterScreen中集成，用户点击"预约更换"按钮自动显示：
+
+```kotlin
+// 在WaterScreen中
+FilterReplaceDialog(
+    filters = uiState.filters,
+    filterReplaceState = filterReplaceState,
+    onConfirm = { filterId, contactName, contactPhone, appointmentDate ->
+        viewModel.bookFilterReplaceWithState(...)
+    },
+    onDismiss = { ... }
+)
+```
+
+---
