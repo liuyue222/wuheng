@@ -4,6 +4,7 @@ import com.wuheng.smart.data.model.*;
 import com.wuheng.smart.data.network.ApiResult;
 import com.wuheng.smart.data.network.TokenManager;
 import com.wuheng.smart.data.repository.HomeRepository;
+import com.wuheng.smart.data.repository.UserRepository;
 import com.wuheng.smart.presentation.base.BaseViewModel;
 import com.wuheng.smart.presentation.base.UiDataState;
 import com.wuheng.smart.presentation.home.components.DeviceCardUiState;
@@ -34,10 +35,11 @@ import javax.inject.Inject;
  * - 遵循单向数据流（UDF）原则
  */
 @dagger.hilt.android.lifecycle.HiltViewModel()
-@kotlin.Metadata(mv = {1, 7, 1}, k = 1, d1 = {"\u0000\u00c2\u0001\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0010\t\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010\u000e\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0010 \n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0012\n\u0002\u0010\b\n\u0002\b\u0006\n\u0002\u0018\u0002\n\u0002\b\t\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0006\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0010\u0006\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0010\u000b\n\u0002\b\b\b\u0007\u0018\u00002\u00020\u0001B\u0017\b\u0007\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u00a2\u0006\u0002\u0010\u0006J\u0016\u00107\u001a\u00020\u00122\u0006\u00108\u001a\u0002092\u0006\u0010:\u001a\u00020\u000bJ\"\u0010;\u001a\u00020\u00122\u0006\u0010<\u001a\u0002092\u0006\u0010=\u001a\u00020\u000b2\n\b\u0002\u0010>\u001a\u0004\u0018\u00010\u000bJ\f\u0010?\u001a\b\u0012\u0004\u0012\u00020@0\u000fJ\u000e\u0010A\u001a\u00020\u00122\u0006\u0010:\u001a\u00020\u000bJ\u000e\u0010B\u001a\u00020\u00122\u0006\u0010:\u001a\u00020\u000bJ\b\u0010C\u001a\u00020\u0012H\u0002J\u000e\u0010D\u001a\u00020\u00122\u0006\u0010:\u001a\u00020\u000bJ\u000e\u0010E\u001a\u00020\u00122\u0006\u0010:\u001a\u00020\u000bJ\b\u0010F\u001a\u00020\u0012H\u0014J\u000e\u0010G\u001a\u00020\u00122\u0006\u0010<\u001a\u00020\u000bJ\u000e\u0010H\u001a\u00020\u00122\u0006\u0010I\u001a\u00020JJ\u000e\u0010K\u001a\u00020\u00122\u0006\u0010L\u001a\u00020MJ\u000e\u0010N\u001a\u00020\u00122\u0006\u0010O\u001a\u00020\u0018J\u000e\u0010P\u001a\u00020\u00122\u0006\u0010I\u001a\u00020QJ\u0006\u0010R\u001a\u00020\u0012J\u0006\u0010S\u001a\u00020\u0012J\u0010\u0010T\u001a\u00020\u00122\u0006\u0010:\u001a\u00020\u000bH\u0002J\u0010\u0010U\u001a\u00020\u00122\u0006\u0010:\u001a\u00020\u000bH\u0002J\u000e\u0010V\u001a\u00020\u00122\u0006\u0010W\u001a\u00020XJ\u0016\u0010Y\u001a\u00020\u00122\u0006\u0010<\u001a\u0002092\u0006\u0010Z\u001a\u00020[J\u0016\u0010\\\u001a\u00020\u00122\u0006\u0010:\u001a\u00020\u000b2\u0006\u0010]\u001a\u00020\u000bJ\u0016\u0010^\u001a\u00020\u00122\u0006\u0010:\u001a\u00020\u000b2\u0006\u0010_\u001a\u00020\u000bJ\u0016\u0010`\u001a\u00020\u00122\u0006\u0010:\u001a\u00020\u000b2\u0006\u0010I\u001a\u00020aJ\b\u0010b\u001a\u00020\u0012H\u0002J\u0006\u0010c\u001a\u00020\u0012J\u0016\u0010d\u001a\u00020\u00122\u0006\u0010<\u001a\u0002092\u0006\u0010e\u001a\u00020fJ\u000e\u0010g\u001a\u00020\u00122\u0006\u0010h\u001a\u00020\u000bJ\u000e\u0010i\u001a\u00020\u00122\u0006\u0010I\u001a\u00020JJ.\u0010j\u001a\u00020\u00122\u0006\u0010Z\u001a\u0002092\u0006\u0010k\u001a\u00020\u000b2\u0006\u0010l\u001a\u0002092\u0006\u0010m\u001a\u0002092\u0006\u0010]\u001a\u000209R\u000e\u0010\u0007\u001a\u00020\bX\u0082D\u00a2\u0006\u0002\n\u0000R\u0014\u0010\t\u001a\b\u0012\u0004\u0012\u00020\u000b0\nX\u0082\u0004\u00a2\u0006\u0002\n\u0000R \u0010\f\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00100\u000f0\u000e0\rX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\u0011\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00120\u000e0\rX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\u0013\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00140\u000e0\rX\u0082\u0004\u00a2\u0006\u0002\n\u0000R \u0010\u0015\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00160\u000f0\u000e0\rX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010\u0017\u001a\b\u0012\u0004\u0012\u00020\u00180\nX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\u0019\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u001a0\u000e0\rX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010\u001b\u001a\b\u0012\u0004\u0012\u00020\u001c0\rX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010\u001d\u001a\b\u0012\u0004\u0012\u00020\u001e0\rX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0010\u0010\u001f\u001a\u0004\u0018\u00010 X\u0082\u000e\u00a2\u0006\u0002\n\u0000R\u0017\u0010!\u001a\b\u0012\u0004\u0012\u00020\u000b0\"\u00a2\u0006\b\n\u0000\u001a\u0004\b#\u0010$R#\u0010%\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00100\u000f0\u000e0&\u00a2\u0006\b\n\u0000\u001a\u0004\b\'\u0010(R\u001d\u0010)\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00120\u000e0&\u00a2\u0006\b\n\u0000\u001a\u0004\b*\u0010(R\u000e\u0010\u0002\u001a\u00020\u0003X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001d\u0010+\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00140\u000e0&\u00a2\u0006\b\n\u0000\u001a\u0004\b,\u0010(R#\u0010-\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00160\u000f0\u000e0&\u00a2\u0006\b\n\u0000\u001a\u0004\b.\u0010(R\u0017\u0010/\u001a\b\u0012\u0004\u0012\u00020\u00180\"\u00a2\u0006\b\n\u0000\u001a\u0004\b0\u0010$R\u001d\u00101\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u001a0\u000e0&\u00a2\u0006\b\n\u0000\u001a\u0004\b2\u0010(R\u000e\u0010\u0004\u001a\u00020\u0005X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0017\u00103\u001a\b\u0012\u0004\u0012\u00020\u001c0&\u00a2\u0006\b\n\u0000\u001a\u0004\b4\u0010(R\u0017\u00105\u001a\b\u0012\u0004\u0012\u00020\u001e0&\u00a2\u0006\b\n\u0000\u001a\u0004\b6\u0010(\u00a8\u0006n"}, d2 = {"Lcom/wuheng/smart/presentation/home/HomeViewModel;", "Lcom/wuheng/smart/presentation/base/BaseViewModel;", "homeRepository", "Lcom/wuheng/smart/data/repository/HomeRepository;", "tokenManager", "Lcom/wuheng/smart/data/network/TokenManager;", "(Lcom/wuheng/smart/data/repository/HomeRepository;Lcom/wuheng/smart/data/network/TokenManager;)V", "AUTO_REFRESH_INTERVAL", "", "_deviceClickEvent", "Lkotlinx/coroutines/flow/MutableSharedFlow;", "", "_deviceListState", "Lkotlinx/coroutines/flow/MutableStateFlow;", "Lcom/wuheng/smart/presentation/base/UiDataState;", "", "Lcom/wuheng/smart/data/model/DeviceInfo;", "_deviceOperationState", "", "_houseInfoState", "Lcom/wuheng/smart/data/model/HouseInfo;", "_sceneListState", "Lcom/wuheng/smart/data/model/SceneInfo;", "_serviceClickEvent", "Lcom/wuheng/smart/data/model/ServiceType;", "_systemStatusState", "Lcom/wuheng/smart/data/model/SystemStatus;", "_uiState", "Lcom/wuheng/smart/presentation/home/HomeUiState;", "_weatherModeState", "Lcom/wuheng/smart/presentation/home/components/WeatherModeSelectorUiState;", "autoRefreshJob", "Lkotlinx/coroutines/Job;", "deviceClickEvent", "Lkotlinx/coroutines/flow/SharedFlow;", "getDeviceClickEvent", "()Lkotlinx/coroutines/flow/SharedFlow;", "deviceListState", "Lkotlinx/coroutines/flow/StateFlow;", "getDeviceListState", "()Lkotlinx/coroutines/flow/StateFlow;", "deviceOperationState", "getDeviceOperationState", "houseInfoState", "getHouseInfoState", "sceneListState", "getSceneListState", "serviceClickEvent", "getServiceClickEvent", "systemStatusState", "getSystemStatusState", "uiState", "getUiState", "weatherModeState", "getWeatherModeState", "applyScene", "sceneId", "", "houseId", "controlDevice", "deviceId", "command", "value", "getDeviceCardUiStates", "Lcom/wuheng/smart/presentation/home/components/DeviceCardUiState;", "loadDeviceList", "loadHouseInfo", "loadInitialData", "loadSceneList", "loadSystemStatus", "onCleared", "onDeviceCardClicked", "onModeSelected", "mode", "Lcom/wuheng/smart/presentation/home/ClimateMode;", "onSceneSelected", "sceneType", "Lcom/wuheng/smart/data/model/SceneType;", "onServiceClicked", "serviceType", "onWeatherModeSelected", "Lcom/wuheng/smart/data/model/WeatherMode;", "refresh", "refreshData", "refreshDeviceListSilently", "refreshSystemStatusSilently", "saveScene", "request", "Lcom/wuheng/smart/data/model/SaveSceneRequest;", "setDeviceTemperature", "temperature", "", "setGlobalHumidity", "humidity", "setGlobalTemp", "temp", "setSystemMode", "Lcom/wuheng/smart/data/model/SystemMode;", "startAutoRefresh", "stopAutoRefresh", "toggleDevicePower", "powerOn", "", "updateLocation", "location", "updateMode", "updateWeather", "weather", "aqi", "pm25", "app_debug"})
+@kotlin.Metadata(mv = {1, 7, 1}, k = 1, d1 = {"\u0000\u00ce\u0001\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0010\t\n\u0000\n\u0002\u0018\u0002\n\u0002\u0010\u000e\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0010 \n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0014\n\u0002\u0010\b\n\u0002\b\n\n\u0002\u0018\u0002\n\u0002\b\u000b\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0006\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0010\u0006\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0002\b\t\n\u0002\u0010\u000b\n\u0002\b\t\b\u0007\u0018\u00002\u00020\u0001B\u001f\b\u0007\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\u0006\u0010\u0006\u001a\u00020\u0007\u00a2\u0006\u0002\u0010\bJ\u0016\u0010=\u001a\u00020\u00142\u0006\u0010>\u001a\u00020?2\u0006\u0010@\u001a\u00020\rJ\"\u0010A\u001a\u00020\u00142\u0006\u0010B\u001a\u00020?2\u0006\u0010C\u001a\u00020\r2\n\b\u0002\u0010D\u001a\u0004\u0018\u00010\rJ\u0016\u0010E\u001a\u00020\u00142\u0006\u0010F\u001a\u00020\r2\u0006\u0010G\u001a\u00020\rJ\u0006\u0010H\u001a\u00020\rJ\f\u0010I\u001a\b\u0012\u0004\u0012\u00020J0\u0011J\u0006\u0010K\u001a\u00020\u0014J\u000e\u0010L\u001a\u00020\u00142\u0006\u0010@\u001a\u00020\rJ\u000e\u0010M\u001a\u00020\u00142\u0006\u0010@\u001a\u00020\rJ\b\u0010N\u001a\u00020\u0014H\u0002J\u0006\u0010O\u001a\u00020\u0014J\u000e\u0010P\u001a\u00020\u00142\u0006\u0010@\u001a\u00020\rJ\u000e\u0010Q\u001a\u00020\u00142\u0006\u0010@\u001a\u00020\rJ\b\u0010R\u001a\u00020\u0014H\u0014J\u000e\u0010S\u001a\u00020\u00142\u0006\u0010B\u001a\u00020\rJ\u000e\u0010T\u001a\u00020\u00142\u0006\u0010U\u001a\u00020VJ\u000e\u0010W\u001a\u00020\u00142\u0006\u0010X\u001a\u00020YJ\u000e\u0010Z\u001a\u00020\u00142\u0006\u0010[\u001a\u00020\u001cJ\u000e\u0010\\\u001a\u00020\u00142\u0006\u0010U\u001a\u00020]J\u0006\u0010^\u001a\u00020\u0014J\u0006\u0010_\u001a\u00020\u0014J\u0010\u0010`\u001a\u00020\u00142\u0006\u0010@\u001a\u00020\rH\u0002J\u0010\u0010a\u001a\u00020\u00142\u0006\u0010@\u001a\u00020\rH\u0002J\u000e\u0010b\u001a\u00020\u00142\u0006\u0010c\u001a\u00020dJ\u0016\u0010e\u001a\u00020\u00142\u0006\u0010B\u001a\u00020?2\u0006\u0010f\u001a\u00020gJ\u0016\u0010h\u001a\u00020\u00142\u0006\u0010@\u001a\u00020\r2\u0006\u0010i\u001a\u00020\rJ\u0016\u0010j\u001a\u00020\u00142\u0006\u0010@\u001a\u00020\r2\u0006\u0010k\u001a\u00020\rJ\u0016\u0010l\u001a\u00020\u00142\u0006\u0010@\u001a\u00020\r2\u0006\u0010U\u001a\u00020mJ&\u0010n\u001a\u00020\u00142\u0006\u0010o\u001a\u00020\n2\n\b\u0002\u0010p\u001a\u0004\u0018\u00010\r2\n\b\u0002\u0010q\u001a\u0004\u0018\u00010\rJ\b\u0010r\u001a\u00020\u0014H\u0002J\u0006\u0010s\u001a\u00020\u0014J\u000e\u0010t\u001a\u00020\u00142\u0006\u0010@\u001a\u00020\rJ\u0016\u0010u\u001a\u00020\u00142\u0006\u0010B\u001a\u00020?2\u0006\u0010v\u001a\u00020wJ\u000e\u0010x\u001a\u00020\u00142\u0006\u0010y\u001a\u00020\rJ\u000e\u0010z\u001a\u00020\u00142\u0006\u0010U\u001a\u00020VJ8\u0010{\u001a\u00020\u00142\u0006\u0010f\u001a\u00020?2\u0006\u0010|\u001a\u00020\r2\u0006\u0010}\u001a\u00020?2\u0006\u0010~\u001a\u00020?2\u0006\u0010i\u001a\u00020?2\b\b\u0002\u0010\u007f\u001a\u00020\rR\u000e\u0010\t\u001a\u00020\nX\u0082D\u00a2\u0006\u0002\n\u0000R\u0014\u0010\u000b\u001a\b\u0012\u0004\u0012\u00020\r0\fX\u0082\u0004\u00a2\u0006\u0002\n\u0000R \u0010\u000e\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00120\u00110\u00100\u000fX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\u0013\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00140\u00100\u000fX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\u0015\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00160\u00100\u000fX\u0082\u0004\u00a2\u0006\u0002\n\u0000R \u0010\u0017\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00180\u00110\u00100\u000fX\u0082\u0004\u00a2\u0006\u0002\n\u0000R \u0010\u0019\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u001a0\u00110\u00100\u000fX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010\u001b\u001a\b\u0012\u0004\u0012\u00020\u001c0\fX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\u001d\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u001e0\u00100\u000fX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010\u001f\u001a\b\u0012\u0004\u0012\u00020 0\u000fX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010!\u001a\b\u0012\u0004\u0012\u00020\"0\u000fX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0010\u0010#\u001a\u0004\u0018\u00010$X\u0082\u000e\u00a2\u0006\u0002\n\u0000R\u0017\u0010%\u001a\b\u0012\u0004\u0012\u00020\r0&\u00a2\u0006\b\n\u0000\u001a\u0004\b\'\u0010(R#\u0010)\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00120\u00110\u00100*\u00a2\u0006\b\n\u0000\u001a\u0004\b+\u0010,R\u001d\u0010-\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00140\u00100*\u00a2\u0006\b\n\u0000\u001a\u0004\b.\u0010,R\u000e\u0010\u0002\u001a\u00020\u0003X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001d\u0010/\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00160\u00100*\u00a2\u0006\b\n\u0000\u001a\u0004\b0\u0010,R#\u00101\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00180\u00110\u00100*\u00a2\u0006\b\n\u0000\u001a\u0004\b2\u0010,R#\u00103\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u001a0\u00110\u00100*\u00a2\u0006\b\n\u0000\u001a\u0004\b4\u0010,R\u0017\u00105\u001a\b\u0012\u0004\u0012\u00020\u001c0&\u00a2\u0006\b\n\u0000\u001a\u0004\b6\u0010(R\u001d\u00107\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u001e0\u00100*\u00a2\u0006\b\n\u0000\u001a\u0004\b8\u0010,R\u000e\u0010\u0004\u001a\u00020\u0005X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0017\u00109\u001a\b\u0012\u0004\u0012\u00020 0*\u00a2\u0006\b\n\u0000\u001a\u0004\b:\u0010,R\u000e\u0010\u0006\u001a\u00020\u0007X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0017\u0010;\u001a\b\u0012\u0004\u0012\u00020\"0*\u00a2\u0006\b\n\u0000\u001a\u0004\b<\u0010,\u00a8\u0006\u0080\u0001"}, d2 = {"Lcom/wuheng/smart/presentation/home/HomeViewModel;", "Lcom/wuheng/smart/presentation/base/BaseViewModel;", "homeRepository", "Lcom/wuheng/smart/data/repository/HomeRepository;", "tokenManager", "Lcom/wuheng/smart/data/network/TokenManager;", "userRepository", "Lcom/wuheng/smart/data/repository/UserRepository;", "(Lcom/wuheng/smart/data/repository/HomeRepository;Lcom/wuheng/smart/data/network/TokenManager;Lcom/wuheng/smart/data/repository/UserRepository;)V", "AUTO_REFRESH_INTERVAL", "", "_deviceClickEvent", "Lkotlinx/coroutines/flow/MutableSharedFlow;", "", "_deviceListState", "Lkotlinx/coroutines/flow/MutableStateFlow;", "Lcom/wuheng/smart/presentation/base/UiDataState;", "", "Lcom/wuheng/smart/data/model/DeviceInfo;", "_deviceOperationState", "", "_houseInfoState", "Lcom/wuheng/smart/data/model/HouseInfo;", "_myHousesState", "Lcom/wuheng/smart/data/model/MyHouse;", "_sceneListState", "Lcom/wuheng/smart/data/model/SceneInfo;", "_serviceClickEvent", "Lcom/wuheng/smart/data/model/ServiceType;", "_systemStatusState", "Lcom/wuheng/smart/data/model/SystemStatus;", "_uiState", "Lcom/wuheng/smart/presentation/home/HomeUiState;", "_weatherModeState", "Lcom/wuheng/smart/presentation/home/components/WeatherModeSelectorUiState;", "autoRefreshJob", "Lkotlinx/coroutines/Job;", "deviceClickEvent", "Lkotlinx/coroutines/flow/SharedFlow;", "getDeviceClickEvent", "()Lkotlinx/coroutines/flow/SharedFlow;", "deviceListState", "Lkotlinx/coroutines/flow/StateFlow;", "getDeviceListState", "()Lkotlinx/coroutines/flow/StateFlow;", "deviceOperationState", "getDeviceOperationState", "houseInfoState", "getHouseInfoState", "myHousesState", "getMyHousesState", "sceneListState", "getSceneListState", "serviceClickEvent", "getServiceClickEvent", "systemStatusState", "getSystemStatusState", "uiState", "getUiState", "weatherModeState", "getWeatherModeState", "applyScene", "sceneId", "", "houseId", "controlDevice", "deviceId", "command", "value", "fetchWeatherByCoordinates", "lat", "lng", "getCurrentHouseId", "getDeviceCardUiStates", "Lcom/wuheng/smart/presentation/home/components/DeviceCardUiState;", "getVacationStatus", "loadDeviceList", "loadHouseInfo", "loadInitialData", "loadMyHouses", "loadSceneList", "loadSystemStatus", "onCleared", "onDeviceCardClicked", "onModeSelected", "mode", "Lcom/wuheng/smart/presentation/home/ClimateMode;", "onSceneSelected", "sceneType", "Lcom/wuheng/smart/data/model/SceneType;", "onServiceClicked", "serviceType", "onWeatherModeSelected", "Lcom/wuheng/smart/data/model/WeatherMode;", "refresh", "refreshData", "refreshDeviceListSilently", "refreshSystemStatusSilently", "saveScene", "request", "Lcom/wuheng/smart/data/model/SaveSceneRequest;", "setDeviceTemperature", "temperature", "", "setGlobalHumidity", "humidity", "setGlobalTemp", "temp", "setSystemMode", "Lcom/wuheng/smart/data/model/SystemMode;", "setVacationMode", "returnTime", "tempSet", "humiditySet", "startAutoRefresh", "stopAutoRefresh", "switchHouse", "toggleDevicePower", "powerOn", "", "updateLocation", "location", "updateMode", "updateWeather", "weather", "aqi", "pm25", "weatherCode", "app_debug"})
 public final class HomeViewModel extends com.wuheng.smart.presentation.base.BaseViewModel {
     private final com.wuheng.smart.data.repository.HomeRepository homeRepository = null;
     private final com.wuheng.smart.data.network.TokenManager tokenManager = null;
+    private final com.wuheng.smart.data.repository.UserRepository userRepository = null;
     private final kotlinx.coroutines.flow.MutableStateFlow<com.wuheng.smart.presentation.home.HomeUiState> _uiState = null;
     @org.jetbrains.annotations.NotNull()
     private final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.home.HomeUiState> uiState = null;
@@ -78,6 +80,13 @@ public final class HomeViewModel extends com.wuheng.smart.presentation.base.Base
     private final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.home.components.WeatherModeSelectorUiState> weatherModeState = null;
     
     /**
+     * 我的房屋列表状态（用于房屋选择器）
+     */
+    private final kotlinx.coroutines.flow.MutableStateFlow<com.wuheng.smart.presentation.base.UiDataState<java.util.List<com.wuheng.smart.data.model.MyHouse>>> _myHousesState = null;
+    @org.jetbrains.annotations.NotNull()
+    private final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.base.UiDataState<java.util.List<com.wuheng.smart.data.model.MyHouse>>> myHousesState = null;
+    
+    /**
      * 设备控制操作状态（用于显示加载/成功/错误反馈）
      */
     private final kotlinx.coroutines.flow.MutableStateFlow<com.wuheng.smart.presentation.base.UiDataState<kotlin.Unit>> _deviceOperationState = null;
@@ -103,7 +112,8 @@ public final class HomeViewModel extends com.wuheng.smart.presentation.base.Base
     @javax.inject.Inject()
     public HomeViewModel(@org.jetbrains.annotations.NotNull()
     com.wuheng.smart.data.repository.HomeRepository homeRepository, @org.jetbrains.annotations.NotNull()
-    com.wuheng.smart.data.network.TokenManager tokenManager) {
+    com.wuheng.smart.data.network.TokenManager tokenManager, @org.jetbrains.annotations.NotNull()
+    com.wuheng.smart.data.repository.UserRepository userRepository) {
         super();
     }
     
@@ -134,6 +144,11 @@ public final class HomeViewModel extends com.wuheng.smart.presentation.base.Base
     
     @org.jetbrains.annotations.NotNull()
     public final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.home.components.WeatherModeSelectorUiState> getWeatherModeState() {
+        return null;
+    }
+    
+    @org.jetbrains.annotations.NotNull()
+    public final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.base.UiDataState<java.util.List<com.wuheng.smart.data.model.MyHouse>>> getMyHousesState() {
         return null;
     }
     
@@ -353,7 +368,16 @@ public final class HomeViewModel extends com.wuheng.smart.presentation.base.Base
      * 更新天气信息
      */
     public final void updateWeather(int temperature, @org.jetbrains.annotations.NotNull()
-    java.lang.String weather, int aqi, int pm25, int humidity) {
+    java.lang.String weather, int aqi, int pm25, int humidity, @org.jetbrains.annotations.NotNull()
+    java.lang.String weatherCode) {
+    }
+    
+    /**
+     * 根据GPS坐标获取真实天气数据
+     */
+    public final void fetchWeatherByCoordinates(@org.jetbrains.annotations.NotNull()
+    java.lang.String lat, @org.jetbrains.annotations.NotNull()
+    java.lang.String lng) {
     }
     
     /**
@@ -371,5 +395,47 @@ public final class HomeViewModel extends com.wuheng.smart.presentation.base.Base
     @org.jetbrains.annotations.NotNull()
     public final java.util.List<com.wuheng.smart.presentation.home.components.DeviceCardUiState> getDeviceCardUiStates() {
         return null;
+    }
+    
+    /**
+     * 加载当前用户的房屋列表（用于房屋选择器）
+     */
+    public final void loadMyHouses() {
+    }
+    
+    /**
+     * 切换到指定房屋
+     * 会更新 TokenManager 中的当前房屋ID，并刷新所有数据
+     *
+     * @param houseId 目标房屋ID
+     */
+    public final void switchHouse(@org.jetbrains.annotations.NotNull()
+    java.lang.String houseId) {
+    }
+    
+    /**
+     * 获取当前房屋ID（供 UI 层使用）
+     */
+    @org.jetbrains.annotations.NotNull()
+    public final java.lang.String getCurrentHouseId() {
+        return null;
+    }
+    
+    /**
+     * 设置度假模式
+     *
+     * @param returnTime 归期时间戳（秒）
+     * @param tempSet 度假温度设置（可选）
+     * @param humiditySet 度假湿度设置（可选）
+     */
+    public final void setVacationMode(long returnTime, @org.jetbrains.annotations.Nullable()
+    java.lang.String tempSet, @org.jetbrains.annotations.Nullable()
+    java.lang.String humiditySet) {
+    }
+    
+    /**
+     * 获取当前房屋的度假模式状态
+     */
+    public final void getVacationStatus() {
     }
 }

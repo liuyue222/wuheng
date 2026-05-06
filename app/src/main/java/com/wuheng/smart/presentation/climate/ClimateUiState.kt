@@ -9,28 +9,22 @@ data class ClimateUiState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
 
-    // 当前选中的Tab
     val selectedTab: ClimateTab = ClimateTab.WHOLE_HOUSE,
 
-    // 全屋设定
     val temperature: Float = 0f,
     val humidity: Float = 0f,
 
-    // 楼层列表
-    val floors: List<FloorItem> = emptyList()
+    val floors: List<FloorItem> = emptyList(),
+    val selectedFloorId: String? = null,
+    val rooms: List<RoomUiItem> = emptyList(),
+    val roomsLoading: Boolean = false
 )
 
-/**
- * Tab枚举
- */
 enum class ClimateTab {
-    WHOLE_HOUSE,  // 全屋
-    FLOOR         // 楼层
+    WHOLE_HOUSE,
+    FLOOR
 }
 
-/**
- * 楼层项数据类
- */
 data class FloorItem(
     val id: String,
     val name: String,
@@ -39,11 +33,22 @@ data class FloorItem(
     val devices: List<FloorDevice> = emptyList()
 )
 
-/**
- * 楼层设备数据类
- */
 data class FloorDevice(
     val name: String,
     val value: String? = null,
     val status: String = "关闭"
+)
+
+data class RoomUiItem(
+    val id: String,
+    val name: String,
+    val floorId: String = "",
+    val roomType: String = "",
+    val area: String = "",
+    val currentTemp: Float = 0f,
+    val targetTemp: Float = 0f,
+    val humidity: Float = 0f,
+    val deviceCount: Int = 0,
+    val isRunning: Boolean = false,
+    val isOnline: Boolean = true
 )

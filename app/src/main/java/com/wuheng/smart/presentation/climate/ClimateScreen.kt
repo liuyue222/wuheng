@@ -31,13 +31,11 @@ fun ClimateScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // 使用 remember 缓存回调函数，避免每次重组时创建新的lambda引用
-    // 这样可以防止子组件在回调引用不变的情况下发生不必要的重组
     val onTabSelected = remember(viewModel) { { tab: ClimateTab -> viewModel.onTabSelected(tab) } }
     val onTemperatureChange = remember(viewModel) { { temp: Float -> viewModel.onTemperatureChange(temp) } }
     val onHumidityChange = remember(viewModel) { { humidity: Float -> viewModel.onHumidityChange(humidity) } }
     val onFloorToggle = remember(viewModel) { { id: String, enabled: Boolean -> viewModel.onFloorToggle(id, enabled) } }
-    val onFloorClick = remember(onNavigateToFloorDetail) { { id: String -> onNavigateToFloorDetail(id) } }
+    val onFloorSelected = remember(viewModel) { { id: String -> viewModel.onFloorSelected(id) } }
     val onRefresh = remember(viewModel) { { viewModel.refreshData() } }
 
     ClimateScreenContent(
@@ -46,7 +44,7 @@ fun ClimateScreen(
         onTemperatureChange = onTemperatureChange,
         onHumidityChange = onHumidityChange,
         onFloorToggle = onFloorToggle,
-        onFloorClick = onFloorClick,
+        onFloorSelected = onFloorSelected,
         onRefresh = onRefresh
     )
 }
@@ -61,7 +59,7 @@ private fun ClimateScreenContent(
     onTemperatureChange: (Float) -> Unit,
     onHumidityChange: (Float) -> Unit,
     onFloorToggle: (String, Boolean) -> Unit,
-    onFloorClick: (String) -> Unit,
+    onFloorSelected: (String) -> Unit,
     onRefresh: () -> Unit
 ) {
     ResponsiveContainer { maxWidth, _ ->
@@ -82,7 +80,7 @@ private fun ClimateScreenContent(
                     onTemperatureChange = onTemperatureChange,
                     onHumidityChange = onHumidityChange,
                     onFloorToggle = onFloorToggle,
-                    onFloorClick = onFloorClick,
+                    onFloorSelected = onFloorSelected,
                     maxWidth = maxWidth
                 )
             }
@@ -106,7 +104,7 @@ fun ClimateScreenWholeHousePreview() {
             onTemperatureChange = {},
             onHumidityChange = {},
             onFloorToggle = { _, _ -> },
-            onFloorClick = {},
+            onFloorSelected = {},
             onRefresh = {}
         )
     }
@@ -139,13 +137,25 @@ fun ClimateScreenFloorPreview() {
                             FloorDevice("新风面板", "运行中")
                         )
                     )
+                ),
+                rooms = listOf(
+                    RoomUiItem(
+                        id = "1", name = "客厅", roomType = "living",
+                        area = "45.00", deviceCount = 2, currentTemp = 23.5f,
+                        targetTemp = 24f, humidity = 45f, isOnline = true
+                    ),
+                    RoomUiItem(
+                        id = "2", name = "主卧", roomType = "bedroom",
+                        area = "25.00", deviceCount = 1, currentTemp = 22f,
+                        targetTemp = 26f, humidity = 50f, isOnline = true
+                    )
                 )
             ),
             onTabSelected = {},
             onTemperatureChange = {},
             onHumidityChange = {},
             onFloorToggle = { _, _ -> },
-            onFloorClick = {},
+            onFloorSelected = {},
             onRefresh = {}
         )
     }
@@ -165,7 +175,7 @@ fun ClimateScreenWidePreview() {
             onTemperatureChange = {},
             onHumidityChange = {},
             onFloorToggle = { _, _ -> },
-            onFloorClick = {},
+            onFloorSelected = {},
             onRefresh = {}
         )
     }

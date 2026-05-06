@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.wuheng.smart.data.model.MyHouse
 import com.wuheng.smart.presentation.theme.*
 
 /**
@@ -24,9 +25,9 @@ import com.wuheng.smart.presentation.theme.*
  */
 @Composable
 fun HouseSelectorDialog(
-    houses: List<MyHouseInfo>,
+    houses: List<MyHouse>,
     currentHouseId: String,
-    onHouseSelected: (MyHouseInfo) -> Unit,
+    onHouseSelected: (MyHouse) -> Unit,
     onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = onDismiss) {
@@ -60,7 +61,7 @@ fun HouseSelectorDialog(
                 houses.forEach { house ->
                     HouseItem(
                         house = house,
-                        isSelected = house.houseId == currentHouseId,
+                        isSelected = house.houseId.toString() == currentHouseId,
                         onClick = { onHouseSelected(house) }
                     )
                     Spacer(modifier = Modifier.height(spacing_sm))
@@ -83,7 +84,7 @@ fun HouseSelectorDialog(
 
 @Composable
 private fun HouseItem(
-    house: MyHouseInfo,
+    house: MyHouse,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -151,13 +152,3 @@ private fun HouseItem(
         }
     }
 }
-
-/**
- * 房产信息数据类（用于UI展示）
- */
-data class MyHouseInfo(
-    val houseId: String,
-    val houseName: String,
-    val address: String,
-    val isOnline: Boolean = true
-)

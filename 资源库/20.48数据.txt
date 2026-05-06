@@ -1,0 +1,366 @@
+2026-05-06 20:46:53.697  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  --> POST http://116.62.51.112/wuheng_iot/index.php/home/user/login
+2026-05-06 20:46:53.697  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 46
+2026-05-06 20:46:53.700  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-05-06 20:46:53.700  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-05-06 20:46:53.700  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer ec55e60bcab5eb5646fdaf8f973d53f7
+2026-05-06 20:46:53.700  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  {"password":"123456","username":"15900474254"}
+2026-05-06 20:46:53.700  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END POST (46-byte body)
+2026-05-06 20:46:53.702  7727-16422 TrafficStats            com.wuheng.smart                     D  tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+2026-05-06 20:46:53.704  7727-7727  HandWritingStubImpl     com.wuheng.smart                     I  getCurrentKeyboardType: 1
+2026-05-06 20:46:53.760  7727-7727  HandWritingStubImpl     com.wuheng.smart                     I  refreshLastKeyboardType: 1
+2026-05-06 20:46:53.761  7727-7727  HandWritingStubImpl     com.wuheng.smart                     I  getCurrentKeyboardType: 1
+2026-05-06 20:46:53.762  7727-7727  HandWritingStubImpl     com.wuheng.smart                     I  refreshLastKeyboardType: 1
+2026-05-06 20:46:53.762  7727-7727  HandWritingStubImpl     com.wuheng.smart                     I  getCurrentKeyboardType: 1
+2026-05-06 20:46:53.795  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/user/login (94ms)
+2026-05-06 20:46:53.795  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Wed, 06 May 2026 12:46:52 GMT
+2026-05-06 20:46:53.795  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-05-06 20:46:53.795  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-05-06 20:46:53.795  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-05-06 20:46:53.795  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-05-06 20:46:53.795  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-05-06 20:46:53.795  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 392
+2026-05-06 20:46:53.795  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-05-06 20:46:53.795  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-05-06 20:46:53.796  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"登录成功","data":{"user_id":"8","user_id_no":"USER202604201590","user_token":"c33ce96e9ae7d6ab249c966ced4553d7","share_user_token":"","share_user_id_no":"","wei_openid":"","user_name":"刘大大","user_img_url":"https:\/\/example.com\/avatar.png","user_tel":"15900474254","user_type":"1","house_id":"2","status":"1","createtime":"1776680887","updatetime":"1778070911"}}
+2026-05-06 20:46:53.796  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (392-byte body)
+2026-05-06 20:46:53.803  7727-7727  MainViewModel           com.wuheng.smart                     D  Token changed, isLoggedIn=true, startDestination=home
+2026-05-06 20:46:53.804  7727-7727  MainViewModel           com.wuheng.smart                     D  Token changed, isLoggedIn=true, startDestination=home
+2026-05-06 20:46:53.805  7727-7727  UserReposi...wWithRetry com.wuheng.smart                     D  Login success: userId=8
+2026-05-06 20:46:53.805  7727-7727  UserReposi...wWithRetry com.wuheng.smart                     D  Login success: userId=8
+2026-05-06 20:46:53.805  7727-7727  LoginViewModel$login    com.wuheng.smart                     D  Login successful
+2026-05-06 20:46:53.806  7727-7727  LoginViewModel$login    com.wuheng.smart                     D  Login successful
+2026-05-06 20:46:53.863  7727-7727  LoginViewM...dLoginInfo com.wuheng.smart                     D  Loaded saved phone: false
+2026-05-06 20:46:53.864  7727-7727  LoginViewM...dLoginInfo com.wuheng.smart                     D  Loaded saved phone: false
+2026-05-06 20:46:53.864  7727-7727  LoginViewM...dLoginInfo com.wuheng.smart                     D  Loaded saved password: false
+2026-05-06 20:46:53.864  7727-7727  LoginViewM...dLoginInfo com.wuheng.smart                     D  Loaded saved password: false
+2026-05-06 20:46:53.865  7727-7727  LoginViewM...dLoginInfo com.wuheng.smart                     D  Loaded remember password state: false
+2026-05-06 20:46:53.865  7727-7727  LoginViewM...dLoginInfo com.wuheng.smart                     D  Loaded remember password state: false
+2026-05-06 20:46:53.871  7727-7727  UserRepositoryImpl      com.wuheng.smart                     D  Login credentials cleared
+2026-05-06 20:46:53.871  7727-7727  UserRepositoryImpl      com.wuheng.smart                     D  Login credentials cleared
+2026-05-06 20:46:53.871  7727-7727  LoginViewM...redentials com.wuheng.smart                     D  Login credentials cleared
+2026-05-06 20:46:53.871  7727-7727  LoginViewM...redentials com.wuheng.smart                     D  Login credentials cleared
+2026-05-06 20:46:54.102  7727-7727  HandWritingStubImpl     com.wuheng.smart                     I  getCurrentKeyboardType: 1
+2026-05-06 20:46:55.363  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getHouseInfo, Params: houseId=2
+2026-05-06 20:46:55.364  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getHouseInfo, Params: houseId=2
+2026-05-06 20:46:55.367  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  --> GET http://116.62.51.112/wuheng_iot/index.php/home/house/getHouseInfo?house_id=2
+2026-05-06 20:46:55.368  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-05-06 20:46:55.368  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-05-06 20:46:55.368  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer c33ce96e9ae7d6ab249c966ced4553d7
+2026-05-06 20:46:55.368  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END GET
+2026-05-06 20:46:55.368  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getDeviceList, Params: houseId=2, roomId=null
+2026-05-06 20:46:55.369  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getDeviceList, Params: houseId=2, roomId=null
+2026-05-06 20:46:55.370  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getSceneList, Params: houseId=2
+2026-05-06 20:46:55.371  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getSceneList, Params: houseId=2
+2026-05-06 20:46:55.371  7727-16422 TrafficStats            com.wuheng.smart                     D  tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+2026-05-06 20:46:55.371  7727-16427 okhttp.OkHttpClient     com.wuheng.smart                     I  --> GET http://116.62.51.112/wuheng_iot/index.php/home/device/getDeviceList?house_id=2
+2026-05-06 20:46:55.371  7727-16427 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-05-06 20:46:55.372  7727-16427 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-05-06 20:46:55.372  7727-16427 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer c33ce96e9ae7d6ab249c966ced4553d7
+2026-05-06 20:46:55.372  7727-16427 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END GET
+2026-05-06 20:46:55.372  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getSystemStatus, Params: houseId=2
+2026-05-06 20:46:55.373  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getSystemStatus, Params: houseId=2
+2026-05-06 20:46:55.373  7727-16427 TrafficStats            com.wuheng.smart                     D  tagSocket(148) with statsTag=0xffffffff, statsUid=-1
+2026-05-06 20:46:55.374  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getMyHouses
+2026-05-06 20:46:55.375  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getMyHouses
+2026-05-06 20:46:55.376  7727-16797 okhttp.OkHttpClient     com.wuheng.smart                     I  --> GET http://116.62.51.112/wuheng_iot/index.php/home/scene/getSceneList?house_id=2
+2026-05-06 20:46:55.376  7727-16797 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-05-06 20:46:55.376  7727-16797 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-05-06 20:46:55.376  7727-16797 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer c33ce96e9ae7d6ab249c966ced4553d7
+2026-05-06 20:46:55.376  7727-16797 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END GET
+2026-05-06 20:46:55.377  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getVacationStatus, Params: houseId=2
+2026-05-06 20:46:55.377  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getVacationStatus, Params: houseId=2
+2026-05-06 20:46:55.381  7727-16797 TrafficStats            com.wuheng.smart                     D  tagSocket(123) with statsTag=0xffffffff, statsUid=-1
+2026-05-06 20:46:55.381  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  --> GET http://116.62.51.112/wuheng_iot/index.php/home/user/getMyHouses
+2026-05-06 20:46:55.382  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-05-06 20:46:55.382  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-05-06 20:46:55.382  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer c33ce96e9ae7d6ab249c966ced4553d7
+2026-05-06 20:46:55.382  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END GET
+2026-05-06 20:46:55.383  7727-16424 GoogleApiManager        com.wuheng.smart                     W  The service for com.google.android.gms.internal.location.zzda is not available: ConnectionResult{statusCode=SERVICE_DISABLED, resolution=null, message=null}
+2026-05-06 20:46:55.384  7727-16798 okhttp.OkHttpClient     com.wuheng.smart                     I  --> GET http://116.62.51.112/wuheng_iot/index.php/home/system/getSystemStatus?house_id=2
+2026-05-06 20:46:55.384  7727-16798 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-05-06 20:46:55.384  7727-16798 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-05-06 20:46:55.384  7727-16798 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer c33ce96e9ae7d6ab249c966ced4553d7
+2026-05-06 20:46:55.384  7727-16798 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END GET
+2026-05-06 20:46:55.385  7727-16799 TrafficStats            com.wuheng.smart                     D  tagSocket(150) with statsTag=0xffffffff, statsUid=-1
+2026-05-06 20:46:55.385  7727-16424 GoogleApiAvailability   com.wuheng.smart                     W  GMS core API Availability. ConnectionResult=3, tag=null
+                                                                                                    java.lang.IllegalArgumentException
+                                                                                                    	at com.google.android.gms.common.GoogleApiAvailability.zae(com.google.android.gms:play-services-base@@18.1.0:2)
+                                                                                                    	at com.google.android.gms.common.GoogleApiAvailability.zah(com.google.android.gms:play-services-base@@18.1.0:6)
+                                                                                                    	at com.google.android.gms.common.api.internal.GoogleApiManager.zaG(com.google.android.gms:play-services-base@@18.1.0:1)
+                                                                                                    	at com.google.android.gms.common.api.internal.zabq.zar(com.google.android.gms:play-services-base@@18.1.0:21)
+                                                                                                    	at com.google.android.gms.common.api.internal.zabq.zao(com.google.android.gms:play-services-base@@18.1.0:13)
+                                                                                                    	at com.google.android.gms.common.api.internal.GoogleApiManager.zaI(com.google.android.gms:play-services-base@@18.1.0:7)
+                                                                                                    	at com.google.android.gms.common.api.internal.GoogleApiManager.handleMessage(com.google.android.gms:play-services-base@@18.1.0:50)
+                                                                                                    	at android.os.Handler.dispatchMessage(Handler.java:102)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:211)
+                                                                                                    	at android.os.Looper.loop(Looper.java:300)
+                                                                                                    	at android.os.HandlerThread.run(HandlerThread.java:67)
+2026-05-06 20:46:55.386  7727-16798 TrafficStats            com.wuheng.smart                     D  tagSocket(149) with statsTag=0xffffffff, statsUid=-1
+2026-05-06 20:46:55.397  7727-16424 GoogleApiManager        com.wuheng.smart                     W  The service for com.google.android.gms.internal.location.zzda is not available: ConnectionResult{statusCode=SERVICE_DISABLED, resolution=null, message=null}
+2026-05-06 20:46:55.401  7727-16424 GoogleApiAvailability   com.wuheng.smart                     W  GMS core API Availability. ConnectionResult=3, tag=null
+                                                                                                    java.lang.IllegalArgumentException
+                                                                                                    	at com.google.android.gms.common.GoogleApiAvailability.zae(com.google.android.gms:play-services-base@@18.1.0:2)
+                                                                                                    	at com.google.android.gms.common.GoogleApiAvailability.zah(com.google.android.gms:play-services-base@@18.1.0:6)
+                                                                                                    	at com.google.android.gms.common.api.internal.GoogleApiManager.zaG(com.google.android.gms:play-services-base@@18.1.0:1)
+                                                                                                    	at com.google.android.gms.common.api.internal.zabq.zar(com.google.android.gms:play-services-base@@18.1.0:21)
+                                                                                                    	at com.google.android.gms.common.api.internal.zabq.zao(com.google.android.gms:play-services-base@@18.1.0:13)
+                                                                                                    	at com.google.android.gms.common.api.internal.zabq.zap(com.google.android.gms:play-services-base@@18.1.0:8)
+                                                                                                    	at com.google.android.gms.common.api.internal.GoogleApiManager.handleMessage(com.google.android.gms:play-services-base@@18.1.0:64)
+                                                                                                    	at android.os.Handler.dispatchMessage(Handler.java:102)
+                                                                                                    	at android.os.Looper.loopOnce(Looper.java:211)
+                                                                                                    	at android.os.Looper.loop(Looper.java:300)
+                                                                                                    	at android.os.HandlerThread.run(HandlerThread.java:67)
+2026-05-06 20:46:55.465  7727-16798 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/system/getSystemStatus?house_id=2 (81ms)
+2026-05-06 20:46:55.465  7727-16798 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Wed, 06 May 2026 12:46:54 GMT
+2026-05-06 20:46:55.466  7727-16798 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-05-06 20:46:55.466  7727-16798 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-05-06 20:46:55.466  7727-16798 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-05-06 20:46:55.466  7727-16798 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-05-06 20:46:55.466  7727-16798 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-05-06 20:46:55.466  7727-16798 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 841
+2026-05-06 20:46:55.466  7727-16798 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-05-06 20:46:55.466  7727-16798 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-05-06 20:46:55.466  7727-16798 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"success","data":{"system_status":{"status_id":"2","house_id":"2","system_mode":"cooling","global_temp_set":"24.95","global_humidity_set":"51.34","avg_indoor_temp":"23.80","avg_indoor_humidity":"47.50","avg_co2":"500","outdoor_temp":"30.00","outdoor_humidity":"70.00","outdoor_aqi":"95","outdoor_pm25":"55","system_run_status":"running","last_update":"1778070205"},"house_info":{"house_id":"2","house_id_no":"HOUSE202604190002","house_name":"绿城江南里","owner_name":"李四","owner_phone":"13800138002","address":"浙江省杭州市滨江区江南大道456号","floor_count":"2","area_total":"145.00","system_type":"地源热泵系统","install_date":"2025-03-20","warranty_end":"2030-03-20","jetlinks_device_id":"","status":"1","createtime":"1745059300","updatetime":"1745059300"},"device_count":2,"online_count":2}}
+2026-05-06 20:46:55.466  7727-16798 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (841-byte body)
+2026-05-06 20:46:55.470  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  --> GET http://116.62.51.112/wuheng_iot/index.php/home/scene/getVacationStatus?house_id=2
+2026-05-06 20:46:55.470  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-05-06 20:46:55.470  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-05-06 20:46:55.470  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer c33ce96e9ae7d6ab249c966ced4553d7
+2026-05-06 20:46:55.470  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END GET
+2026-05-06 20:46:55.472  7727-16800 TrafficStats            com.wuheng.smart                     D  tagSocket(90) with statsTag=0xffffffff, statsUid=-1
+2026-05-06 20:46:55.522  7727-16797 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/scene/getSceneList?house_id=2 (145ms)
+2026-05-06 20:46:55.522  7727-16797 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Wed, 06 May 2026 12:46:54 GMT
+2026-05-06 20:46:55.522  7727-16797 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-05-06 20:46:55.522  7727-16797 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-05-06 20:46:55.523  7727-16797 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-05-06 20:46:55.523  7727-16797 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-05-06 20:46:55.523  7727-16797 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-05-06 20:46:55.523  7727-16797 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 38
+2026-05-06 20:46:55.523  7727-16797 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-05-06 20:46:55.523  7727-16797 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-05-06 20:46:55.523  7727-16797 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"success","data":[]}
+2026-05-06 20:46:55.523  7727-16797 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (38-byte body)
+2026-05-06 20:46:55.539  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/house/getHouseInfo?house_id=2 (171ms)
+2026-05-06 20:46:55.539  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Wed, 06 May 2026 12:46:54 GMT
+2026-05-06 20:46:55.539  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-05-06 20:46:55.539  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-05-06 20:46:55.539  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-05-06 20:46:55.539  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-05-06 20:46:55.539  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-05-06 20:46:55.539  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 492
+2026-05-06 20:46:55.540  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-05-06 20:46:55.540  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-05-06 20:46:55.540  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"success","data":{"house_id":"2","house_id_no":"HOUSE202604190002","house_name":"绿城江南里","owner_name":"李四","owner_phone":"13800138002","address":"浙江省杭州市滨江区江南大道456号","floor_count":2,"area_total":"145.00","system_type":"地源热泵系统","install_date":"2025-03-20","warranty_end":"2030-03-20","jetlinks_device_id":"","status":"1","createtime":"1745059300","updatetime":"1745059300","room_count":3,"device_count":2,"online_count":2}}
+2026-05-06 20:46:55.540  7727-16422 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (492-byte body)
+2026-05-06 20:46:55.543  7727-16427 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/device/getDeviceList?house_id=2 (170ms)
+2026-05-06 20:46:55.543  7727-16427 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Wed, 06 May 2026 12:46:54 GMT
+2026-05-06 20:46:55.543  7727-16427 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-05-06 20:46:55.543  7727-16427 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-05-06 20:46:55.543  7727-16427 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-05-06 20:46:55.543  7727-16427 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-05-06 20:46:55.543  7727-16427 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-05-06 20:46:55.543  7727-16427 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 979
+2026-05-06 20:46:55.543  7727-16427 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-05-06 20:46:55.543  7727-16427 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-05-06 20:46:55.543  7727-16427 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"success","data":[{"device_id":"7","device_id_no":"DEV202604190007","house_id":"2","floor_id":"4","room_id":"6","device_name":"?????","device_type":"thermostat","device_model":"TH-2025A","jetlinks_device_id":"jet-007","jetlinks_product_id":"prod-001","online_status":"1","run_status":"running","last_heartbeat":"1745059300","install_date":"2025-03-20","warranty_end":"2030-03-20","sort_order":"1","status":"1","createtime":"1745059300","updatetime":"1745059300","room_name":"客厅"},{"device_id":"8","device_id_no":"DEV202604190008","house_id":"2","floor_id":"4","room_id":"7","device_name":"主卧温控器","device_type":"thermostat","device_model":"TH-2025A","jetlinks_device_id":"jet-008","jetlinks_product_id":"prod-001","online_status":"1","run_status":"running","last_heartbeat":"1745059300","install_date":"2025-03-20","warranty_end":"2030-03-20","sort_order":"2","status":"1","createtime":"1745059300","updatetime":"1745059300","room_name":"主卧"}]}
+2026-05-06 20:46:55.543  7727-16427 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (979-byte body)
+2026-05-06 20:46:55.555  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/user/getMyHouses (173ms)
+2026-05-06 20:46:55.555  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Wed, 06 May 2026 12:46:54 GMT
+2026-05-06 20:46:55.555  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-05-06 20:46:55.555  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-05-06 20:46:55.555  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-05-06 20:46:55.556  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-05-06 20:46:55.556  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-05-06 20:46:55.556  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 915
+2026-05-06 20:46:55.556  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-05-06 20:46:55.556  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-05-06 20:46:55.556  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"success","data":[{"house_id":"1","house_id_no":"HOUSE202604190001","house_name":"阳光花园别墅","address":"浙江省杭州市西湖区文三路123号","owner_name":"张三","area_total":"280.00","system_type":"辐射空调系统","bind_type":"owner","bind_time":"1778002757","system_mode":"cooling","system_run_status":"running","indoor_temp":"24.50","indoor_humidity":"45.20","outdoor_temp":"28.50","device_count":0,"online_count":0,"alarm_count":2},{"house_id":"2","house_id_no":"HOUSE202604190002","house_name":"绿城江南里","address":"浙江省杭州市滨江区江南大道456号","owner_name":"李四","area_total":"145.00","system_type":"地源热泵系统","bind_type":"owner","bind_time":"1778003423","system_mode":"cooling","system_run_status":"running","indoor_temp":"23.80","indoor_humidity":"47.50","outdoor_temp":"30.00","device_count":2,"online_count":2,"alarm_count":1}]}
+2026-05-06 20:46:55.556  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (915-byte body)
+2026-05-06 20:46:55.565  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/scene/getVacationStatus?house_id=2 (94ms)
+2026-05-06 20:46:55.565  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Wed, 06 May 2026 12:46:54 GMT
+2026-05-06 20:46:55.565  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-05-06 20:46:55.565  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-05-06 20:46:55.565  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-05-06 20:46:55.565  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-05-06 20:46:55.565  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-05-06 20:46:55.565  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 86
+2026-05-06 20:46:55.565  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-05-06 20:46:55.565  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-05-06 20:46:55.566  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"success","data":{"active":false,"message":"未设置度假模式"}}
+2026-05-06 20:46:55.566  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (86-byte body)
+2026-05-06 20:46:55.593  7727-16385 om.wuheng.smart         com.wuheng.smart                     I  Compiler allocated 7526KB to compile void com.wuheng.smart.presentation.home.HomeLayoutKt.WeatherHeader(java.lang.String, int, java.lang.String, int, int, int, androidx.compose.runtime.Composer, int)
+2026-05-06 20:46:55.726  7727-7727  LoginViewM...dLoginInfo com.wuheng.smart                     E  Failed to load saved phone
+                                                                                                    kotlinx.coroutines.JobCancellationException: Job was cancelled; job=SupervisorJobImpl{Cancelling}@ce24525
+2026-05-06 20:46:55.727  7727-7727  LoginViewM...dLoginInfo com.wuheng.smart                     E  Failed to load saved phone
+                                                                                                    kotlinx.coroutines.JobCancellationException: Job was cancelled; job=SupervisorJobImpl{Cancelling}@ce24525
+2026-05-06 20:46:55.727  7727-7727  LoginViewM...dLoginInfo com.wuheng.smart                     E  Failed to load saved password
+                                                                                                    kotlinx.coroutines.JobCancellationException: Job was cancelled; job=SupervisorJobImpl{Cancelling}@ce24525
+2026-05-06 20:46:55.728  7727-7727  LoginViewM...dLoginInfo com.wuheng.smart                     E  Failed to load saved password
+                                                                                                    kotlinx.coroutines.JobCancellationException: Job was cancelled; job=SupervisorJobImpl{Cancelling}@ce24525
+2026-05-06 20:46:55.729  7727-7727  LoginViewM...dLoginInfo com.wuheng.smart                     E  Failed to load remember password state
+                                                                                                    kotlinx.coroutines.JobCancellationException: Job was cancelled; job=SupervisorJobImpl{Cancelling}@ce24525
+2026-05-06 20:46:55.729  7727-7727  LoginViewM...dLoginInfo com.wuheng.smart                     E  Failed to load remember password state
+                                                                                                    kotlinx.coroutines.JobCancellationException: Job was cancelled; job=SupervisorJobImpl{Cancelling}@ce24525
+2026-05-06 20:46:57.184  1971-2121  MIUIInput               system_server                        D  [MotionEvent] publisher action=0x0, 32037818, channel '49c934e com.wuheng.smart/com.wuheng.smart.MainActivity (server)'
+2026-05-06 20:46:57.193  2363-2363  RecentsModel            com.miui.home                        D  logTasks: type_all, [TaskInfo{userId=0 taskId=2002 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 cmp=com.wuheng.smart/.MainActivity } baseActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} topActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} origActivity=null realActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} numActivities=1 lastActiveTime=32037827 supportsSplitScreenMultiWindow=true supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@356b6b6} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{e5b6fb7 com.wuheng.smart.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}, TaskInfo{userId=0 taskId=2 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.HOME] flg=0x10800100 cmp=com.miui.home/.launcher.Launcher } baseActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} topActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} origActivity=null realActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} numActivities=1 lastActiveTime=31883423 supportsSplitScreenMultiWindow=true supportsMultiWindow=true resizeMode=2 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@7828324} topActivityType=2 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{85efe8d com.miui.home.launcher.Launcher} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}]
+2026-05-06 20:46:57.194  2363-2363  RecentsModel            com.miui.home                        D  logTasks: type_ignore_split_and_freefrom, [TaskInfo{userId=0 taskId=2002 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 cmp=com.wuheng.smart/.MainActivity } baseActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} topActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} origActivity=null realActivity=ComponentInfo{com.wuheng.smart/com.wuheng.smart.MainActivity} numActivities=1 lastActiveTime=32037827 supportsSplitScreenMultiWindow=true supportsMultiWindow=true resizeMode=1 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@356b6b6} topActivityType=1 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{e5b6fb7 com.wuheng.smart.MainActivity} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=true isVisible=true isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}, TaskInfo{userId=0 taskId=2 displayId=0 isRunning=true baseIntent=Intent { act=android.intent.action.MAIN cat=[android.intent.category.HOME] flg=0x10800100 cmp=com.miui.home/.launcher.Launcher } baseActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} topActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} origActivity=null realActivity=ComponentInfo{com.miui.home/com.miui.home.launcher.Launcher} numActivities=1 lastActiveTime=31883423 supportsSplitScreenMultiWindow=true supportsMultiWindow=true resizeMode=2 isResizeable=true minWidth=-1 minHeight=-1 defaultMinSize=200 token=WCT{android.window.IWindowContainerToken$Stub$Proxy@7828324} topActivityType=2 pictureInPictureParams=null shouldDockBigOverlays=false launchIntoPipHostTaskId=0 displayCutoutSafeInsets=null topActivityInfo=ActivityInfo{85efe8d com.miui.home.launcher.Launcher} launchCookies=[] positionInParent=Point(0, 0) parentTaskId=-1 isFocused=false isVisible=false isSleeping=false topActivityInSizeCompat=false topActivityInMiuiSizeCompat=false topActivityEligibleForLetterboxEducation= false locusId=null displayAreaFeatureId=1 cameraCompatControlState=hidden mIsCastMode=false}]
+2026-05-06 20:46:57.290  1971-2121  MIUIInput               system_server                        D  [MotionEvent] publisher action=0x1, 32037925, channel '49c934e com.wuheng.smart/com.wuheng.smart.MainActivity (server)'
+2026-05-06 20:46:57.300  7727-7727  OnBackInvokedCallback   com.wuheng.smart                     W  OnBackInvokedCallback is not enabled for the application.
+                                                                                                    Set 'android:enableOnBackInvokedCallback="true"' in the application manifest.
+2026-05-06 20:46:57.335  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getUserInfo
+2026-05-06 20:46:57.336  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getUserInfo
+2026-05-06 20:46:57.338  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getMaintenanceLog, Params: houseId=2
+2026-05-06 20:46:57.339  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getMaintenanceLog, Params: houseId=2
+2026-05-06 20:46:57.340  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  --> GET http://116.62.51.112/wuheng_iot/index.php/home/user/getUserInfo
+2026-05-06 20:46:57.340  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-05-06 20:46:57.340  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-05-06 20:46:57.340  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer c33ce96e9ae7d6ab249c966ced4553d7
+2026-05-06 20:46:57.340  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END GET
+2026-05-06 20:46:57.341  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  --> GET http://116.62.51.112/wuheng_iot/index.php/home/house/getMaintenanceLog?house_id=2
+2026-05-06 20:46:57.341  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-05-06 20:46:57.341  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-05-06 20:46:57.341  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer c33ce96e9ae7d6ab249c966ced4553d7
+2026-05-06 20:46:57.341  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END GET
+2026-05-06 20:46:57.343  7727-16799 TrafficStats            com.wuheng.smart                     D  tagSocket(103) with statsTag=0xffffffff, statsUid=-1
+2026-05-06 20:46:57.343  7727-16800 TrafficStats            com.wuheng.smart                     D  tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+2026-05-06 20:46:57.359  1971-2555  PerfShielderService     system_server                        D  com.wuheng.smart|com.wuheng.smart/com.wuheng.smart.MainActivity|136|32036085208975|82|2|2
+2026-05-06 20:46:57.360  3994-6592  MiuiPerfServiceClient   com.miui.daemon                      W  interceptAndQueuing:7727|com.wuheng.smart|136|82|32036085208975|Slow handle animation|2
+2026-05-06 20:46:57.360  1971-2555  PerfShielderService     system_server                        D  com.wuheng.smart|com.wuheng.smart/com.wuheng.smart.MainActivity|127|32036242627568|67|2|6
+2026-05-06 20:46:57.361  3994-6592  MiuiPerfServiceClient   com.miui.daemon                      W  interceptAndQueuing:7727|com.wuheng.smart|127|67|32036242627568|Slow handle animation|6
+2026-05-06 20:46:57.433  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/house/getMaintenanceLog?house_id=2 (91ms)
+2026-05-06 20:46:57.433  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Wed, 06 May 2026 12:46:56 GMT
+2026-05-06 20:46:57.433  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-05-06 20:46:57.433  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-05-06 20:46:57.433  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-05-06 20:46:57.433  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-05-06 20:46:57.433  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-05-06 20:46:57.433  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 374
+2026-05-06 20:46:57.433  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-05-06 20:46:57.433  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-05-06 20:46:57.434  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"success","data":[{"log_id":21,"service_type":"maintenance","service_date":"2026-05-15","description":"系统保养","contact_name":"???","contact_phone":"15900474254","status":"pending"},{"log_id":2,"service_type":"host","service_date":"2026-04-26","description":"主机保养","contact_name":"李四","contact_phone":"13800138002","status":"confirmed"}]}
+2026-05-06 20:46:57.434  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (374-byte body)
+2026-05-06 20:46:57.439  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/user/getUserInfo (98ms)
+2026-05-06 20:46:57.439  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Wed, 06 May 2026 12:46:56 GMT
+2026-05-06 20:46:57.439  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-05-06 20:46:57.439  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-05-06 20:46:57.439  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-05-06 20:46:57.439  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-05-06 20:46:57.439  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-05-06 20:46:57.439  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 387
+2026-05-06 20:46:57.439  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-05-06 20:46:57.439  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-05-06 20:46:57.440  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"success","data":{"user_id":"8","user_id_no":"USER202604201590","user_token":"c33ce96e9ae7d6ab249c966ced4553d7","share_user_token":"","share_user_id_no":"","wei_openid":"","user_name":"刘大大","user_img_url":"https:\/\/example.com\/avatar.png","user_tel":"15900474254","user_type":"1","house_id":"2","status":"1","createtime":"1776680887","updatetime":"1778071612"}}
+2026-05-06 20:46:57.440  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (387-byte body)
+2026-05-06 20:46:57.447  7727-7727  ProfileVie...adUserInfo com.wuheng.smart                     D  User info loaded: userId=8, userName=刘大大
+2026-05-06 20:46:57.447  7727-7727  ProfileVie...adUserInfo com.wuheng.smart                     D  User info loaded: userId=8, userName=刘大大
+2026-05-06 20:46:57.681  7727-7727  LocationMa...ntLocation com.wuheng.smart                     D  定位协程被取消
+2026-05-06 20:46:57.681  7727-7727  LocationMa...ntLocation com.wuheng.smart                     D  定位协程被取消
+2026-05-06 20:46:57.688  7727-7727  LocationManager         com.wuheng.smart                     E  获取位置失败，使用默认位置
+                                                                                                    kotlinx.coroutines.JobCancellationException: StandaloneCoroutine was cancelled; job=StandaloneCoroutine{Cancelling}@d4cf970
+2026-05-06 20:46:57.688  7727-7727  LocationManager         com.wuheng.smart                     E  获取位置失败，使用默认位置
+                                                                                                    kotlinx.coroutines.JobCancellationException: StandaloneCoroutine was cancelled; job=StandaloneCoroutine{Cancelling}@d4cf970
+2026-05-06 20:46:57.689  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getWeather, Params: lat=30.2741, lng=120.1551
+2026-05-06 20:46:57.689  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getWeather, Params: lat=30.2741, lng=120.1551
+2026-05-06 20:46:57.692  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  --> GET http://116.62.51.112/wuheng_iot/index.php/home/weather/getWeather?lat=30.2741&lng=120.1551
+2026-05-06 20:46:57.692  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-05-06 20:46:57.693  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-05-06 20:46:57.693  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer c33ce96e9ae7d6ab249c966ced4553d7
+2026-05-06 20:46:57.693  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END GET
+2026-05-06 20:46:57.694  7727-16800 TrafficStats            com.wuheng.smart                     D  tagSocket(90) with statsTag=0xffffffff, statsUid=-1
+2026-05-06 20:46:57.775  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/weather/getWeather?lat=30.2741&lng=120.1551 (82ms)
+2026-05-06 20:46:57.775  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Wed, 06 May 2026 12:46:56 GMT
+2026-05-06 20:46:57.775  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-05-06 20:46:57.775  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-05-06 20:46:57.775  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-05-06 20:46:57.776  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-05-06 20:46:57.776  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-05-06 20:46:57.776  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 540
+2026-05-06 20:46:57.776  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-05-06 20:46:57.776  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-05-06 20:46:57.776  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"success","data":{"location":"","latitude":"30.2741","longitude":"120.1551","temperature":24.1,"weather_code":"2","weather_desc":"阴","humidity":59,"wind_speed":23,"wind_direction":"N","visibility":13,"uv_index":1,"aqi":42,"aqi_level":"优","pm25":15,"pm10":32,"forecast":[{"date":"2026-05-07","max_temp":27.1,"min_temp":17.1,"weather_desc":"阴"},{"date":"2026-05-08","max_temp":27.1,"min_temp":21.1,"weather_desc":"阴"},{"date":"2026-05-09","max_temp":27.1,"min_temp":17.1,"weather_desc":"阴"}],"source":"simulated"}}
+2026-05-06 20:46:57.776  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (540-byte body)
+2026-05-06 20:47:23.420  7727-16412 MemoryMonitor           com.wuheng.smart                     D  内存状态: used=21MB, max=256MB, usage=8%
+2026-05-06 20:47:23.421  7727-16412 MemoryMonitor           com.wuheng.smart                     D  内存状态: used=21MB, max=256MB, usage=8%
+2026-05-06 20:47:25.409  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getDeviceList, Params: houseId=2, roomId=null
+2026-05-06 20:47:25.410  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getDeviceList, Params: houseId=2, roomId=null
+2026-05-06 20:47:25.411  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getSystemStatus, Params: houseId=2
+2026-05-06 20:47:25.411  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getSystemStatus, Params: houseId=2
+2026-05-06 20:47:25.416  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  --> GET http://116.62.51.112/wuheng_iot/index.php/home/system/getSystemStatus?house_id=2
+2026-05-06 20:47:25.417  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-05-06 20:47:25.417  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-05-06 20:47:25.417  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  --> GET http://116.62.51.112/wuheng_iot/index.php/home/device/getDeviceList?house_id=2
+2026-05-06 20:47:25.417  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer c33ce96e9ae7d6ab249c966ced4553d7
+2026-05-06 20:47:25.417  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-05-06 20:47:25.417  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END GET
+2026-05-06 20:47:25.417  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-05-06 20:47:25.418  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer c33ce96e9ae7d6ab249c966ced4553d7
+2026-05-06 20:47:25.418  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END GET
+2026-05-06 20:47:25.421  7727-16799 TrafficStats            com.wuheng.smart                     D  tagSocket(101) with statsTag=0xffffffff, statsUid=-1
+2026-05-06 20:47:25.421  7727-16800 TrafficStats            com.wuheng.smart                     D  tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+2026-05-06 20:47:25.524  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/device/getDeviceList?house_id=2 (105ms)
+2026-05-06 20:47:25.524  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Wed, 06 May 2026 12:47:24 GMT
+2026-05-06 20:47:25.524  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/system/getSystemStatus?house_id=2 (105ms)
+2026-05-06 20:47:25.524  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-05-06 20:47:25.524  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Wed, 06 May 2026 12:47:24 GMT
+2026-05-06 20:47:25.525  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-05-06 20:47:25.525  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-05-06 20:47:25.525  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-05-06 20:47:25.525  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-05-06 20:47:25.525  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-05-06 20:47:25.525  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-05-06 20:47:25.525  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-05-06 20:47:25.525  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-05-06 20:47:25.525  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 979
+2026-05-06 20:47:25.525  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-05-06 20:47:25.526  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-05-06 20:47:25.526  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 841
+2026-05-06 20:47:25.526  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-05-06 20:47:25.526  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-05-06 20:47:25.527  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-05-06 20:47:25.527  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"success","data":[{"device_id":"7","device_id_no":"DEV202604190007","house_id":"2","floor_id":"4","room_id":"6","device_name":"?????","device_type":"thermostat","device_model":"TH-2025A","jetlinks_device_id":"jet-007","jetlinks_product_id":"prod-001","online_status":"1","run_status":"running","last_heartbeat":"1745059300","install_date":"2025-03-20","warranty_end":"2030-03-20","sort_order":"1","status":"1","createtime":"1745059300","updatetime":"1745059300","room_name":"客厅"},{"device_id":"8","device_id_no":"DEV202604190008","house_id":"2","floor_id":"4","room_id":"7","device_name":"主卧温控器","device_type":"thermostat","device_model":"TH-2025A","jetlinks_device_id":"jet-008","jetlinks_product_id":"prod-001","online_status":"1","run_status":"running","last_heartbeat":"1745059300","install_date":"2025-03-20","warranty_end":"2030-03-20","sort_order":"2","status":"1","createtime":"1745059300","updatetime":"1745059300","room_name":"主卧"}]}
+2026-05-06 20:47:25.527  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (979-byte body)
+2026-05-06 20:47:25.527  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"success","data":{"system_status":{"status_id":"2","house_id":"2","system_mode":"cooling","global_temp_set":"24.95","global_humidity_set":"51.34","avg_indoor_temp":"23.80","avg_indoor_humidity":"47.50","avg_co2":"500","outdoor_temp":"30.00","outdoor_humidity":"70.00","outdoor_aqi":"95","outdoor_pm25":"55","system_run_status":"running","last_update":"1778070205"},"house_info":{"house_id":"2","house_id_no":"HOUSE202604190002","house_name":"绿城江南里","owner_name":"李四","owner_phone":"13800138002","address":"浙江省杭州市滨江区江南大道456号","floor_count":"2","area_total":"145.00","system_type":"地源热泵系统","install_date":"2025-03-20","warranty_end":"2030-03-20","jetlinks_device_id":"","status":"1","createtime":"1745059300","updatetime":"1745059300"},"device_count":2,"online_count":2}}
+2026-05-06 20:47:25.527  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (841-byte body)
+2026-05-06 20:47:44.264  5250-5669  collectorManager        com.miui.powerkeeper                 D  ThermalScenarioValue setForegroundCounts: com.wuheng.smart
+2026-05-06 20:47:53.427  7727-16400 MemoryMonitor           com.wuheng.smart                     D  内存状态: used=21MB, max=256MB, usage=8%
+2026-05-06 20:47:53.427  7727-16400 MemoryMonitor           com.wuheng.smart                     D  内存状态: used=21MB, max=256MB, usage=8%
+2026-05-06 20:47:55.450  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getDeviceList, Params: houseId=2, roomId=null
+2026-05-06 20:47:55.451  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getDeviceList, Params: houseId=2, roomId=null
+2026-05-06 20:47:55.456  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getSystemStatus, Params: houseId=2
+2026-05-06 20:47:55.457  7727-7727  BaseRepository          com.wuheng.smart                     D  Repository Operation: getSystemStatus, Params: houseId=2
+2026-05-06 20:47:55.461  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  --> GET http://116.62.51.112/wuheng_iot/index.php/home/device/getDeviceList?house_id=2
+2026-05-06 20:47:55.462  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-05-06 20:47:55.462  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-05-06 20:47:55.462  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer c33ce96e9ae7d6ab249c966ced4553d7
+2026-05-06 20:47:55.462  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  --> GET http://116.62.51.112/wuheng_iot/index.php/home/system/getSystemStatus?house_id=2
+2026-05-06 20:47:55.462  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END GET
+2026-05-06 20:47:55.462  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json
+2026-05-06 20:47:55.463  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Accept: application/json
+2026-05-06 20:47:55.463  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Authorization: Bearer c33ce96e9ae7d6ab249c966ced4553d7
+2026-05-06 20:47:55.463  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  --> END GET
+2026-05-06 20:47:55.468  7727-16800 TrafficStats            com.wuheng.smart                     D  tagSocket(6) with statsTag=0xffffffff, statsUid=-1
+2026-05-06 20:47:55.468  7727-16799 TrafficStats            com.wuheng.smart                     D  tagSocket(101) with statsTag=0xffffffff, statsUid=-1
+2026-05-06 20:47:55.569  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/device/getDeviceList?house_id=2 (105ms)
+2026-05-06 20:47:55.569  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Wed, 06 May 2026 12:47:54 GMT
+2026-05-06 20:47:55.569  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-05-06 20:47:55.569  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-05-06 20:47:55.570  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-05-06 20:47:55.570  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-05-06 20:47:55.570  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-05-06 20:47:55.570  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 979
+2026-05-06 20:47:55.571  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-05-06 20:47:55.571  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-05-06 20:47:55.572  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"success","data":[{"device_id":"7","device_id_no":"DEV202604190007","house_id":"2","floor_id":"4","room_id":"6","device_name":"?????","device_type":"thermostat","device_model":"TH-2025A","jetlinks_device_id":"jet-007","jetlinks_product_id":"prod-001","online_status":"1","run_status":"running","last_heartbeat":"1745059300","install_date":"2025-03-20","warranty_end":"2030-03-20","sort_order":"1","status":"1","createtime":"1745059300","updatetime":"1745059300","room_name":"客厅"},{"device_id":"8","device_id_no":"DEV202604190008","house_id":"2","floor_id":"4","room_id":"7","device_name":"主卧温控器","device_type":"thermostat","device_model":"TH-2025A","jetlinks_device_id":"jet-008","jetlinks_product_id":"prod-001","online_status":"1","run_status":"running","last_heartbeat":"1745059300","install_date":"2025-03-20","warranty_end":"2030-03-20","sort_order":"2","status":"1","createtime":"1745059300","updatetime":"1745059300","room_name":"主卧"}]}
+2026-05-06 20:47:55.572  7727-16799 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (979-byte body)
+2026-05-06 20:47:55.575  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- 200 OK http://116.62.51.112/wuheng_iot/index.php/home/system/getSystemStatus?house_id=2 (112ms)
+2026-05-06 20:47:55.575  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Date: Wed, 06 May 2026 12:47:54 GMT
+2026-05-06 20:47:55.576  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Server: Apache/2.2.15 (CentOS)
+2026-05-06 20:47:55.576  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  X-Powered-By: PHP/5.5.38
+2026-05-06 20:47:55.576  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Origin: *
+2026-05-06 20:47:55.576  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Headers: x-requested-with,content-type,authorization
+2026-05-06 20:47:55.577  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS
+2026-05-06 20:47:55.577  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Length: 841
+2026-05-06 20:47:55.577  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Connection: close
+2026-05-06 20:47:55.577  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  Content-Type: application/json; charset=utf-8
+2026-05-06 20:47:55.578  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  {"code":200,"msg":"success","data":{"system_status":{"status_id":"2","house_id":"2","system_mode":"cooling","global_temp_set":"24.95","global_humidity_set":"51.34","avg_indoor_temp":"23.80","avg_indoor_humidity":"47.50","avg_co2":"500","outdoor_temp":"30.00","outdoor_humidity":"70.00","outdoor_aqi":"95","outdoor_pm25":"55","system_run_status":"running","last_update":"1778070205"},"house_info":{"house_id":"2","house_id_no":"HOUSE202604190002","house_name":"绿城江南里","owner_name":"李四","owner_phone":"13800138002","address":"浙江省杭州市滨江区江南大道456号","floor_count":"2","area_total":"145.00","system_type":"地源热泵系统","install_date":"2025-03-20","warranty_end":"2030-03-20","jetlinks_device_id":"","status":"1","createtime":"1745059300","updatetime":"1745059300"},"device_count":2,"online_count":2}}
+2026-05-06 20:47:55.578  7727-16800 okhttp.OkHttpClient     com.wuheng.smart                     I  <-- END HTTP (841-byte body)

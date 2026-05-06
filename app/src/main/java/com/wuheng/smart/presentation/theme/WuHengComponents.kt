@@ -1,14 +1,21 @@
 package com.wuheng.smart.presentation.theme
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,39 +64,46 @@ fun WuHengBottomNavigation(selectedItem: Int, onItemSelected: (Int) -> Unit) {
         ) {
             items.forEachIndexed { index, (label, selectedIcon, unselectedIcon) ->
                 val isSelected = selectedItem == index
-                NavigationBarItem(
-                    icon = {
-                        Image(
-                            painter = painterResource(
-                                id = if (isSelected) selectedIcon else unselectedIcon
-                            ),
-                            contentDescription = label,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    },
-                    label = {
-                        Text(
-                            text = label,
-                            fontSize = 11.sp,
-                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                            letterSpacing = if (isSelected) 0.3.sp else 0.sp,
-                            // 使用设计令牌：选中态蓝色，未选中态灰色
-                            color = if (isSelected) NavSelectedColor else NavUnselectedColor
-                        )
-                    },
-                    selected = isSelected,
-                    onClick = { onItemSelected(index) },
-                    colors = NavigationBarItemDefaults.colors(
-                        // 核心优化：所有背景色都使用完全透明
-                        selectedIconColor = NavSelectedColor,
-                        selectedTextColor = NavSelectedColor,
-                        unselectedIconColor = NavUnselectedColor,
-                        unselectedTextColor = NavUnselectedColor,
-                        indicatorColor = Color.Transparent  // 强制完全透明，无背景指示器
+
+                // 🆕 颜色平滑过渡动画
+                val textColor by animateColorAsState(
+                    targetValue = if (isSelected) NavSelectedColor else NavUnselectedColor,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
                     ),
-                    // 禁用默认选中指示器动画效果
-                    alwaysShowLabel = true
+                    label = "navTextColor"
                 )
+
+                // 自定义导航项：不使用 NavigationBarItem 以避免 Material3 1.0.x 中无法覆写的指示器背景
+                Column(
+                    modifier = Modifier
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null, // 🆕 禁用波纹闪屏效果
+                            role = Role.Tab,
+                            onClick = { onItemSelected(index) }
+                        )
+                        .weight(1f)
+                        .padding(vertical = 8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(
+                            id = if (isSelected) selectedIcon else unselectedIcon
+                        ),
+                        contentDescription = label,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = label,
+                        fontSize = 11.sp,
+                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                        letterSpacing = if (isSelected) 0.3.sp else 0.sp,
+                        color = textColor
+                    )
+                }
             }
         }
     }

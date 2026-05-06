@@ -5,6 +5,7 @@ import com.wuheng.smart.data.model.DeviceInfo
 import com.wuheng.smart.data.model.FloorInfo
 import com.wuheng.smart.data.model.RoomInfo
 import com.wuheng.smart.data.network.ApiResult
+import com.wuheng.smart.data.network.TokenManager
 import com.wuheng.smart.data.repository.HomeRepository
 import com.wuheng.smart.presentation.base.BaseViewModel
 import com.wuheng.smart.presentation.base.UiDataState
@@ -33,11 +34,18 @@ import javax.inject.Inject
  * 完成度: 100%
  *
  * @param homeRepository 首页数据仓库
+ * @param tokenManager Token管理器（提供当前房屋ID）
  */
 @HiltViewModel
 class FloorZoneViewModel @Inject constructor(
-    private val homeRepository: HomeRepository
+    private val homeRepository: HomeRepository,
+    private val tokenManager: TokenManager
 ) : BaseViewModel() {
+
+    /**
+     * 从TokenManager动态获取当前房屋ID，若未选择则默认使用1
+     */
+    private val currentHouseId: Int get() = tokenManager.getCurrentHouseId().toIntOrNull() ?: 1
 
     /**
      * 楼层列表数据状态
@@ -81,6 +89,12 @@ class FloorZoneViewModel @Inject constructor(
     private val _operationState = MutableStateFlow<UiDataState<Unit>>(UiDataState.Idle)
     val operationState: StateFlow<UiDataState<Unit>> = _operationState.asStateFlow()
 
+    /**
+     * 房间控制状态（温度设定、辐射模式、风速等）
+     */
+    private val _roomControlState = MutableStateFlow(RoomControlState())
+    val roomControlState: StateFlow<RoomControlState> = _roomControlState.asStateFlow()
+
     init {
         loadFloors()
     }
@@ -93,8 +107,7 @@ class FloorZoneViewModel @Inject constructor(
             _floorsState.value = UiDataState.Loading
             Timber.d("Loading floors...")
 
-            // 使用getFloorInfo方法，传入默认houseId=1
-            homeRepository.getFloorInfo(houseId = 1).collectLatest { result ->
+            homeRepository.getFloorInfo(houseId = currentHouseId).collectLatest { result ->
                 when (result) {
                     is ApiResult.Loading -> {
                         _floorsState.value = UiDataState.Loading
@@ -129,7 +142,7 @@ class FloorZoneViewModel @Inject constructor(
             Timber.d("Loading rooms for floor: $floorId")
 
             // 使用getRoomInfo方法，传入houseId和floorId
-            homeRepository.getRoomInfo(houseId = 1, floorId = floorId).collectLatest { result ->
+            homeRepository.getRoomInfo(houseId = currentHouseId, floorId = floorId).collectLatest { result ->
                 when (result) {
                     is ApiResult.Loading -> {
                         _roomsState.value = UiDataState.Loading
@@ -164,7 +177,7 @@ class FloorZoneViewModel @Inject constructor(
             Timber.d("Loading devices for room: $roomId")
 
             // 使用getDeviceList方法，传入houseId和roomId
-            homeRepository.getDeviceList(houseId = 1, roomId = roomId).collectLatest { result ->
+            homeRepository.getDeviceList(houseId = currentHouseId, roomId = roomId).collectLatest { result ->
                 when (result) {
                     is ApiResult.Loading -> {
                         _roomDevicesState.value = UiDataState.Loading
@@ -215,6 +228,12 @@ class FloorZoneViewModel @Inject constructor(
                             )
                             _roomEnvironmentState.value = UiDataState.Success(environmentData)
                             Timber.d("Loaded room environment: temp=${environmentData.temperature}")
+
+                            // 同步环境数据到房间控制状态
+                            _roomControlState.value = _roomControlState.value.copy(
+                                temperature = environmentData.temperature,
+                                humidity = environmentData.humidity
+                            )
                         }
                         is ApiResult.Error -> {
                             Timber.e(result.exception, "Failed to load room environment")
@@ -223,18 +242,38 @@ class FloorZoneViewModel @Inject constructor(
                     }
                 }
             } else {
-                // 如果没有传感器设备，使用模拟数据
-                kotlinx.coroutines.delay(500)
-                val mockEnvironment = RoomEnvironmentData(
-                    temperature = 24.5f,
-                    humidity = 55f,
-                    co2 = 650,
-                    pm25 = 25,
-                    voc = 150,
-                    updateTime = System.currentTimeMillis()
-                )
-                _roomEnvironmentState.value = UiDataState.Success(mockEnvironment)
-                Timber.d("Loaded mock room environment")
+                // 如果没有传感器设备，从系统状态获取全局环境均值
+                Timber.d("No sensor device in room, fetching global system status")
+                homeRepository.getSystemStatus(houseId = currentHouseId).collectLatest { result ->
+                    when (result) {
+                        is ApiResult.Loading -> {
+                            _roomEnvironmentState.value = UiDataState.Loading
+                        }
+                        is ApiResult.Success -> {
+                            val systemStatus = result.data.systemStatus
+                            val environmentData = RoomEnvironmentData(
+                                temperature = systemStatus.avgIndoorTemp.toFloatOrNull() ?: 0f,
+                                humidity = systemStatus.avgIndoorHumidity.toFloatOrNull() ?: 0f,
+                                co2 = systemStatus.avgCo2?.toIntOrNull() ?: 0,
+                                pm25 = 0,
+                                voc = 0,
+                                updateTime = System.currentTimeMillis()
+                            )
+                            _roomEnvironmentState.value = UiDataState.Success(environmentData)
+                            Timber.d("Loaded global environment: temp=${environmentData.temperature}, humidity=${environmentData.humidity}")
+
+                            // 同步环境数据到房间控制状态
+                            _roomControlState.value = _roomControlState.value.copy(
+                                temperature = environmentData.temperature,
+                                humidity = environmentData.humidity
+                            )
+                        }
+                        is ApiResult.Error -> {
+                            Timber.e(result.exception, "Failed to load system status for room environment")
+                            _roomEnvironmentState.value = UiDataState.Error(result.exception)
+                        }
+                    }
+                }
             }
         }
     }
@@ -265,6 +304,14 @@ class FloorZoneViewModel @Inject constructor(
 
         Timber.d("Selecting room: $roomId")
         _selectedRoomId.value = roomId
+
+        // 从房间列表中获取房间名称，初始化房间控制状态
+        val rooms = (_roomsState.value as? UiDataState.Success<List<RoomInfo>>)?.data
+        val room = rooms?.find { it.roomId.toString() == roomId }
+        _roomControlState.value = _roomControlState.value.copy(
+            roomId = roomId,
+            roomName = room?.roomName ?: ""
+        )
 
         // 加载房间设备和环境数据
         roomId.toIntOrNull()?.let {
@@ -409,9 +456,127 @@ class FloorZoneViewModel @Inject constructor(
     }
 
     /**
+     * 设置目标温度
+     *
+     * @param roomId 房间ID (String)
+     * @param temperature 目标温度值
+     */
+    fun setTargetTemperature(roomId: String, temperature: Float) {
+        _roomControlState.value = _roomControlState.value.copy(targetTemperature = temperature)
+        roomId.toIntOrNull()?.let { setRoomTemperature(it, temperature) }
+    }
+
+    /**
+     * 切换顶面辐射开关
+     *
+     * @param roomId 房间ID (String)
+     */
+    fun toggleCeilingRadiation(roomId: String) {
+        val newValue = !_roomControlState.value.ceilingRadiation
+        _roomControlState.value = _roomControlState.value.copy(ceilingRadiation = newValue)
+        roomId.toIntOrNull()?.let { id ->
+            viewModelScope.launch {
+                val devices = (_roomDevicesState.value as? UiDataState.Success<List<DeviceInfo>>)?.data
+                val controller = devices?.find { it.deviceType == "thermostat" }
+                controller?.let {
+                    homeRepository.controlDevice(it.deviceId, "ceiling_radiation", if (newValue) "1" else "0")
+                }
+            }
+        }
+    }
+
+    /**
+     * 切换地面辐射开关
+     *
+     * @param roomId 房间ID (String)
+     */
+    fun toggleFloorRadiation(roomId: String) {
+        val newValue = !_roomControlState.value.floorRadiation
+        _roomControlState.value = _roomControlState.value.copy(floorRadiation = newValue)
+        roomId.toIntOrNull()?.let { id ->
+            viewModelScope.launch {
+                val devices = (_roomDevicesState.value as? UiDataState.Success<List<DeviceInfo>>)?.data
+                val controller = devices?.find { it.deviceType == "thermostat" }
+                controller?.let {
+                    homeRepository.controlDevice(it.deviceId, "floor_radiation", if (newValue) "1" else "0")
+                }
+            }
+        }
+    }
+
+    /**
+     * 设置风速
+     *
+     * @param roomId 房间ID (String)
+     * @param speed 风速: 0-自动, 1-低, 2-中, 3-高
+     */
+    fun setFanSpeed(roomId: String, speed: Int) {
+        _roomControlState.value = _roomControlState.value.copy(fanSpeed = speed)
+        roomId.toIntOrNull()?.let { id ->
+            viewModelScope.launch {
+                val devices = (_roomDevicesState.value as? UiDataState.Success<List<DeviceInfo>>)?.data
+                val controller = devices?.find { it.deviceType == "thermostat" }
+                controller?.let {
+                    homeRepository.controlDevice(it.deviceId, "fan_speed", speed.toString())
+                }
+            }
+        }
+    }
+
+    /**
+     * 设置CO2阈值
+     *
+     * @param roomId 房间ID (String)
+     * @param threshold CO2阈值 (ppm)
+     */
+    fun setCo2Threshold(roomId: String, threshold: Int) {
+        _roomControlState.value = _roomControlState.value.copy(co2Threshold = threshold)
+    }
+
+    /**
+     * 设置目标湿度
+     *
+     * @param roomId 房间ID (String)
+     * @param humidity 目标湿度值
+     */
+    fun setTargetHumidity(roomId: String, humidity: Float) {
+        _roomControlState.value = _roomControlState.value.copy(targetHumidity = humidity)
+        roomId.toIntOrNull()?.let { setRoomHumidity(it, humidity) }
+    }
+
+    /**
      * 重置操作状态
      */
     fun resetOperationState() {
         _operationState.value = UiDataState.Idle
     }
 }
+
+/**
+ * 房间控制状态数据类
+ *
+ * 用于管理选中房间的温度设定、辐射模式、风速、CO2阈值等控制参数
+ *
+ * @param roomId 房间ID
+ * @param roomName 房间名称
+ * @param temperature 当前环境温度
+ * @param targetTemperature 目标温度设定值
+ * @param humidity 当前环境湿度
+ * @param targetHumidity 目标湿度设定值
+ * @param ceilingRadiation 顶面辐射开关
+ * @param floorRadiation 地面辐射开关
+ * @param fanSpeed 风速: 0-自动, 1-低, 2-中, 3-高
+ * @param co2Threshold CO2阈值 (ppm)
+ */
+data class RoomControlState(
+    val roomId: String = "",
+    val roomName: String = "",
+    val temperature: Float = 24f,
+    val targetTemperature: Float = 24f,
+    val humidity: Float = 55f,
+    val targetHumidity: Float = 55f,
+    val ceilingRadiation: Boolean = true,
+    val floorRadiation: Boolean = true,
+    val fanSpeed: Int = 1,
+    val co2Threshold: Int = 800
+)

@@ -4,6 +4,7 @@ import com.wuheng.smart.data.model.*;
 import com.wuheng.smart.data.network.ApiResult;
 import com.wuheng.smart.data.network.TokenManager;
 import com.wuheng.smart.data.repository.HomeRepository;
+import com.wuheng.smart.data.repository.UserRepository;
 import com.wuheng.smart.presentation.base.BaseViewModel;
 import com.wuheng.smart.presentation.base.UiDataState;
 import com.wuheng.smart.presentation.home.components.DeviceCardUiState;

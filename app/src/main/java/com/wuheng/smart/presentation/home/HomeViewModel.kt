@@ -5,6 +5,7 @@ import com.wuheng.smart.data.model.*
 import com.wuheng.smart.data.network.ApiResult
 import com.wuheng.smart.data.network.TokenManager
 import com.wuheng.smart.data.repository.HomeRepository
+import com.wuheng.smart.data.repository.UserRepository
 import com.wuheng.smart.presentation.base.BaseViewModel
 import com.wuheng.smart.presentation.base.UiDataState
 import com.wuheng.smart.presentation.base.createUiStateFlow
@@ -32,6 +33,7 @@ data class HomeUiState(
     val location: String = "",
     val outdoorTemp: Int = 0,
     val weather: String = "",
+    val weatherCode: String = "",
     val aqi: Int = 0,
     val pm25: Int = 0,
     val outdoorHumidity: Int = 0,
@@ -77,7 +79,8 @@ enum class ClimateMode {
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val homeRepository: HomeRepository,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val userRepository: UserRepository
 ) : BaseViewModel() {
 
     // ==================== 新版统一UI State ====================
@@ -116,6 +119,12 @@ class HomeViewModel @Inject constructor(
      */
     private val _weatherModeState = MutableStateFlow(WeatherModeSelectorUiState())
     val weatherModeState: StateFlow<WeatherModeSelectorUiState> = _weatherModeState.asStateFlow()
+
+    /**
+     * 我的房屋列表状态（用于房屋选择器）
+     */
+    private val _myHousesState = createUiStateFlow<List<MyHouse>>()
+    val myHousesState: StateFlow<UiDataState<List<MyHouse>>> = _myHousesState.asStateFlow()
 
     /**
      * 设备控制操作状态（用于显示加载/成功/错误反馈）
@@ -206,17 +215,17 @@ class HomeViewModel @Inject constructor(
                         _uiState.value = _uiState.value.copy(
                             indoorTemp = systemStatus?.avgIndoorTemp ?: "--",
                             indoorHumidity = systemStatus?.avgIndoorHumidity ?: "--",
-                            co2 = systemStatus?.avgCo2?.toIntOrNull() ?: 0,
+                            co2 = systemStatus?.avgCo2?.toFloatOrNull()?.toInt() ?: 0,
                             currentMode = when(systemStatus?.systemMode) {
                                 "cooling" -> ClimateMode.COOLING
                                 "heating" -> ClimateMode.HEATING
                                 "ventilation" -> ClimateMode.VENTILATION
                                 else -> ClimateMode.COOLING
                             },
-                            outdoorTemp = systemStatus?.outdoorTemp?.toIntOrNull() ?: 0,
-                            outdoorHumidity = systemStatus?.outdoorHumidity?.toIntOrNull() ?: 0,
-                            aqi = systemStatus?.outdoorAqi?.toIntOrNull() ?: 0,
-                            pm25 = systemStatus?.outdoorPm25?.toIntOrNull() ?: 0
+                            outdoorTemp = systemStatus?.outdoorTemp?.toFloatOrNull()?.toInt() ?: 0,
+                            outdoorHumidity = systemStatus?.outdoorHumidity?.toFloatOrNull()?.toInt() ?: 0,
+                            aqi = systemStatus?.outdoorAqi?.toFloatOrNull()?.toInt() ?: 0,
+                            pm25 = systemStatus?.outdoorPm25?.toFloatOrNull()?.toInt() ?: 0
                         )
                     }
                     is ApiResult.Error -> {
@@ -245,6 +254,10 @@ class HomeViewModel @Inject constructor(
             loadSceneList(houseId)
             loadSystemStatus(houseId)
         }
+        // 加载房屋列表（用于房屋选择器）
+        loadMyHouses()
+        // 检查度假模式状态
+        getVacationStatus()
     }
 
     // ==================== 数据加载方法（新版API）====================
@@ -309,21 +322,30 @@ class HomeViewModel @Inject constructor(
                     is ApiResult.Loading -> _sceneListState.value = UiDataState.Loading
                     is ApiResult.Success -> {
                         _sceneListState.value = UiDataState.Success(result.data)
-                        // 将API场景数据映射到UI State，保持当前选中状态
                         val currentSelectedType = _uiState.value.scenes.find { it.isSelected }?.type
-                        val sceneItems = result.data.map { sceneInfo ->
-                            val sceneType = when (sceneInfo.sceneType) {
-                                "guest" -> SceneType.MEETING
-                                "away" -> SceneType.AWAY
-                                "sleep" -> SceneType.SLEEP
-                                "guard", "eco", "vacation" -> SceneType.GUARD
-                                else -> SceneType.MEETING
-                            }
-                            SceneItem(
-                                type = sceneType,
-                                name = sceneInfo.sceneName,
-                                isSelected = sceneType == currentSelectedType
+                        val sceneItems = if (result.data.isEmpty()) {
+                            val defaultScenes = listOf(
+                                SceneItem(SceneType.MEETING, "会客模式"),
+                                SceneItem(SceneType.AWAY, "离家模式"),
+                                SceneItem(SceneType.SLEEP, "睡眠模式"),
+                                SceneItem(SceneType.GUARD, "ECO节能")
                             )
+                            defaultScenes
+                        } else {
+                            result.data.map { sceneInfo ->
+                                val sceneType = when (sceneInfo.sceneType) {
+                                    "guest" -> SceneType.MEETING
+                                    "away" -> SceneType.AWAY
+                                    "sleep" -> SceneType.SLEEP
+                                    "guard", "eco", "vacation" -> SceneType.GUARD
+                                    else -> SceneType.MEETING
+                                }
+                                SceneItem(
+                                    type = sceneType,
+                                    name = sceneInfo.sceneName,
+                                    isSelected = sceneType == currentSelectedType
+                                )
+                            }
                         }
                         _uiState.value = _uiState.value.copy(scenes = sceneItems)
                     }
@@ -355,18 +377,18 @@ class HomeViewModel @Inject constructor(
                             errorMessage = null,
                             indoorTemp = systemStatus?.avgIndoorTemp ?: "--",
                             indoorHumidity = systemStatus?.avgIndoorHumidity ?: "--",
-                            co2 = systemStatus?.avgCo2?.toIntOrNull() ?: 0,
+                            co2 = systemStatus?.avgCo2?.toFloatOrNull()?.toInt() ?: 0,
                             currentMode = when(systemStatus?.systemMode) {
                                 "cooling" -> ClimateMode.COOLING
                                 "heating" -> ClimateMode.HEATING
                                 "ventilation" -> ClimateMode.VENTILATION
                                 else -> ClimateMode.COOLING
                             },
-                            // 更新室外环境数据
-                            outdoorTemp = systemStatus?.outdoorTemp?.toIntOrNull() ?: 0,
-                            outdoorHumidity = systemStatus?.outdoorHumidity?.toIntOrNull() ?: 0,
-                            aqi = systemStatus?.outdoorAqi?.toIntOrNull() ?: 0,
-                            pm25 = systemStatus?.outdoorPm25?.toIntOrNull() ?: 0
+                            // 更新室外环境数据（API返回小数如"30.00"，需要先转Float再取整）
+                            outdoorTemp = systemStatus?.outdoorTemp?.toFloatOrNull()?.toInt() ?: 0,
+                            outdoorHumidity = systemStatus?.outdoorHumidity?.toFloatOrNull()?.toInt() ?: 0,
+                            aqi = systemStatus?.outdoorAqi?.toFloatOrNull()?.toInt() ?: 0,
+                            pm25 = systemStatus?.outdoorPm25?.toFloatOrNull()?.toInt() ?: 0
                         )
                     }
                     is ApiResult.Error -> {
@@ -621,6 +643,8 @@ class HomeViewModel @Inject constructor(
             loadSceneList(houseId)
             loadSystemStatus(houseId)
         }
+        loadMyHouses()
+        getVacationStatus()
     }
     
     /**
@@ -715,15 +739,44 @@ class HomeViewModel @Inject constructor(
         weather: String,
         aqi: Int,
         pm25: Int,
-        humidity: Int
+        humidity: Int,
+        weatherCode: String = ""
     ) {
         _uiState.value = _uiState.value.copy(
             outdoorTemp = temperature,
             weather = weather,
             aqi = aqi,
             pm25 = pm25,
-            outdoorHumidity = humidity
+            outdoorHumidity = humidity,
+            weatherCode = weatherCode
         )
+    }
+
+    /**
+     * 根据GPS坐标获取真实天气数据
+     */
+    fun fetchWeatherByCoordinates(lat: String, lng: String) {
+        viewModelScope.launch {
+            homeRepository.getWeather(lat, lng).collectLatest { result ->
+                when (result) {
+                    is ApiResult.Success -> {
+                        val data = result.data
+                        updateWeather(
+                            temperature = data.temperature.toFloatOrNull()?.toInt() ?: 0,
+                            weather = data.weatherDesc,
+                            aqi = data.aqi,
+                            pm25 = data.pm25,
+                            humidity = data.humidity.toFloatOrNull()?.toInt() ?: 0,
+                            weatherCode = data.weatherCode
+                        )
+                    }
+                    is ApiResult.Error -> {
+                        // 天气API调用失败时保持现有状态，不做更新
+                    }
+                    else -> {}
+                }
+            }
+        }
     }
 
     /**
@@ -774,6 +827,92 @@ class HomeViewModel @Inject constructor(
                 )
             }
             else -> emptyList()
+        }
+    }
+
+    // ==================== 房屋列表管理 ====================
+
+    /**
+     * 加载当前用户的房屋列表（用于房屋选择器）
+     */
+    fun loadMyHouses() {
+        viewModelScope.launch {
+            _myHousesState.value = UiDataState.Loading
+            userRepository.getMyHouses().collectLatest { result ->
+                when (result) {
+                    is ApiResult.Loading -> _myHousesState.value = UiDataState.Loading
+                    is ApiResult.Success -> _myHousesState.value = UiDataState.Success(result.data)
+                    is ApiResult.Error -> _myHousesState.value = UiDataState.Error(result.exception)
+                }
+            }
+        }
+    }
+
+    /**
+     * 切换到指定房屋
+     * 会更新 TokenManager 中的当前房屋ID，并刷新所有数据
+     *
+     * @param houseId 目标房屋ID
+     */
+    fun switchHouse(houseId: String) {
+        val currentHouseId = tokenManager.getCurrentHouseId()
+        if (houseId == currentHouseId) return // 同一房屋不做切换
+        tokenManager.setCurrentHouseId(houseId)
+        refresh()
+    }
+
+    /**
+     * 获取当前房屋ID（供 UI 层使用）
+     */
+    fun getCurrentHouseId(): String = tokenManager.getCurrentHouseId()
+
+    // ==================== 度假模式管理 ====================
+
+    /**
+     * 设置度假模式
+     *
+     * @param returnTime 归期时间戳（秒）
+     * @param tempSet 度假温度设置（可选）
+     * @param humiditySet 度假湿度设置（可选）
+     */
+    fun setVacationMode(returnTime: Long, tempSet: String? = null, humiditySet: String? = null) {
+        val houseId = tokenManager.getCurrentHouseId()
+        if (houseId.isEmpty()) return
+        viewModelScope.launch {
+            _deviceOperationState.value = UiDataState.Loading
+            homeRepository.setVacationMode(houseId.toInt(), returnTime, tempSet, humiditySet)
+                .collectLatest { result ->
+                    when (result) {
+                        is ApiResult.Loading -> _deviceOperationState.value = UiDataState.Loading
+                        is ApiResult.Success -> {
+                            _deviceOperationState.value = UiDataState.Success(Unit)
+                            // 刷新场景列表以反映度假模式状态
+                            loadSceneList(houseId)
+                        }
+                        is ApiResult.Error -> _deviceOperationState.value =
+                            UiDataState.Error(result.exception)
+                    }
+                }
+        }
+    }
+
+    /**
+     * 获取当前房屋的度假模式状态
+     */
+    fun getVacationStatus() {
+        val houseId = tokenManager.getCurrentHouseId()
+        if (houseId.isEmpty()) return
+        viewModelScope.launch {
+            homeRepository.getVacationStatus(houseId.toInt()).collectLatest { result ->
+                when (result) {
+                    is ApiResult.Success -> {
+                        if (result.data.active) {
+                            _uiState.value = _uiState.value.copy(preheatPreheatEnabled = true)
+                        }
+                    }
+                    else -> {}
+                }
+            }
         }
     }
 }

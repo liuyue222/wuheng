@@ -34,7 +34,7 @@ import javax.inject.Singleton
  * 6. 记住密码功能（安全存储登录凭证）
  */
 @Singleton
-class TokenManager @Inject constructor(
+open class TokenManager @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
 
@@ -210,7 +210,7 @@ class TokenManager @Inject constructor(
     /**
      * 获取当前房屋ID（同步）
      */
-    fun getCurrentHouseId(): String = _currentHouseId.value
+    open fun getCurrentHouseId(): String = _currentHouseId.value
 
     /**
      * 检查是否已选择房屋

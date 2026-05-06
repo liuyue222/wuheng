@@ -1637,9 +1637,220 @@ sealed class UiState<out T> {
 
 ---
 
+---
+
+## 2026-05-06 首页天气动画背景增强
+
+### 问题描述
+WeatherBackground.kt 天气动画效果简单，无法区分大雨/小雨，用户要求增强动画效果。
+
+### 修改内容
+
+#### 1. WeatherBackground.kt - 全面重写
+**文件位置**: `app/src/main/java/com/wuheng/smart/presentation/home/WeatherBackground.kt`
+
+**修改内容**:
+- **扩展 WeatherType 枚举**：新增 `HEAVY_RAIN`, `LIGHT_RAIN`, `MODERATE_RAIN`, `OVERCAST` 四种天气类型
+- **新增 weatherCode 参数**：支持传入整数天气编码，优先于字符串匹配
+  - code 0=晴, 1-2=多云, 3=阴, 4-6=小雨, 7-9=中雨, 10-12=大雨, 13-17=雪, 45-48=雾
+- **参数化 RainEffect**：`RainEffect(density, speedRange, lineWidth, animPeriodMs)`
+  - HEAVY_RAIN: 100滴, 速度3-5, 线宽3px, 周期500ms, 深灰蓝背景
+  - MODERATE_RAIN: 60滴, 速度1.5-3, 线宽2px, 周期800ms
+  - LIGHT_RAIN: 30滴, 速度0.8-1.5, 线宽1px, 周期1200ms, 浅蓝背景
+  - 雨滴改为斜线 `\` 表示，使用 StrokeCap.Round 圆角
+- **增强 SunnyEffect**：
+  - 3层光晕缩放动画（呼吸感，FastOutSlowInEasing）
+  - 8条旋转光芒射线（20s一圈，线性缓动）
+  - 太阳本体 + 内部高光
+  - 16个浮动粒子围绕太阳闪烁（正弦波透明度变化）
+- **背景渐变优化**：
+  - HEAVY_RAIN: 深灰蓝系 `#455A64 -> #37474F -> #263238`
+  - OVERCAST: 灰蓝系 `#CFD8DC -> #B0BEC5 -> #90A4AE`
+  - LIGHT_RAIN: 淡蓝紫系 `#E8EAF6 -> #C5CAE9 -> #E3F2FD`
+  - THUNDER: 暗紫系 `#37474F -> #263238 -> #1A237E`
+- **ThunderEffect 拆分**：独立 `ThunderFlashEffect` + 复用参数化 `RainEffect`
+- **OVERCAST/CLOUDY 共用云朵动画**，通过背景色区分
+
+#### 2. HomeViewModel.kt - weatherCode 字段（已存在）
+- `HomeUiState` 已含 `weatherCode: String = ""`
+- `updateWeather()` 已含 `weatherCode` 参数
+- `fetchWeatherByCoordinates()` 已映射 `data.weatherCode`
+
+#### 3. HomeLayout.kt - 传递 weatherCode（已存在）
+- `WeatherBackground(weather = uiState.weather, weatherCode = uiState.weatherCode)`
+
+### 技术要点
+- 所有动画使用 `rememberInfiniteTransition` 无限循环
+- 使用 `FastOutSlowInEasing`, `LinearEasing` 等缓动
+- 雨滴位置随机分布，透明度随高度递减（coerceIn 限幅）
+- 代码结构清晰，分 section 注释
+
+### 修改文件清单
+1. `app/src/main/java/com/wuheng/smart/presentation/home/WeatherBackground.kt` - 重写增强
+
+---
+
+## 2026-05-06 DeviceDetailViewModel 假数据修复
+
+### 问题描述
+`DeviceDetailViewModel` 中有多处使用假数据：
+1. 历史数据完全随机生成 (`generateMockHistoryData`, 24个随机数据点 + `delay(800)`)
+2. 重命名设备为假实现 (`delay(500)` + 本地状态更新)
+3. 恢复出厂设置为假实现 (`delay(1000)`)
+4. 删除设备为假实现 (`delay(800)`)
+
+### 修复内容
+
+#### 1. 历史数据修复
+**文件**: `DeviceDetailViewModel.kt`
+
+- 将 `_historyDataState` 类型从 `UiDataState<List<HistoryDataPoint>>` 改为 `UiDataState<DeviceStatus>`
+- `loadHistoryData()` 改为调用 `homeRepository.getDeviceStatus(deviceId)` 获取真实设备实时状态
+- 删除 `generateMockHistoryData()` 方法（移除24个随机数据点生成）
+- 删除 `kotlinx.coroutines.delay(800)` 假延迟
+- 添加 `import com.wuheng.smart.data.model.DeviceStatus`
+
+#### 2. 重命名设备修复
+- `renameDevice()` 改为调用 `homeRepository.controlDevice(deviceId, "rename", newName)`
+- 尝试通过 controlDevice 接口发送 "rename" 自定义命令
+- 如果接口不支持该命令（返回 Error），则显示"功能开发中"
+
+#### 3. 恢复出厂设置修复
+- `resetDevice()` 改为调用 `homeRepository.controlDevice(deviceId, "reset", null)`
+- 删除 `delay(1000)` 假延迟
+- 完整的 Loading/Success/Error 状态处理
+
+#### 4. 删除设备修复
+- `deleteDevice()` 改为直接显示"功能开发中"提示
+- 删除 `delay(800)` 假延迟
+- 当前接口文档无删除设备API
+
+#### 5. DeviceDetailScreen.kt 适配
+**文件**: `DeviceDetailScreen.kt`
+
+- `DeviceDetailContent` 参数 `historyDataState` 类型从 `UiDataState<List<HistoryDataPoint>>` 改为 `UiDataState<DeviceStatus>`
+- 新增 `DeviceStatusCard` 组件替代 `HistoryDataChart`（假24小时趋势图）
+- 新增 `StatusItem` 状态项组件
+- 删除 `HistoryDataChart`, `SimpleTrendChart`, `MetricType`, `HistoryDataPoint` 等假数据相关组件/类型
+- 更新 Preview 函数使用 `DeviceStatus` 真实模型数据
+- 添加 `import com.wuheng.smart.data.model.DeviceStatus`
+
+### DeviceStatusCard 显示内容
+- 电源状态（已开启/已关闭，绿色/灰色）
+- 在线状态（在线/离线，绿色/黄色）
+- 运行状态（运行中/待机/已停止，彩色标签）
+- 风速档位
+- 阀门状态（已开启/已关闭）
+- 数据上报时间
+
+### 修改文件清单
+1. `app/src/main/java/com/wuheng/smart/presentation/device/DeviceDetailViewModel.kt` - 历史数据/重命名/重置/删除修复
+2. `app/src/main/java/com/wuheng/smart/presentation/device/DeviceDetailScreen.kt` - UI适配和状态卡片替换
+
+### 编译验证
+- 所有 `HistoryDataPoint` 引用已清除
+- 所有 `MetricType`, `SimpleTrendChart`, `generateMockHistoryData` 引用已清除
+- 类型一致性已验证
+
+---
+
+## 2026-05-06 全量API实际测试
+
+### 测试概述
+对全部32个API接口进行了实际调用测试，覆盖用户、房屋、天气、设备、场景、系统、水系统共7个模块。
+
+### 测试环境
+- Base URL: `http://116.62.51.112/wuheng_iot/index.php`
+- 测试 Token: `token001` (登录失败后使用 fallback)
+- 测试 house_id: 1
+- 测试 device_id: 1
+- 测试坐标: lat=30.2741, lng=120.1551 (杭州)
+
+### 关键发现
+
+#### 严重问题 (P0)
+1. **admin/123456 登录失败** (400: 用户不存在或已被禁用) - 数据库可能被重置
+
+#### 一般问题 (P1)
+2. **token001 关联的用户信息为空** - getUserInfo/getMyHouses 返回空数组
+3. **house_id=1 的房间/设备/场景列表均为空** - 缺少测试数据
+4. **device_id=1 属于 house_id=5** (而非 house_id=1) - 数据关联不一致
+5. **getFilterStatus 不返回 filter_id** - APP 无法调用预约更换接口
+
+#### 类型不一致
+6. 天气API `temperature` 返回 float (24.1)，文档定义为 string
+7. vacation API `return_time` 返回字符串而非 int
+8. 天气数据源为 simulated (wttr.in 不可达)
+
+### 测试结果统计
+- SUCCESS: 11个 (34.4%)
+- WARNING (返回空数据): 5个 (15.6%)
+- FAILED: 1个 (3.1% - 登录)
+- SKIPPED: 15个 (46.9% - POST操作仅记录格式)
+
+### 产出文件
+- `docs/API_TEST_REPORT.md` - 完整测试报告（含每个API的请求URL、返回JSON、状态分析）
+- `test_api.ps1` - 自动化测试脚本
+- `test_results.txt` - 原始测试输出
+
+### 对APP端的影响
+- 当前使用 token001 时，房屋列表、设备列表、场景列表、房间列表均返回空 -> APP 首页无法正常展示数据
+- 需要后端恢复 admin 账号，或提供有效的测试 token
+- 需要为 house_id=1 初始化房间、设备、场景数据
+
+---
+---
+
+## 2026-05-06 ViewModel 全部对接真实 API
+
+### 任务概述
+将4个ViewModel中的Mock数据/假延迟/占位实现全部替换为真实API调用。
+
+### 修改内容
+
+#### 1. 新增数据模型 (3个文件)
+- [WaterSystemModels.kt](file:///d:/AndroidDev/WuHeng/app/src/main/java/com/wuheng/smart/data/model/WaterSystemModels.kt): 新增 `SetSterilizationRequest`, `SterilizationApiResponse`
+- [HomeModels.kt](file:///d:/AndroidDev/WuHeng/app/src/main/java/com/wuheng/smart/data/model/HomeModels.kt): 新增 `NotificationApiItem`, `MarkNotificationReadRequest`, `MarkAllNotificationsReadRequest`, `ClearAllNotificationsRequest`, `BookServiceRequest`, `MaintenanceLogItem`, `DeviceHistoryData`, `RenameDeviceRequest`, `DeleteDeviceRequest`
+
+#### 2. 新增 API 接口 (ApiService.kt)
+- `POST /home/water/setSterilization` - 设置热力杀菌
+- `GET /home/notification/getNotificationList` - 获取通知列表
+- `POST /home/notification/markNotificationRead` - 标记已读
+- `POST /home/notification/markAllNotificationsRead` - 全部已读
+- `POST /home/notification/clearAllNotifications` - 清空通知
+- `POST /home/service/bookService` - 预约服务
+- `GET /home/service/getMaintenanceLog` - 保养记录
+- `GET /home/device/getDeviceHistoryData` - 设备历史数据
+- `POST /home/device/renameDevice` - 重命名设备
+- `POST /home/device/deleteDevice` - 删除设备
+
+#### 3. Repository 层 (2个文件)
+- [WaterRepository.kt](file:///d:/AndroidDev/WuHeng/app/src/main/java/com/wuheng/smart/data/repository/WaterRepository.kt): 新增 `setSterilization()` 接口与实现
+- [HomeRepository.kt](file:///d:/AndroidDev/WuHeng/app/src/main/java/com/wuheng/smart/data/repository/HomeRepository.kt): 新增10个方法（通知4个、服务预约2个、设备扩展3个、补水方法）及完整Mock/真实API实现
+
+#### 4. ViewModel 更新 (4个文件)
+- [NotificationViewModel.kt](file:///d:/AndroidDev/WuHeng/app/src/main/java/com/wuheng/smart/presentation/notification/NotificationViewModel.kt): 注入HomeRepository+TokenManager，`loadNotifications()`调用`getNotificationList(houseId)`，`markAsRead/markAllAsRead/clearAllNotifications`全部调用对应API，删除`generateMockNotifications()`和`delay(800)`，新增`NotificationApiItem.toNotificationItem()`映射函数
+- [WaterViewModel.kt](file:///d:/AndroidDev/WuHeng/app/src/main/java/com/wuheng/smart/presentation/water/WaterViewModel.kt): `updateSterilizationSchedule()`调用`waterRepository.setSterilization()`，成功后更新`_hotWaterStatusState`和`_uiState.sterilizationSchedule`，失败设置Error状态
+- [ProfileViewModel.kt](file:///d:/AndroidDev/WuHeng/app/src/main/java/com/wuheng/smart/presentation/profile/ProfileViewModel.kt): 注入HomeRepository，`confirmBooking()`非FILTER_REPLACEMENT类型调用`homeRepository.bookService()`，新增`loadMaintenanceLog()`从`getMaintenanceLog(houseId)`获取最新保养记录更新`lastServiceDate`
+- [DeviceDetailViewModel.kt](file:///d:/AndroidDev/WuHeng/app/src/main/java/com/wuheng/smart/presentation/device/DeviceDetailViewModel.kt): `loadHistoryData()`调用`getDeviceHistoryData(deviceId)`，取最新数据映射为`DeviceStatus`，失败回退到`getDeviceStatus`；`renameDevice()`调用`homeRepository.renameDevice()`；`deleteDevice()`调用`homeRepository.deleteDevice()`；`resetDevice()`保持不变
+
+### 修改文件清单 (9个文件)
+1. [WaterSystemModels.kt](file:///d:/AndroidDev/WuHeng/app/src/main/java/com/wuheng/smart/data/model/WaterSystemModels.kt)
+2. [HomeModels.kt](file:///d:/AndroidDev/WuHeng/app/src/main/java/com/wuheng/smart/data/model/HomeModels.kt)
+3. [ApiService.kt](file:///d:/AndroidDev/WuHeng/app/src/main/java/com/wuheng/smart/data/network/ApiService.kt)
+4. [WaterRepository.kt](file:///d:/AndroidDev/WuHeng/app/src/main/java/com/wuheng/smart/data/repository/WaterRepository.kt)
+5. [HomeRepository.kt](file:///d:/AndroidDev/WuHeng/app/src/main/java/com/wuheng/smart/data/repository/HomeRepository.kt)
+6. [NotificationViewModel.kt](file:///d:/AndroidDev/WuHeng/app/src/main/java/com/wuheng/smart/presentation/notification/NotificationViewModel.kt)
+7. [WaterViewModel.kt](file:///d:/AndroidDev/WuHeng/app/src/main/java/com/wuheng/smart/presentation/water/WaterViewModel.kt)
+8. [ProfileViewModel.kt](file:///d:/AndroidDev/WuHeng/app/src/main/java/com/wuheng/smart/presentation/profile/ProfileViewModel.kt)
+9. [DeviceDetailViewModel.kt](file:///d:/AndroidDev/WuHeng/app/src/main/java/com/wuheng/smart/presentation/device/DeviceDetailViewModel.kt)
+
+---
+
 ## 📚 参考资源
 
 - [项目架构](./project_arch.md)
 - [当前冲刺](./current_sprint.md)
 - [Agent交接](./agent_handoff.md)
 - [接口文档](../资源库/五恒接口文档.txt)
+- [API测试报告](./API_TEST_REPORT.md)

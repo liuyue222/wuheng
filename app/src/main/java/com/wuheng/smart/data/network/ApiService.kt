@@ -43,9 +43,10 @@ interface ApiService {
      * URL: /home/user/getUserInfo
      * Method: GET
      * 认证: 是
+     * data字段可能返回对象{}或空数组[]，用JsonElement兼容
      */
     @GET("home/user/getUserInfo")
-    suspend fun getUserInfo(): BaseResponse<UserInfo>
+    suspend fun getUserInfo(): BaseResponse<com.google.gson.JsonElement>
 
     /**
      * 5. 更新用户信息
@@ -126,6 +127,9 @@ interface ApiService {
         @Query("floor_id") floorId: Int? = null
     ): BaseResponse<List<RoomInfo>>
 
+    @GET("home/house/getMaintenanceLog")
+    suspend fun getMaintenanceLog(@Query("house_id") houseId: Int): BaseResponse<List<MaintenanceLogItem>>
+
     // ==================== 三、设备模块 (4个接口) ====================
 
     /**
@@ -167,6 +171,20 @@ interface ApiService {
     @POST("home/device/controlDevice")
     suspend fun controlDevice(@Body request: ControlDeviceRequest): BaseResponse<ControlDeviceResponse>
 
+    @GET("home/device/getHistoryData")
+    suspend fun getDeviceHistoryData(
+        @Query("device_id") deviceId: Int,
+        @Query("data_type") dataType: String? = null,
+        @Query("start_time") startTime: Long? = null,
+        @Query("end_time") endTime: Long? = null
+    ): BaseResponse<List<HistoryDataPoint>>
+
+    @POST("home/device/renameDevice")
+    suspend fun renameDevice(@Body request: RenameDeviceRequest): BaseResponse<Unit>
+
+    @POST("home/device/deleteDevice")
+    suspend fun deleteDevice(@Body request: DeleteDeviceRequest): BaseResponse<Unit>
+
     // ==================== 四、场景模块 (3个接口) ====================
 
     /**
@@ -195,6 +213,33 @@ interface ApiService {
      */
     @POST("home/scene/saveScene")
     suspend fun saveScene(@Body request: SaveSceneRequest): BaseResponse<Unit>
+
+    /**
+     * 4. 设置度假模式
+     * URL: /home/scene/setVacationMode
+     * Method: POST
+     * 认证: 是
+     */
+    @POST("home/scene/setVacationMode")
+    suspend fun setVacationMode(@Body request: SetVacationModeRequest): BaseResponse<SetVacationModeResponse>
+
+    /**
+     * 5. 获取度假模式状态
+     * URL: /home/scene/getVacationStatus
+     * Method: GET
+     * 认证: 是
+     */
+    @GET("home/scene/getVacationStatus")
+    suspend fun getVacationStatus(@Query("house_id") houseId: Int): BaseResponse<VacationStatusResponse>
+
+    /**
+     * 6. 取消度假模式
+     * URL: /home/scene/cancelVacationMode
+     * Method: POST
+     * 认证: 是
+     */
+    @POST("home/scene/cancelVacationMode")
+    suspend fun cancelVacationMode(@Body request: CancelVacationRequest): BaseResponse<Unit>
 
     // ==================== 五、系统模块 (4个接口) ====================
 
@@ -234,23 +279,30 @@ interface ApiService {
     @POST("home/system/setGlobalHumidity")
     suspend fun setGlobalHumidity(@Body request: SetGlobalHumidityRequest): BaseResponse<Unit>
 
+    // getSystemParams / setSystemParams -- 接口文档中不存在，暂不可用
+
+    // ==================== 七、天气模块 (2个接口) ====================
+
     /**
-     * 5. 获取系统参数
-     * URL: /home/system/getSystemParams
+     * 1. 获取天气数据
+     * URL: /home/weather/getWeather
+     * Method: GET
+     * 认证: 否
+     */
+    @GET("home/weather/getWeather")
+    suspend fun getWeather(
+        @Query("lat") lat: String,
+        @Query("lng") lng: String
+    ): BaseResponse<WeatherData>
+
+    /**
+     * 2. 获取室外环境
+     * URL: /home/weather/getOutdoorEnv
      * Method: GET
      * 认证: 是
      */
-    @GET("home/system/getSystemParams")
-    suspend fun getSystemParams(@Query("house_id") houseId: Int): BaseResponse<SystemParams>
-
-    /**
-     * 6. 设置系统参数
-     * URL: /home/system/setSystemParams
-     * Method: POST
-     * 认证: 是
-     */
-    @POST("home/system/setSystemParams")
-    suspend fun setSystemParams(@Body request: SetSystemParamsRequest): BaseResponse<SetSystemParamsResponse>
+    @GET("home/weather/getOutdoorEnv")
+    suspend fun getOutdoorEnv(@Query("house_id") houseId: Int): BaseResponse<OutdoorEnv>
 
     // ==================== 六、水系统模块 (4个接口) ====================
 
@@ -272,14 +324,7 @@ interface ApiService {
     @POST("home/water/setCirculationMode")
     suspend fun setCirculationMode(@Body request: SetCirculationModeRequest): BaseResponse<SetCirculationModeResponse>
 
-    /**
-     * 3. 获取净水状态
-     * URL: /home/water/getWaterPurifierStatus
-     * Method: GET
-     * 认证: 是
-     */
-    @GET("home/water/getWaterPurifierStatus")
-    suspend fun getWaterPurifierStatus(@Query("house_id") houseId: Int): BaseResponse<WaterPurifierStatusResponse>
+    // getWaterPurifierStatus -- 接口文档中不存在，暂不可用
 
     /**
      * 4. 获取滤芯状态
@@ -298,5 +343,33 @@ interface ApiService {
      */
     @POST("home/water/bookFilterReplace")
     suspend fun bookFilterReplace(@Body request: BookFilterReplaceRequest): BaseResponse<Unit>
+
+    /**
+     * 6. 设置热力杀菌
+     * URL: /home/water/setSterilization
+     * Method: POST
+     * 认证: 是
+     */
+    @POST("home/water/setSterilization")
+    suspend fun setSterilization(@Body request: SetSterilizationRequest): BaseResponse<SterilizationApiResponse>
+
+    // ==================== 八、通知模块 (4个接口) ====================
+
+    @GET("home/notification/getList")
+    suspend fun getNotificationList(): BaseResponse<List<NotificationApiItem>>
+
+    @POST("home/notification/markRead")
+    suspend fun markNotificationRead(@Body request: MarkNotificationReadRequest): BaseResponse<Unit>
+
+    @POST("home/notification/markAllRead")
+    suspend fun markAllNotificationsRead(): BaseResponse<Unit>
+
+    @POST("home/notification/clearAll")
+    suspend fun clearAllNotifications(): BaseResponse<Unit>
+
+    // ==================== 九、服务预约模块 (1个接口) ====================
+
+    @POST("home/service/book")
+    suspend fun bookService(@Body request: BookServiceRequest): BaseResponse<Unit>
 
 }

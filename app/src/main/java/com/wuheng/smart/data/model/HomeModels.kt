@@ -219,3 +219,21 @@ enum class DeviceRunningStatus {
     STANDBY,
     ERROR
 }
+
+
+data class MaintenanceLogItem(
+    @SerializedName("log_id")
+    val logId: Int,
+    @SerializedName("service_type")
+    val serviceType: String,
+    @SerializedName("service_date")
+    val serviceDate: String,
+    @SerializedName("description")
+    val description: String? = null,
+    @SerializedName("contact_name")
+    val contactName: String? = null,
+    @SerializedName("contact_phone")
+    val contactPhone: String? = null,
+    @SerializedName("status")
+    val status: String? = null
+)

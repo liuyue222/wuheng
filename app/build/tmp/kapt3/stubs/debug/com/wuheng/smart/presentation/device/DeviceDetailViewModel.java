@@ -2,6 +2,7 @@ package com.wuheng.smart.presentation.device;
 
 import com.wuheng.smart.data.model.DeviceData;
 import com.wuheng.smart.data.model.DeviceInfo;
+import com.wuheng.smart.data.model.DeviceStatus;
 import com.wuheng.smart.data.network.ApiResult;
 import com.wuheng.smart.data.repository.HomeRepository;
 import com.wuheng.smart.presentation.base.BaseViewModel;
@@ -27,7 +28,7 @@ import javax.inject.Inject;
  * @param homeRepository 首页数据仓库
  */
 @dagger.hilt.android.lifecycle.HiltViewModel()
-@kotlin.Metadata(mv = {1, 7, 1}, k = 1, d1 = {"\u0000R\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010 \n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\n\n\u0002\u0010\b\n\u0000\n\u0002\u0010\u000e\n\u0002\b\u0015\n\u0002\u0010\u000b\n\u0000\b\u0007\u0018\u00002\u00020\u0001B\u000f\b\u0007\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u00a2\u0006\u0002\u0010\u0004J$\u0010\u001a\u001a\u00020\u000f2\u0006\u0010\u001b\u001a\u00020\u001c2\u0006\u0010\u001d\u001a\u00020\u001e2\n\b\u0002\u0010\u001f\u001a\u0004\u0018\u00010\u001eH\u0002J\u000e\u0010 \u001a\u00020\u000f2\u0006\u0010\u001b\u001a\u00020\u001cJ\u000e\u0010!\u001a\b\u0012\u0004\u0012\u00020\r0\fH\u0002J\u000e\u0010\"\u001a\u00020\u000f2\u0006\u0010\u001b\u001a\u00020\u001cJ\u000e\u0010#\u001a\u00020\u000f2\u0006\u0010\u001b\u001a\u00020\u001cJ\u000e\u0010$\u001a\u00020\u000f2\u0006\u0010\u001b\u001a\u00020\u001cJ\u000e\u0010%\u001a\u00020\u000f2\u0006\u0010\u001b\u001a\u00020\u001cJ\u0016\u0010&\u001a\u00020\u000f2\u0006\u0010\u001b\u001a\u00020\u001c2\u0006\u0010\'\u001a\u00020\u001eJ\u000e\u0010(\u001a\u00020\u000f2\u0006\u0010\u001b\u001a\u00020\u001cJ\u0006\u0010)\u001a\u00020\u000fJ\u0016\u0010*\u001a\u00020\u000f2\u0006\u0010\u001b\u001a\u00020\u001c2\u0006\u0010+\u001a\u00020\u001cJ\u0016\u0010,\u001a\u00020\u000f2\u0006\u0010\u001b\u001a\u00020\u001c2\u0006\u0010-\u001a\u00020\u001eJ\u0016\u0010.\u001a\u00020\u000f2\u0006\u0010\u001b\u001a\u00020\u001c2\u0006\u0010/\u001a\u00020\u001eJ\u000e\u00100\u001a\u00020\u000f2\u0006\u0010\u001b\u001a\u00020\u001cJ\u000e\u00101\u001a\u00020\u000f2\u0006\u0010\u001b\u001a\u00020\u001cJ\u0016\u00102\u001a\u00020\u000f2\u0006\u0010\u001b\u001a\u00020\u001c2\u0006\u00103\u001a\u000204R\u001a\u0010\u0005\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\b0\u00070\u0006X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\t\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\n0\u00070\u0006X\u0082\u0004\u00a2\u0006\u0002\n\u0000R \u0010\u000b\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\r0\f0\u00070\u0006X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\u000e\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u000f0\u00070\u0006X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001d\u0010\u0010\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\b0\u00070\u0011\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0012\u0010\u0013R\u001d\u0010\u0014\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\n0\u00070\u0011\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0015\u0010\u0013R#\u0010\u0016\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\r0\f0\u00070\u0011\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0017\u0010\u0013R\u000e\u0010\u0002\u001a\u00020\u0003X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001d\u0010\u0018\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u000f0\u00070\u0011\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0019\u0010\u0013\u00a8\u00065"}, d2 = {"Lcom/wuheng/smart/presentation/device/DeviceDetailViewModel;", "Lcom/wuheng/smart/presentation/base/BaseViewModel;", "homeRepository", "Lcom/wuheng/smart/data/repository/HomeRepository;", "(Lcom/wuheng/smart/data/repository/HomeRepository;)V", "_deviceDataState", "Lkotlinx/coroutines/flow/MutableStateFlow;", "Lcom/wuheng/smart/presentation/base/UiDataState;", "Lcom/wuheng/smart/data/model/DeviceData;", "_deviceInfoState", "Lcom/wuheng/smart/data/model/DeviceInfo;", "_historyDataState", "", "Lcom/wuheng/smart/presentation/device/HistoryDataPoint;", "_operationState", "", "deviceDataState", "Lkotlinx/coroutines/flow/StateFlow;", "getDeviceDataState", "()Lkotlinx/coroutines/flow/StateFlow;", "deviceInfoState", "getDeviceInfoState", "historyDataState", "getHistoryDataState", "operationState", "getOperationState", "controlDevice", "deviceId", "", "command", "", "value", "deleteDevice", "generateMockHistoryData", "loadDeviceData", "loadDeviceInfo", "loadHistoryData", "refreshDeviceData", "renameDevice", "newName", "resetDevice", "resetOperationState", "setFanSpeed", "speed", "setMode", "mode", "setTemperature", "temperature", "tempDown", "tempUp", "togglePower", "powerOn", "", "app_debug"})
+@kotlin.Metadata(mv = {1, 7, 1}, k = 1, d1 = {"\u0000N\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\n\n\u0002\u0010\b\n\u0000\n\u0002\u0010\u000e\n\u0002\b\u0015\n\u0002\u0010\u000b\n\u0000\b\u0007\u0018\u00002\u00020\u0001B\u000f\b\u0007\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u00a2\u0006\u0002\u0010\u0004J$\u0010\u0019\u001a\u00020\u000e2\u0006\u0010\u001a\u001a\u00020\u001b2\u0006\u0010\u001c\u001a\u00020\u001d2\n\b\u0002\u0010\u001e\u001a\u0004\u0018\u00010\u001dH\u0002J\u000e\u0010\u001f\u001a\u00020\u000e2\u0006\u0010\u001a\u001a\u00020\u001bJ\u000e\u0010 \u001a\u00020\u000e2\u0006\u0010\u001a\u001a\u00020\u001bJ\u000e\u0010!\u001a\u00020\u000e2\u0006\u0010\u001a\u001a\u00020\u001bJ\u0010\u0010\"\u001a\u00020\u000e2\u0006\u0010\u001a\u001a\u00020\u001bH\u0002J\u000e\u0010#\u001a\u00020\u000e2\u0006\u0010\u001a\u001a\u00020\u001bJ\u000e\u0010$\u001a\u00020\u000e2\u0006\u0010\u001a\u001a\u00020\u001bJ\u0016\u0010%\u001a\u00020\u000e2\u0006\u0010\u001a\u001a\u00020\u001b2\u0006\u0010&\u001a\u00020\u001dJ\u000e\u0010\'\u001a\u00020\u000e2\u0006\u0010\u001a\u001a\u00020\u001bJ\u0006\u0010(\u001a\u00020\u000eJ\u0016\u0010)\u001a\u00020\u000e2\u0006\u0010\u001a\u001a\u00020\u001b2\u0006\u0010*\u001a\u00020\u001bJ\u0016\u0010+\u001a\u00020\u000e2\u0006\u0010\u001a\u001a\u00020\u001b2\u0006\u0010,\u001a\u00020\u001dJ\u0016\u0010-\u001a\u00020\u000e2\u0006\u0010\u001a\u001a\u00020\u001b2\u0006\u0010.\u001a\u00020\u001dJ\u000e\u0010/\u001a\u00020\u000e2\u0006\u0010\u001a\u001a\u00020\u001bJ\u000e\u00100\u001a\u00020\u000e2\u0006\u0010\u001a\u001a\u00020\u001bJ\u0016\u00101\u001a\u00020\u000e2\u0006\u0010\u001a\u001a\u00020\u001b2\u0006\u00102\u001a\u000203R\u001a\u0010\u0005\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\b0\u00070\u0006X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\t\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\n0\u00070\u0006X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\u000b\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\f0\u00070\u0006X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\r\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u000e0\u00070\u0006X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001d\u0010\u000f\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\b0\u00070\u0010\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0011\u0010\u0012R\u001d\u0010\u0013\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\n0\u00070\u0010\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0014\u0010\u0012R\u001d\u0010\u0015\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\f0\u00070\u0010\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0016\u0010\u0012R\u000e\u0010\u0002\u001a\u00020\u0003X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001d\u0010\u0017\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u000e0\u00070\u0010\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0018\u0010\u0012\u00a8\u00064"}, d2 = {"Lcom/wuheng/smart/presentation/device/DeviceDetailViewModel;", "Lcom/wuheng/smart/presentation/base/BaseViewModel;", "homeRepository", "Lcom/wuheng/smart/data/repository/HomeRepository;", "(Lcom/wuheng/smart/data/repository/HomeRepository;)V", "_deviceDataState", "Lkotlinx/coroutines/flow/MutableStateFlow;", "Lcom/wuheng/smart/presentation/base/UiDataState;", "Lcom/wuheng/smart/data/model/DeviceData;", "_deviceInfoState", "Lcom/wuheng/smart/data/model/DeviceInfo;", "_historyDataState", "Lcom/wuheng/smart/data/model/DeviceStatus;", "_operationState", "", "deviceDataState", "Lkotlinx/coroutines/flow/StateFlow;", "getDeviceDataState", "()Lkotlinx/coroutines/flow/StateFlow;", "deviceInfoState", "getDeviceInfoState", "historyDataState", "getHistoryDataState", "operationState", "getOperationState", "controlDevice", "deviceId", "", "command", "", "value", "deleteDevice", "loadDeviceData", "loadDeviceInfo", "loadDeviceStatusFallback", "loadHistoryData", "refreshDeviceData", "renameDevice", "newName", "resetDevice", "resetOperationState", "setFanSpeed", "speed", "setMode", "mode", "setTemperature", "temperature", "tempDown", "tempUp", "togglePower", "powerOn", "", "app_debug"})
 public final class DeviceDetailViewModel extends com.wuheng.smart.presentation.base.BaseViewModel {
     private final com.wuheng.smart.data.repository.HomeRepository homeRepository = null;
     
@@ -46,11 +47,11 @@ public final class DeviceDetailViewModel extends com.wuheng.smart.presentation.b
     private final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.base.UiDataState<com.wuheng.smart.data.model.DeviceData>> deviceDataState = null;
     
     /**
-     * 设备历史数据状态（24小时趋势）
+     * 设备状态数据（当前实时数据，替代历史趋势）
      */
-    private final kotlinx.coroutines.flow.MutableStateFlow<com.wuheng.smart.presentation.base.UiDataState<java.util.List<com.wuheng.smart.presentation.device.HistoryDataPoint>>> _historyDataState = null;
+    private final kotlinx.coroutines.flow.MutableStateFlow<com.wuheng.smart.presentation.base.UiDataState<com.wuheng.smart.data.model.DeviceStatus>> _historyDataState = null;
     @org.jetbrains.annotations.NotNull()
-    private final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.base.UiDataState<java.util.List<com.wuheng.smart.presentation.device.HistoryDataPoint>>> historyDataState = null;
+    private final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.base.UiDataState<com.wuheng.smart.data.model.DeviceStatus>> historyDataState = null;
     
     /**
      * 操作状态（用于控制设备）
@@ -76,7 +77,7 @@ public final class DeviceDetailViewModel extends com.wuheng.smart.presentation.b
     }
     
     @org.jetbrains.annotations.NotNull()
-    public final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.base.UiDataState<java.util.List<com.wuheng.smart.presentation.device.HistoryDataPoint>>> getHistoryDataState() {
+    public final kotlinx.coroutines.flow.StateFlow<com.wuheng.smart.presentation.base.UiDataState<com.wuheng.smart.data.model.DeviceStatus>> getHistoryDataState() {
         return null;
     }
     
@@ -102,18 +103,14 @@ public final class DeviceDetailViewModel extends com.wuheng.smart.presentation.b
     }
     
     /**
-     * 加载设备历史数据（24小时趋势）
+     * 加载设备历史数据
      *
      * @param deviceId 设备ID
      */
     public final void loadHistoryData(int deviceId) {
     }
     
-    /**
-     * 生成模拟历史数据
-     */
-    private final java.util.List<com.wuheng.smart.presentation.device.HistoryDataPoint> generateMockHistoryData() {
-        return null;
+    private final void loadDeviceStatusFallback(int deviceId) {
     }
     
     /**

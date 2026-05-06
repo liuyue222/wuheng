@@ -3,8 +3,12 @@ package com.wuheng.smart.data.repository
 import com.wuheng.smart.data.model.*
 import com.wuheng.smart.data.network.ApiResult
 import com.wuheng.smart.data.network.ApiService
+import com.wuheng.smart.data.network.AppException
 import com.wuheng.smart.data.network.RetryConfig
 import com.wuheng.smart.data.network.TokenManager
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import timber.log.Timber
@@ -263,7 +267,31 @@ class UserRepositoryImpl @Inject constructor(
             )
             ApiResult.Success(mockUserInfo)
         } else {
-            apiCall { apiService.getUserInfo() }
+            val rawResult = apiCall { apiService.getUserInfo() }
+            @Suppress("UNCHECKED_CAST")
+            when {
+                rawResult is ApiResult.Success && rawResult.data != null -> {
+                    val userInfo = when (rawResult.data) {
+                        is JsonObject -> {
+                            Gson().fromJson(rawResult.data, UserInfo::class.java)
+                        }
+                        is JsonArray -> {
+                            val array = rawResult.data.asJsonArray
+                            if (array.size() > 0) {
+                                Gson().fromJson(array.get(0), UserInfo::class.java)
+                            } else null
+                        }
+                        else -> null
+                    }
+                    if (userInfo != null) {
+                        ApiResult.Success(userInfo)
+                    } else {
+                        ApiResult.Error(AppException.BusinessError(400, "用户信息为空"))
+                    }
+                }
+                rawResult is ApiResult.Error -> rawResult
+                else -> ApiResult.Error(AppException.UnknownError("未知错误"))
+            }
         }
     }
 
@@ -316,10 +344,22 @@ class UserRepositoryImpl @Inject constructor(
             val mockHouses = listOf(
                 MyHouse(
                     houseId = 1,
+                    houseIdNo = "HOUSE202604190001",
                     houseName = "阳光花园别墅",
                     address = "浙江省杭州市西湖区文三路123号",
+                    ownerName = "张三",
+                    areaTotal = "280.00",
+                    systemType = "辐射空调系统",
                     bindType = "owner",
-                    bindTime = System.currentTimeMillis() / 1000
+                    bindTime = System.currentTimeMillis() / 1000,
+                    systemMode = "cooling",
+                    systemRunStatus = "running",
+                    indoorTemp = "24.50",
+                    indoorHumidity = "45.20",
+                    outdoorTemp = "26.00",
+                    deviceCount = 6,
+                    onlineCount = 5,
+                    alarmCount = 0
                 )
             )
             ApiResult.Success(mockHouses)

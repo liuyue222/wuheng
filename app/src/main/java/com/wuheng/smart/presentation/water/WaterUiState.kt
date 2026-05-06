@@ -35,8 +35,9 @@ enum class HotWaterMode {
  * 滤芯项目数据类
  */
 data class FilterItem(
+    val filterId: String = "",
     val name: String,
-    val progress: Float,  // 0.0 - 1.0
+    val progress: Float,
     val status: FilterUiStatus
 )
 

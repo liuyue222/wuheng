@@ -30,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.wuheng.smart.data.model.DeviceData
 import com.wuheng.smart.data.model.DeviceInfo
 import com.wuheng.smart.data.model.DeviceRunStatus
+import com.wuheng.smart.data.model.DeviceStatus
 import com.wuheng.smart.presentation.base.UiDataState
 import com.wuheng.smart.presentation.theme.*
 import java.text.SimpleDateFormat
@@ -111,7 +112,7 @@ fun DeviceDetailScreen(
 fun DeviceDetailContent(
     deviceInfoState: UiDataState<DeviceInfo>,
     deviceDataState: UiDataState<DeviceData>,
-    historyDataState: UiDataState<List<HistoryDataPoint>>,
+    historyDataState: UiDataState<DeviceStatus>,
     onNavigateBack: () -> Unit = {},
     onNavigateToEdit: () -> Unit = {},
     onRefresh: () -> Unit = {},
@@ -250,7 +251,7 @@ fun DeviceDetailContent(
             is UiDataState.Success -> {
                 val deviceInfo = (deviceInfoState as UiDataState.Success<DeviceInfo>).data
                 val deviceData = (deviceDataState as? UiDataState.Success<DeviceData>)?.data
-                val historyData = (historyDataState as? UiDataState.Success<List<HistoryDataPoint>>)?.data
+                val deviceStatus = (historyDataState as? UiDataState.Success<DeviceStatus>)?.data
 
                 LazyColumn(
                     modifier = Modifier
@@ -286,10 +287,10 @@ fun DeviceDetailContent(
                         DeviceDataCard(deviceData = deviceData)
                     }
 
-                    // 24小时趋势图表
+                    // 设备运行状态卡片（替代假24小时趋势图）
                     item {
-                        HistoryDataChart(
-                            historyData = historyData,
+                        DeviceStatusCard(
+                            deviceStatus = deviceStatus,
                             isLoading = historyDataState is UiDataState.Loading
                         )
                     }
@@ -921,15 +922,13 @@ private fun DataItem(
 }
 
 /**
- * 24小时历史数据图表 (新增)
+ * 设备运行状态卡片（替代假24小时趋势图，显示当前实时数据）
  */
 @Composable
-private fun HistoryDataChart(
-    historyData: List<HistoryDataPoint>?,
+private fun DeviceStatusCard(
+    deviceStatus: DeviceStatus?,
     isLoading: Boolean
 ) {
-    var selectedMetric by remember { mutableStateOf(MetricType.TEMPERATURE) }
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -944,169 +943,118 @@ private fun HistoryDataChart(
             .padding(card_padding_large)
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(spacing_lg)) {
-            // 标题行 + 指标切换
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "24小时趋势",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = TextPrimaryLight,
-                    fontSize = text_h3_size
-                )
-
-                // 指标切换按钮
-                Row(horizontalArrangement = Arrangement.spacedBy(spacing_xs)) {
-                    MetricType.values().forEach { metric ->
-                        val isSelected = selectedMetric == metric
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(corner_xs))
-                                .background(if (isSelected) PrimaryBlue else SurfaceVariantLight)
-                                .clickable { selectedMetric = metric }
-                                .padding(horizontal = spacing_md, vertical = spacing_xs),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = metric.label,
-                                style = MaterialTheme.typography.bodySmall,
-                                fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
-                                color = if (isSelected) Color.White else TextSecondaryLight,
-                                fontSize = 12.sp
-                            )
-                        }
-                    }
-                }
-            }
+            // 标题行
+            Text(
+                text = "运行状态",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = TextPrimaryLight,
+                fontSize = text_h3_size
+            )
 
             if (isLoading) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(150.dp),
+                        .height(120.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(color = PrimaryBlue, modifier = Modifier.size(32.dp))
                 }
-            } else if (historyData.isNullOrEmpty()) {
+            } else if (deviceStatus == null) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(150.dp),
+                        .height(120.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "暂无历史数据",
+                        text = "暂无状态数据",
                         style = MaterialTheme.typography.bodyMedium,
                         color = TextTertiaryLight
                     )
                 }
             } else {
-                // 简化的趋势图
-                SimpleTrendChart(
-                    data = historyData,
-                    metricType = selectedMetric,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                )
-            }
-        }
-    }
-}
-
-/**
- * 指标类型枚举
- */
-enum class MetricType(val label: String) {
-    TEMPERATURE("温度"),
-    HUMIDITY("湿度"),
-    CO2("CO2")
-}
-
-/**
- * 历史数据点
- */
-data class HistoryDataPoint(
-    val timestamp: Long,
-    val temperature: Float,
-    val humidity: Float,
-    val co2: Int
-)
-
-/**
- * 简化趋势图
- */
-@Composable
-private fun SimpleTrendChart(
-    data: List<HistoryDataPoint>,
-    metricType: MetricType,
-    modifier: Modifier = Modifier
-) {
-    val values = when (metricType) {
-        MetricType.TEMPERATURE -> data.map { it.temperature }
-        MetricType.HUMIDITY -> data.map { it.humidity }
-        MetricType.CO2 -> data.map { it.co2.toFloat() }
-    }
-
-    val color = when (metricType) {
-        MetricType.TEMPERATURE -> TemperatureValueColor
-        MetricType.HUMIDITY -> HumidityValueColor
-        MetricType.CO2 -> Co2ValueColor
-    }
-
-    val minValue = values.minOrNull() ?: 0f
-    val maxValue = values.maxOrNull() ?: 100f
-    val range = (maxValue - minValue).coerceAtLeast(1f)
-
-    Box(modifier = modifier) {
-        // 这里使用简化的柱状图表示
-        val chunkedValues = values.chunked(values.size / 8 + 1)
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.Bottom
-        ) {
-            chunkedValues.forEach { chunk ->
-                val avgValue = chunk.average().toFloat()
-                val normalizedHeight = ((avgValue - minValue) / range).coerceIn(0f, 1f)
-
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Bottom
+                // 双列状态网格
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(spacing_md)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .width(8.dp)
-                            .fillMaxHeight(normalizedHeight * 0.8f + 0.1f)
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(color.copy(alpha = 0.7f))
-                    )
+                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacing_md)) {
+                        StatusItem(
+                            label = "电源",
+                            value = if (deviceStatus.power == 1) "已开启" else "已关闭",
+                            valueColor = if (deviceStatus.power == 1) SuccessGreen else TextTertiaryLight
+                        )
+                        StatusItem(
+                            label = "在线状态",
+                            value = if (deviceStatus.onlineStatus == 1) "在线" else "离线",
+                            valueColor = if (deviceStatus.onlineStatus == 1) SuccessGreen else WarningYellow
+                        )
+                        StatusItem(
+                            label = "运行状态",
+                            value = when (deviceStatus.runStatus) {
+                                "running" -> "运行中"
+                                "standby" -> "待机"
+                                "stopped" -> "已停止"
+                                else -> deviceStatus.runStatus
+                            },
+                            valueColor = when (deviceStatus.runStatus) {
+                                "running" -> SuccessGreen
+                                "standby" -> WarningYellow
+                                else -> TextTertiaryLight
+                            }
+                        )
+                    }
+                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(spacing_md)) {
+                        StatusItem(
+                            label = "风速",
+                            value = "档位 ${deviceStatus.fanSpeed ?: 1}",
+                            valueColor = TextSecondaryLight
+                        )
+                        StatusItem(
+                            label = "阀门",
+                            value = if (deviceStatus.valveOpen == 1) "已开启" else "已关闭",
+                            valueColor = if (deviceStatus.valveOpen == 1) PrimaryBlue else TextTertiaryLight
+                        )
+                        StatusItem(
+                            label = "数据上报",
+                            value = deviceStatus.reportTime?.let {
+                                val sdf = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+                                sdf.format(Date(it * 1000))
+                            } ?: "--",
+                            valueColor = TextTertiaryLight
+                        )
+                    }
                 }
             }
         }
+    }
+}
 
-        // 数值标签
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = String.format("%.1f", minValue),
-                style = MaterialTheme.typography.labelSmall,
-                color = TextTertiaryLight,
-                fontSize = 10.sp
-            )
-            Text(
-                text = String.format("%.1f", maxValue),
-                style = MaterialTheme.typography.labelSmall,
-                color = TextTertiaryLight,
-                fontSize = 10.sp
-            )
-        }
+/**
+ * 状态项组件
+ */
+@Composable
+private fun StatusItem(
+    label: String,
+    value: String,
+    valueColor: Color
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(spacing_xs)) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = TextTertiaryLight,
+            fontSize = 12.sp
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Medium,
+            color = valueColor,
+            fontSize = 16.sp
+        )
     }
 }
 
@@ -1382,14 +1330,20 @@ fun DeviceDetailSuccessPreview() {
                 )
             ),
             historyDataState = UiDataState.Success(
-                List(24) { index ->
-                    HistoryDataPoint(
-                        timestamp = System.currentTimeMillis() - (23 - index) * 3600000,
-                        temperature = 22f + kotlin.random.Random.nextFloat() * 4,
-                        humidity = 50f + kotlin.random.Random.nextFloat() * 20,
-                        co2 = 400 + kotlin.random.Random.nextInt(400)
-                    )
-                }
+                DeviceStatus(
+                    deviceId = 1,
+                    onlineStatus = 1,
+                    runStatus = "running",
+                    power = 1,
+                    temperature = "24.5",
+                    humidity = "55",
+                    co2 = 650,
+                    pm25 = 25,
+                    voc = 150,
+                    fanSpeed = 2,
+                    valveOpen = 1,
+                    reportTime = System.currentTimeMillis() / 1000
+                )
             )
         )
     }
@@ -1407,7 +1361,7 @@ fun DeviceDetailErrorPreview() {
                 com.wuheng.smart.data.network.AppException.UnknownError("数据加载失败")
             ),
             historyDataState = UiDataState.Error(
-                com.wuheng.smart.data.network.AppException.UnknownError("历史数据加载失败")
+                com.wuheng.smart.data.network.AppException.UnknownError("状态数据加载失败")
             )
         )
     }

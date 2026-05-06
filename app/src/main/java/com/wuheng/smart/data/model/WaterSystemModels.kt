@@ -20,7 +20,9 @@ data class HotWaterStatusResponse(
     @SerializedName("sterilization_enable")
     val sterilizationEnable: Int,
     @SerializedName("sterilization_time")
-    val sterilizationTime: String
+    val sterilizationTime: String,
+    @SerializedName("sterilization_day")
+    val sterilizationDay: String = ""
 )
 
 /**
@@ -126,6 +128,36 @@ enum class FilterType(val value: String) {
         }
     }
 }
+
+/**
+ * 热力杀菌设置请求
+ */
+data class SetSterilizationRequest(
+    @SerializedName("house_id")
+    val houseId: Int,
+    @SerializedName("enable")
+    val enable: Int,
+    @SerializedName("day_of_week")
+    val dayOfWeek: String? = null,
+    @SerializedName("time")
+    val time: String? = null,
+    @SerializedName("temp")
+    val temp: Int? = null
+)
+
+/**
+ * 热力杀菌设置响应
+ */
+data class SterilizationApiResponse(
+    @SerializedName("enable")
+    val enable: Int,
+    @SerializedName("day_of_week")
+    val dayOfWeek: String? = null,
+    @SerializedName("time")
+    val time: String? = null,
+    @SerializedName("temp")
+    val temp: Int? = null
+)
 
 /**
  * 滤芯状态枚举

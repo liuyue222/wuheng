@@ -96,3 +96,75 @@ enum class SceneType(val value: String) {
         }
     }
 }
+
+// ==================== 度假模式数据模型 ====================
+
+/**
+ * 设置度假模式请求
+ */
+data class SetVacationModeRequest(
+    @SerializedName("house_id")
+    val houseId: Int,
+    @SerializedName("return_time")
+    val returnTime: Long,
+    @SerializedName("temp_set")
+    val tempSet: String? = null,
+    @SerializedName("humidity_set")
+    val humiditySet: String? = null
+)
+
+/**
+ * 设置度假模式响应
+ */
+data class SetVacationModeResponse(
+    @SerializedName("house_id")
+    val houseId: Int,
+    @SerializedName("return_time")
+    val returnTime: Long,
+    @SerializedName("return_time_str")
+    val returnTimeStr: String,
+    @SerializedName("pre_start_time")
+    val preStartTime: Long,
+    @SerializedName("pre_start_time_str")
+    val preStartTimeStr: String,
+    @SerializedName("temp_set")
+    val tempSet: String,
+    @SerializedName("humidity_set")
+    val humiditySet: String
+)
+
+/**
+ * 取消度假模式请求
+ */
+data class CancelVacationRequest(
+    @SerializedName("house_id")
+    val houseId: Int
+)
+
+/**
+ * 度假模式状态响应
+ */
+data class VacationStatusResponse(
+    @SerializedName("active")
+    val active: Boolean,
+    @SerializedName("status")
+    val status: String? = null,
+    @SerializedName("message")
+    val message: String? = null,
+    @SerializedName("return_time")
+    val returnTime: Long? = null,
+    @SerializedName("return_time_str")
+    val returnTimeStr: String? = null,
+    @SerializedName("pre_start_time")
+    val preStartTime: Long? = null,
+    @SerializedName("pre_start_time_str")
+    val preStartTimeStr: String? = null,
+    @SerializedName("temp_set")
+    val tempSet: String? = null,
+    @SerializedName("humidity_set")
+    val humiditySet: String? = null,
+    @SerializedName("countdown_seconds")
+    val countdownSeconds: Long? = null,
+    @SerializedName("countdown_text")
+    val countdownText: String? = null
+)

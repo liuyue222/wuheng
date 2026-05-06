@@ -2,9 +2,11 @@ package com.wuheng.smart.presentation.home.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -139,7 +142,8 @@ private fun ModeButtonHorizontal(
     val targetBackgroundColor = remember(isEnabled, isSelected) {
         when {
             !isEnabled -> Color.LightGray.copy(alpha = 0.5f)
-            isSelected -> ChipSelectedBg  // ✅ 选中状态：白色背景
+            // ✅ 选中状态：更明显的白色背景（带轻微透明度），增强立体感
+            isSelected -> Color.White
             else -> Color.Transparent  // ❌ 未选中状态：完全透明背景
         }
     }
@@ -147,7 +151,7 @@ private fun ModeButtonHorizontal(
     val targetContentColor = remember(isEnabled, isSelected) {
         when {
             !isEnabled -> TextDisabledLight
-            isSelected -> ChipSelectedText  // ✅ 选中状态：深色文字
+            isSelected -> ChipSelectedText  // ✅ 选中状态：品牌蓝色文字
             else -> modeColor  // 未选中态：使用模式对应的颜色
         }
     }
@@ -171,7 +175,18 @@ private fun ModeButtonHorizontal(
         label = "contentColor"
     )
 
+    // 🆕 缩放动画：选中时按钮略微缩小 (0.92x)，增强立体感
+    val scale by animateFloatAsState(
+        targetValue = if (isSelected) 0.92f else 1f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "buttonScale"
+    )
+
     // 优化4: 使用remember缓存shadow修饰符，避免条件判断导致的重组
+    // 选中态使用 elevation_lg (12dp) 增强立体阴影
     val shadowModifier by remember(isSelected) {
         derivedStateOf {
             if (isSelected) {
@@ -187,12 +202,36 @@ private fun ModeButtonHorizontal(
         }
     }
 
-    Box(modifier = modifier) {
+    // 🆕 选中时的微妙边框，进一步强化选中卡片感
+    val borderModifier by remember(isSelected) {
+        derivedStateOf {
+            if (isSelected) {
+                Modifier.border(
+                    width = 1.dp,
+                    color = Color.White.copy(alpha = 0.9f),
+                    shape = RoundedCornerShape(corner_sm)
+                )
+            } else {
+                Modifier
+            }
+        }
+    }
+
+    // 🆕 外层Box：使用graphicsLayer实现缩放 + 上浮效果
+    Box(
+        modifier = modifier.graphicsLayer {
+            scaleX = scale
+            scaleY = scale
+            // 选中时微上浮 2dp，增强立体感
+            translationY = if (isSelected) -2.dp.toPx() else 0f
+        }
+    ) {
         Row(
             modifier = Modifier
                 .then(shadowModifier)
                 .clip(RoundedCornerShape(corner_sm))
                 .background(backgroundColor)
+                .then(borderModifier)
                 .clickable(enabled = isEnabled, onClick = onClick)
                 .padding(horizontal = mode_button_padding_h, vertical = spacing_md)
                 .fillMaxWidth()

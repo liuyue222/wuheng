@@ -121,14 +121,38 @@ data class BindHouseRequest(
 data class MyHouse(
     @SerializedName("house_id")
     val houseId: Int,
+    @SerializedName("house_id_no")
+    val houseIdNo: String,
     @SerializedName("house_name")
     val houseName: String,
     @SerializedName("address")
     val address: String,
+    @SerializedName("owner_name")
+    val ownerName: String,
+    @SerializedName("area_total")
+    val areaTotal: String,
+    @SerializedName("system_type")
+    val systemType: String,
     @SerializedName("bind_type")
     val bindType: String,
     @SerializedName("bind_time")
-    val bindTime: Long
+    val bindTime: Long,
+    @SerializedName("system_mode")
+    val systemMode: String? = null,
+    @SerializedName("system_run_status")
+    val systemRunStatus: String? = null,
+    @SerializedName("indoor_temp")
+    val indoorTemp: String? = null,
+    @SerializedName("indoor_humidity")
+    val indoorHumidity: String? = null,
+    @SerializedName("outdoor_temp")
+    val outdoorTemp: String? = null,
+    @SerializedName("device_count")
+    val deviceCount: Int = 0,
+    @SerializedName("online_count")
+    val onlineCount: Int = 0,
+    @SerializedName("alarm_count")
+    val alarmCount: Int = 0
 )
 
 // ==================== 旧版登录兼容 ====================
@@ -167,4 +191,26 @@ data class ForgotPasswordRequest(
     val mobile: String,
     @SerializedName("new_password")
     val newPassword: String
+)
+
+data class BookServiceRequest(
+    @SerializedName("house_id") val houseId: Int,
+    @SerializedName("service_type") val serviceType: String,
+    @SerializedName("contact_name") val contactName: String,
+    @SerializedName("contact_phone") val contactPhone: String,
+    @SerializedName("appointment_date") val appointmentDate: String,
+    @SerializedName("remark") val remark: String? = null
+)
+
+data class MarkNotificationReadRequest(
+    @SerializedName("notification_id") val notificationId: Int
+)
+
+data class NotificationApiItem(
+    @SerializedName("notification_id") val notificationId: Int,
+    @SerializedName("type") val type: String,
+    @SerializedName("title") val title: String,
+    @SerializedName("content") val content: String,
+    @SerializedName("is_read") val isRead: Int,
+    @SerializedName("createtime") val createTime: Long
 )

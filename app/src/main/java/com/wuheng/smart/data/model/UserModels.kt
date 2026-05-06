@@ -155,18 +155,6 @@ enum class AppointmentStatus {
 // ==================== 请求模型 ====================
 
 /**
- * 预约服务请求
- */
-data class BookServiceRequest(
-    @SerializedName("type")
-    val type: String = "",                      // 服务类型
-    @SerializedName("serviceItem")
-    val serviceItem: String = "",               // 服务项目
-    @SerializedName("appointmentDate")
-    val appointmentDate: String = ""            // 预约日期 "YYYY-MM-DD"
-)
-
-/**
  * 更新资料请求（旧版API）
  */
 data class UpdateProfileRequest(

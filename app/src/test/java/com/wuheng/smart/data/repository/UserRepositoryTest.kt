@@ -8,6 +8,7 @@ import com.wuheng.smart.data.network.ApiService
 import com.wuheng.smart.data.network.AppException
 import com.wuheng.smart.data.network.BaseResponse
 import com.wuheng.smart.data.network.TokenManager
+import com.google.gson.Gson
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -447,7 +448,8 @@ class UserRepositoryTest {
                 houseId = 1,
                 status = 1
             )
-            coEvery { apiService.getUserInfo() } returns BaseResponse(200, "success", userInfo)
+            val userJson = Gson().toJsonTree(userInfo)
+            coEvery { apiService.getUserInfo() } returns BaseResponse(200, "success", userJson)
 
             // When & Then
             repository.getUserInfo().test {
@@ -700,8 +702,8 @@ class UserRepositoryTest {
         fun `getMyHouses - 正常获取 - 返回房屋列表`() = runTest {
             // Given
             val houses = listOf(
-                MyHouse(1, "房屋1", "地址1", "owner", 1234567890),
-                MyHouse(2, "房屋2", "地址2", "member", 1234567891)
+                MyHouse(1, "HOUSE001", "房屋1", "地址1", "张三", "280.00", "辐射空调系统", "owner", 1234567890),
+                MyHouse(2, "HOUSE002", "房屋2", "地址2", "李四", "150.00", "新风系统", "member", 1234567891)
             )
             coEvery { apiService.getMyHouses() } returns BaseResponse(200, "success", houses)
 

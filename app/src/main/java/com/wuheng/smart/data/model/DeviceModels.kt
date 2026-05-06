@@ -141,3 +141,20 @@ enum class DeviceRunStatus(val value: String) {
         }
     }
 }
+
+data class HistoryDataPoint(
+    @SerializedName("timestamp") val timestamp: Long,
+    @SerializedName("temperature") val temperature: String,
+    @SerializedName("humidity") val humidity: String,
+    @SerializedName("co2") val co2: Int,
+    @SerializedName("pm25") val pm25: Int
+)
+
+data class RenameDeviceRequest(
+    @SerializedName("device_id") val deviceId: Int,
+    @SerializedName("device_name") val deviceName: String
+)
+
+data class DeleteDeviceRequest(
+    @SerializedName("device_id") val deviceId: Int
+)

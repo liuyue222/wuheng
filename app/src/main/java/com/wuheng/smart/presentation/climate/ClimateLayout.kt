@@ -51,7 +51,7 @@ fun ClimateLayout(
     onTemperatureChange: (Float) -> Unit,
     onHumidityChange: (Float) -> Unit,
     onFloorToggle: (String, Boolean) -> Unit,
-    onFloorClick: (String) -> Unit,
+    onFloorSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
     maxWidth: Dp = 360.dp
 ) {
@@ -99,14 +99,69 @@ fun ClimateLayout(
                 }
             }
             ClimateTab.FLOOR -> {
-                // 楼层列表
-                items(uiState.floors.size) { index ->
-                    Spacer(modifier = Modifier.height(if (index == 0) spacing_lg else spacing_md))
-                    FloorCard(
-                        floor = uiState.floors[index],
-                        onToggle = { onFloorToggle(it, !uiState.floors[index].isEnabled) },
-                        onClick = { onFloorClick(it) }
+                item {
+                    Spacer(modifier = Modifier.height(spacing_lg))
+                    FloorChipSelector(
+                        floors = uiState.floors,
+                        selectedFloorId = uiState.selectedFloorId,
+                        onFloorSelected = onFloorSelected
                     )
+                }
+
+                if (uiState.selectedFloorId != null) {
+                    if (uiState.roomsLoading) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 32.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    color = PrimaryBlue,
+                                    modifier = Modifier.size(32.dp),
+                                    strokeWidth = 3.dp
+                                )
+                            }
+                        }
+                    } else if (uiState.rooms.isNotEmpty()) {
+                        items(uiState.rooms.size) { index ->
+                            Spacer(modifier = Modifier.height(if (index == 0) spacing_md else spacing_md))
+                            RoomCard(room = uiState.rooms[index])
+                        }
+                    } else {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 24.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "该楼层暂无房间",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = TextTertiaryLight,
+                                    fontSize = 13.sp
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 24.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "请选择楼层查看房间",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextTertiaryLight,
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -452,14 +507,71 @@ private fun HumiditySettingCard(
 }
 
 /**
- * 楼层卡片 - 像素级还原设计图
+ * 楼层Chip选择器 - 横向滚动的芯片选择器
  */
 @Composable
-private fun FloorCard(
-    floor: FloorItem,
-    onToggle: (String) -> Unit,
-    onClick: (String) -> Unit
+private fun FloorChipSelector(
+    floors: List<FloorItem>,
+    selectedFloorId: String?,
+    onFloorSelected: (String) -> Unit
 ) {
+    androidx.compose.foundation.lazy.LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        items(floors.size) { index ->
+            val floor = floors[index]
+            val isSelected = floor.id == selectedFloorId
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(if (isSelected) PrimaryBlue else Color.White)
+                    .border(
+                        width = 1.dp,
+                        color = if (isSelected) PrimaryBlue else Color(0xFFE0E0E0),
+                        shape = RoundedCornerShape(20.dp)
+                    )
+                    .clickable { onFloorSelected(floor.id) }
+                    .padding(horizontal = 18.dp, vertical = 8.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = floor.name,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (isSelected) Color.White else TextPrimaryLight,
+                        fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
+                        fontSize = 14.sp
+                    )
+                    if (floor.isMainControl) {
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(
+                                    if (isSelected) Color.White.copy(alpha = 0.3f)
+                                    else PrimaryBlue.copy(alpha = 0.12f)
+                                )
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = "主控",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = if (isSelected) Color.White else PrimaryBlue,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * 房间卡片 - 显示房间温度/湿度/设备控制
+ */
+@Composable
+private fun RoomCard(room: RoomUiItem) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -470,47 +582,122 @@ private fun FloorCard(
             )
             .clip(RoundedCornerShape(16.dp))
             .background(Color.White)
-            .clickable { onClick(floor.id) }
             .padding(16.dp)
     ) {
         Column {
-            // 楼层标题行
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = floor.name + if (floor.isMainControl) " (主控)" else "",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = TextPrimaryLight,
-                    fontSize = 16.sp
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .clip(CircleShape)
+                            .background(if (room.isOnline) SuccessGreen else Color(0xFFCCCCCC))
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = room.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = TextPrimaryLight,
+                        fontSize = 16.sp
+                    )
+                }
+                if (room.roomType.isNotEmpty()) {
+                    Text(
+                        text = when (room.roomType) {
+                            "living" -> "客厅"
+                            "bedroom" -> "卧室"
+                            "kitchen" -> "厨房"
+                            "study" -> "书房"
+                            "dining" -> "餐厅"
+                            "bathroom" -> "浴室"
+                            else -> room.roomType
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextTertiaryLight,
+                        fontSize = 12.sp
+                    )
+                }
+            }
 
-                // 开关
-                Switch(
-                    checked = floor.isEnabled,
-                    onCheckedChange = { onToggle(floor.id) },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = PrimaryBlue,
-                        uncheckedThumbColor = Color.White,
-                        uncheckedTrackColor = Color(0xFFCCCCCC)
-                    ),
-                    modifier = Modifier.width(48.dp)
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                RoomStatItem(
+                    label = "面积",
+                    value = "${room.area}m²",
+                    color = TextSecondaryLight
+                )
+                RoomStatItem(
+                    label = "设备",
+                    value = "${room.deviceCount}台",
+                    color = PrimaryBlue
+                )
+                RoomStatItem(
+                    label = "状态",
+                    value = if (room.isOnline) "在线" else "离线",
+                    color = if (room.isOnline) SuccessGreen else TextTertiaryLight
                 )
             }
 
-            // 设备状态
-            if (floor.devices.isNotEmpty()) {
+            if (room.area.isNotEmpty() && room.area.toFloatOrNull() != null) {
                 Spacer(modifier = Modifier.height(12.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(DividerLight)
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(24.dp)
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    floor.devices.forEach { device ->
-                        FloorDeviceItem(device = device)
+                    Text(
+                        text = "温控预设",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondaryLight,
+                        fontSize = 13.sp
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        listOf("16°", "20°", "24°", "28°").forEach { preset ->
+                            val isPresetSelected = preset == "${room.targetTemp.toInt()}°"
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(
+                                        if (isPresetSelected) PrimaryBlue.copy(alpha = 0.1f)
+                                        else Color(0xFFF5F5F5)
+                                    )
+                                    .border(
+                                        width = 1.dp,
+                                        color = if (isPresetSelected) PrimaryBlue else Color.Transparent,
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                                    .clickable { }
+                                    .padding(horizontal = 10.dp, vertical = 4.dp)
+                            ) {
+                                Text(
+                                    text = preset,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = if (isPresetSelected) PrimaryBlue else TextSecondaryLight,
+                                    fontSize = 12.sp,
+                                    fontWeight = if (isPresetSelected) FontWeight.Medium else FontWeight.Normal
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -518,27 +705,26 @@ private fun FloorCard(
     }
 }
 
-/**
- * 楼层设备项
- */
 @Composable
-private fun FloorDeviceItem(device: FloorDevice) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+private fun RoomStatItem(
+    label: String,
+    value: String,
+    color: Color
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
-            text = device.name,
-            style = MaterialTheme.typography.bodySmall,
-            color = TextSecondaryLight,
-            fontSize = 13.sp
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = device.value ?: device.status,
-            style = MaterialTheme.typography.bodyMedium,
+            text = value,
+            style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Medium,
-            color = if (device.status == "开启" || device.status == "运行中") PrimaryBlue else TextSecondaryLight,
-            fontSize = 14.sp
+            color = color,
+            fontSize = 15.sp
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
+            color = TextTertiaryLight,
+            fontSize = 11.sp
         )
     }
 }

@@ -205,9 +205,9 @@ fun WaterScreenPreview() {
                 temporaryDuration = 30,
                 sterilizationSchedule = "每周五 02:00",
                 filters = listOf(
-                    FilterItem("前置过滤器", 0.98f, FilterUiStatus.NORMAL),
-                    FilterItem("中央净水机", 0.65f, FilterUiStatus.NORMAL),
-                    FilterItem("末端直饮", 0.15f, FilterUiStatus.WARNING)
+                    FilterItem("1", "前置过滤器", 0.98f, FilterUiStatus.NORMAL),
+                    FilterItem("2", "中央净水机", 0.65f, FilterUiStatus.NORMAL),
+                    FilterItem("3", "末端直饮", 0.15f, FilterUiStatus.WARNING)
                 )
             ),
             onHotWaterModeSelected = {},
@@ -230,9 +230,9 @@ fun WaterScreenWidePreview() {
                 temporaryDuration = 30,
                 sterilizationSchedule = "每周五 02:00",
                 filters = listOf(
-                    FilterItem("前置过滤器", 0.98f, FilterUiStatus.NORMAL),
-                    FilterItem("中央净水机", 0.65f, FilterUiStatus.NORMAL),
-                    FilterItem("末端直饮", 0.15f, FilterUiStatus.WARNING)
+                    FilterItem("1", "前置过滤器", 0.98f, FilterUiStatus.NORMAL),
+                    FilterItem("2", "中央净水机", 0.65f, FilterUiStatus.NORMAL),
+                    FilterItem("3", "末端直饮", 0.15f, FilterUiStatus.WARNING)
                 )
             ),
             onHotWaterModeSelected = {},

@@ -1,10 +1,12 @@
 package com.wuheng.smart.presentation.floorzone
 
+import android.content.Context
 import app.cash.turbine.test
 import com.wuheng.smart.MainDispatcherRule
 import com.wuheng.smart.data.model.*
 import com.wuheng.smart.data.network.ApiResult
 import com.wuheng.smart.data.network.AppException
+import com.wuheng.smart.data.network.TokenManager
 import com.wuheng.smart.data.repository.HomeRepository
 import com.wuheng.smart.presentation.base.UiDataState
 import io.mockk.*
@@ -20,6 +22,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
+import java.io.File
 
 /**
  * FloorZoneViewModel 单元测试
@@ -31,10 +34,28 @@ class FloorZoneViewModelTest {
 
     private lateinit var viewModel: FloorZoneViewModel
     private lateinit var mockHomeRepository: HomeRepository
+    private lateinit var mockTokenManager: TokenManager
+
+    /**
+     * 测试专用 TokenManager 子类，重写 getCurrentHouseId() 返回 "1"，
+     * 避免 mockk 对 final 方法的拦截问题。
+     */
+    private class TestTokenManager(context: Context) : TokenManager(context) {
+        override fun getCurrentHouseId(): String = "1"
+    }
 
     @BeforeEach
     fun setup() {
         mockHomeRepository = mockk(relaxed = true)
+
+        // 使用测试子类代替 mockk，直接返回 houseId="1"
+        // 提供有效的 filesDir 防止 DataStore 初始化时 NPE
+        val testDir = File("build/tmp/test_data_store")
+        testDir.mkdirs()
+        val mockContext = mockk<Context>(relaxed = true)
+        every { mockContext.applicationContext } returns mockContext
+        every { mockContext.filesDir } returns testDir
+        mockTokenManager = TestTokenManager(mockContext)
         
         // 设置默认的楼层数据
         val mockFloors = listOf(
@@ -47,7 +68,7 @@ class FloorZoneViewModelTest {
         coEvery { mockHomeRepository.getDeviceList(1, any()) } returns flowOf(ApiResult.Success(emptyList()))
         coEvery { mockHomeRepository.controlDevice(any(), any(), any()) } returns flowOf(ApiResult.Success(mockk(relaxed = true)))
 
-        viewModel = FloorZoneViewModel(mockHomeRepository)
+        viewModel = FloorZoneViewModel(mockHomeRepository, mockTokenManager)
     }
 
     @AfterEach
@@ -90,7 +111,7 @@ class FloorZoneViewModelTest {
         coEvery { mockHomeRepository.getFloorInfo(1) } returns flowOf(ApiResult.Success(mockFloors))
         coEvery { mockHomeRepository.getRoomInfo(1, 1) } returns flowOf(ApiResult.Success(emptyList()))
 
-        val newViewModel = FloorZoneViewModel(mockHomeRepository)
+        val newViewModel = FloorZoneViewModel(mockHomeRepository, mockTokenManager)
         advanceUntilIdle()
 
         assertTrue(newViewModel.floorsState.value is UiDataState.Success)
@@ -102,7 +123,7 @@ class FloorZoneViewModelTest {
     fun `load floors - failure should return Error`() = runTest {
         coEvery { mockHomeRepository.getFloorInfo(1) } returns flowOf(ApiResult.Error(AppException.NetworkError()))
 
-        val newViewModel = FloorZoneViewModel(mockHomeRepository)
+        val newViewModel = FloorZoneViewModel(mockHomeRepository, mockTokenManager)
         advanceUntilIdle()
 
         assertTrue(newViewModel.floorsState.value is UiDataState.Error)
@@ -310,7 +331,7 @@ class FloorZoneViewModelTest {
         )
         coEvery { mockHomeRepository.getRoomInfo(1, 1) } returns flowOf(ApiResult.Success(emptyList()))
 
-        val newViewModel = FloorZoneViewModel(mockHomeRepository)
+        val newViewModel = FloorZoneViewModel(mockHomeRepository, mockTokenManager)
         advanceUntilIdle()
 
         assertEquals("1", newViewModel.selectedFloorId.value)
@@ -321,7 +342,7 @@ class FloorZoneViewModelTest {
     fun `boundary - empty floor list should handle correctly`() = runTest {
         coEvery { mockHomeRepository.getFloorInfo(1) } returns flowOf(ApiResult.Success(emptyList()))
 
-        val newViewModel = FloorZoneViewModel(mockHomeRepository)
+        val newViewModel = FloorZoneViewModel(mockHomeRepository, mockTokenManager)
         advanceUntilIdle()
 
         assertNull(newViewModel.selectedFloorId.value)

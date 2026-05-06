@@ -890,9 +890,8 @@ fun FilterReplaceDialog(
                 onClick = {
                     val selectedFilter = filters.getOrNull(selectedFilterIndex)
                     if (selectedFilter != null && isFormValid) {
-                        // 使用索引+1作为filterId（因为FilterItem中没有id字段，需要从原始数据映射）
                         onConfirm(
-                            (selectedFilterIndex + 1).toString(),
+                            selectedFilter.filterId,
                             contactName.trim(),
                             contactPhone.trim(),
                             appointmentDate

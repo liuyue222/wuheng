@@ -16,7 +16,7 @@ import javax.inject.Singleton;
  * - 净水状态管理（获取TDS、水质等）
  * - 滤芯管理（获取状态、预约更换）
  */
-@kotlin.Metadata(mv = {1, 7, 1}, k = 1, d1 = {"\u0000N\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u0002\n\u0000\n\u0002\u0010\b\n\u0002\b\u0002\n\u0002\u0010\u000e\n\u0002\b\u0004\n\u0002\u0010 \n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\bf\u0018\u00002\u00020\u0001JQ\u0010\u0002\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00050\u00040\u00032\u0006\u0010\u0006\u001a\u00020\u00072\u0006\u0010\b\u001a\u00020\u00072\n\b\u0002\u0010\t\u001a\u0004\u0018\u00010\n2\n\b\u0002\u0010\u000b\u001a\u0004\u0018\u00010\n2\n\b\u0002\u0010\f\u001a\u0004\u0018\u00010\nH\u00a6@\u00f8\u0001\u0000\u00a2\u0006\u0002\u0010\rJ+\u0010\u000e\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00100\u000f0\u00040\u00032\u0006\u0010\u0006\u001a\u00020\u0007H\u00a6@\u00f8\u0001\u0000\u00a2\u0006\u0002\u0010\u0011J%\u0010\u0012\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00130\u00040\u00032\u0006\u0010\u0006\u001a\u00020\u0007H\u00a6@\u00f8\u0001\u0000\u00a2\u0006\u0002\u0010\u0011J%\u0010\u0014\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00150\u00040\u00032\u0006\u0010\u0006\u001a\u00020\u0007H\u00a6@\u00f8\u0001\u0000\u00a2\u0006\u0002\u0010\u0011J9\u0010\u0016\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00170\u00040\u00032\u0006\u0010\u0006\u001a\u00020\u00072\u0006\u0010\u0018\u001a\u00020\u00192\n\b\u0002\u0010\u001a\u001a\u0004\u0018\u00010\u0007H\u00a6@\u00f8\u0001\u0000\u00a2\u0006\u0002\u0010\u001b\u0082\u0002\u0004\n\u0002\b\u0019\u00a8\u0006\u001c"}, d2 = {"Lcom/wuheng/smart/data/repository/WaterRepository;", "", "bookFilterReplace", "Lkotlinx/coroutines/flow/Flow;", "Lcom/wuheng/smart/data/network/ApiResult;", "", "houseId", "", "filterId", "contactName", "", "contactPhone", "appointmentDate", "(IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;", "getFilterStatus", "", "Lcom/wuheng/smart/data/model/FilterStatusInfo;", "(ILkotlin/coroutines/Continuation;)Ljava/lang/Object;", "getHotWaterStatus", "Lcom/wuheng/smart/data/model/HotWaterStatusResponse;", "getWaterPurifierStatus", "Lcom/wuheng/smart/data/model/WaterPurifierStatusResponse;", "setCirculationMode", "Lcom/wuheng/smart/data/model/SetCirculationModeResponse;", "mode", "Lcom/wuheng/smart/data/model/CirculationMode;", "duration", "(ILcom/wuheng/smart/data/model/CirculationMode;Ljava/lang/Integer;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;", "app_debug"})
+@kotlin.Metadata(mv = {1, 7, 1}, k = 1, d1 = {"\u0000P\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0000\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u0002\n\u0000\n\u0002\u0010\b\n\u0002\b\u0002\n\u0002\u0010\u000e\n\u0002\b\u0004\n\u0002\u0010 \n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0006\bf\u0018\u00002\u00020\u0001JQ\u0010\u0002\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00050\u00040\u00032\u0006\u0010\u0006\u001a\u00020\u00072\u0006\u0010\b\u001a\u00020\u00072\n\b\u0002\u0010\t\u001a\u0004\u0018\u00010\n2\n\b\u0002\u0010\u000b\u001a\u0004\u0018\u00010\n2\n\b\u0002\u0010\f\u001a\u0004\u0018\u00010\nH\u00a6@\u00f8\u0001\u0000\u00a2\u0006\u0002\u0010\rJ+\u0010\u000e\u001a\u0014\u0012\u0010\u0012\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00100\u000f0\u00040\u00032\u0006\u0010\u0006\u001a\u00020\u0007H\u00a6@\u00f8\u0001\u0000\u00a2\u0006\u0002\u0010\u0011J%\u0010\u0012\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00130\u00040\u00032\u0006\u0010\u0006\u001a\u00020\u0007H\u00a6@\u00f8\u0001\u0000\u00a2\u0006\u0002\u0010\u0011J9\u0010\u0014\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u00150\u00040\u00032\u0006\u0010\u0006\u001a\u00020\u00072\u0006\u0010\u0016\u001a\u00020\u00172\n\b\u0002\u0010\u0018\u001a\u0004\u0018\u00010\u0007H\u00a6@\u00f8\u0001\u0000\u00a2\u0006\u0002\u0010\u0019JQ\u0010\u001a\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\u001b0\u00040\u00032\u0006\u0010\u0006\u001a\u00020\u00072\u0006\u0010\u001c\u001a\u00020\u00072\n\b\u0002\u0010\u001d\u001a\u0004\u0018\u00010\n2\n\b\u0002\u0010\u001e\u001a\u0004\u0018\u00010\n2\n\b\u0002\u0010\u001f\u001a\u0004\u0018\u00010\u0007H\u00a6@\u00f8\u0001\u0000\u00a2\u0006\u0002\u0010 \u0082\u0002\u0004\n\u0002\b\u0019\u00a8\u0006!"}, d2 = {"Lcom/wuheng/smart/data/repository/WaterRepository;", "", "bookFilterReplace", "Lkotlinx/coroutines/flow/Flow;", "Lcom/wuheng/smart/data/network/ApiResult;", "", "houseId", "", "filterId", "contactName", "", "contactPhone", "appointmentDate", "(IILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;", "getFilterStatus", "", "Lcom/wuheng/smart/data/model/FilterStatusInfo;", "(ILkotlin/coroutines/Continuation;)Ljava/lang/Object;", "getHotWaterStatus", "Lcom/wuheng/smart/data/model/HotWaterStatusResponse;", "setCirculationMode", "Lcom/wuheng/smart/data/model/SetCirculationModeResponse;", "mode", "Lcom/wuheng/smart/data/model/CirculationMode;", "duration", "(ILcom/wuheng/smart/data/model/CirculationMode;Ljava/lang/Integer;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;", "setSterilization", "Lcom/wuheng/smart/data/model/SterilizationApiResponse;", "enable", "dayOfWeek", "time", "temp", "(IILjava/lang/String;Ljava/lang/String;Ljava/lang/Integer;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;", "app_debug"})
 public abstract interface WaterRepository {
     
     /**
@@ -46,17 +46,6 @@ public abstract interface WaterRepository {
     kotlin.coroutines.Continuation<? super kotlinx.coroutines.flow.Flow<? extends com.wuheng.smart.data.network.ApiResult<com.wuheng.smart.data.model.SetCirculationModeResponse>>> continuation);
     
     /**
-     * 3. 获取净水状态
-     * 对应API: GET /home/water/getWaterPurifierStatus
-     *
-     * @param houseId 房屋ID
-     * @return 净水状态（TDS、水质等）
-     */
-    @org.jetbrains.annotations.Nullable()
-    public abstract java.lang.Object getWaterPurifierStatus(int houseId, @org.jetbrains.annotations.NotNull()
-    kotlin.coroutines.Continuation<? super kotlinx.coroutines.flow.Flow<? extends com.wuheng.smart.data.network.ApiResult<com.wuheng.smart.data.model.WaterPurifierStatusResponse>>> continuation);
-    
-    /**
      * 4. 获取滤芯状态列表
      * 对应API: GET /home/water/getFilterStatus
      *
@@ -82,6 +71,22 @@ public abstract interface WaterRepository {
     java.lang.String contactPhone, @org.jetbrains.annotations.Nullable()
     java.lang.String appointmentDate, @org.jetbrains.annotations.NotNull()
     kotlin.coroutines.Continuation<? super kotlinx.coroutines.flow.Flow<? extends com.wuheng.smart.data.network.ApiResult<kotlin.Unit>>> continuation);
+    
+    /**
+     * 设置热力杀菌
+     *
+     * @param houseId 房屋ID
+     * @param enable 是否启用 (1=启用, 0=禁用)
+     * @param dayOfWeek 每周几 (逗号分隔, "1,3,5")
+     * @param time 时间 "HH:mm:00"
+     * @param temp 温度 (可选)
+     */
+    @org.jetbrains.annotations.Nullable()
+    public abstract java.lang.Object setSterilization(int houseId, int enable, @org.jetbrains.annotations.Nullable()
+    java.lang.String dayOfWeek, @org.jetbrains.annotations.Nullable()
+    java.lang.String time, @org.jetbrains.annotations.Nullable()
+    java.lang.Integer temp, @org.jetbrains.annotations.NotNull()
+    kotlin.coroutines.Continuation<? super kotlinx.coroutines.flow.Flow<? extends com.wuheng.smart.data.network.ApiResult<com.wuheng.smart.data.model.SterilizationApiResponse>>> continuation);
     
     /**
      * 水系统数据仓库接口

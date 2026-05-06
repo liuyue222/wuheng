@@ -79,7 +79,7 @@ fun HomeLayout(
     }
 
     // 优化3: 将WeatherBackground移到LazyColumn外部，避免天气变化导致整个列表重组
-    WeatherBackground(weather = uiState.weather) {
+    WeatherBackground(weather = uiState.weather, weatherCode = uiState.weatherCode) {
         LazyColumn(
             modifier = modifier
                 .fillMaxSize(),

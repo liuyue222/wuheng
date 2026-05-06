@@ -63,6 +63,7 @@ fun FloorZoneScreen(
     val selectedRoomId by viewModel.selectedRoomId.collectAsStateWithLifecycle()
     val roomDevicesState by viewModel.roomDevicesState.collectAsStateWithLifecycle()
     val roomEnvironmentState by viewModel.roomEnvironmentState.collectAsStateWithLifecycle()
+    val roomControlState by viewModel.roomControlState.collectAsStateWithLifecycle()
 
     FloorZoneContent(
         floorsState = floorsState,
@@ -71,12 +72,19 @@ fun FloorZoneScreen(
         roomEnvironmentState = roomEnvironmentState,
         selectedFloorId = selectedFloorId,
         selectedRoomId = selectedRoomId,
+        roomControlState = roomControlState,
         onNavigateBack = onNavigateBack,
         onFloorSelected = { viewModel.selectFloor(it) },
         onRoomSelected = { viewModel.selectRoom(it) },
         onRefresh = { viewModel.refresh() },
         onDevicePowerToggle = { deviceId, power -> viewModel.toggleDevicePower(deviceId, power) },
-        onDeviceClick = { onNavigateToDeviceDetail(it.toString()) }
+        onDeviceClick = { onNavigateToDeviceDetail(it.toString()) },
+        onTargetTempChanged = { temp -> selectedRoomId?.let { viewModel.setTargetTemperature(it, temp) } },
+        onCeilingRadiationToggle = { selectedRoomId?.let { viewModel.toggleCeilingRadiation(it) } },
+        onFloorRadiationToggle = { selectedRoomId?.let { viewModel.toggleFloorRadiation(it) } },
+        onFanSpeedChanged = { speed -> selectedRoomId?.let { viewModel.setFanSpeed(it, speed) } },
+        onTargetHumidityChanged = { humidity -> selectedRoomId?.let { viewModel.setTargetHumidity(it, humidity) } },
+        onCo2ThresholdChanged = { threshold -> selectedRoomId?.let { viewModel.setCo2Threshold(it, threshold) } }
     )
 }
 
@@ -91,12 +99,19 @@ fun FloorZoneContent(
     roomEnvironmentState: UiDataState<RoomEnvironmentData>,
     selectedFloorId: String?,
     selectedRoomId: String?,
+    roomControlState: RoomControlState = RoomControlState(),
     onNavigateBack: () -> Unit = {},
     onFloorSelected: (String) -> Unit = {},
     onRoomSelected: (String) -> Unit = {},
     onRefresh: () -> Unit = {},
     onDevicePowerToggle: (Int, Boolean) -> Unit = { _, _ -> },
-    onDeviceClick: (Int) -> Unit = {}
+    onDeviceClick: (Int) -> Unit = {},
+    onTargetTempChanged: (Float) -> Unit = {},
+    onCeilingRadiationToggle: () -> Unit = {},
+    onFloorRadiationToggle: () -> Unit = {},
+    onFanSpeedChanged: (Int) -> Unit = {},
+    onTargetHumidityChanged: (Float) -> Unit = {},
+    onCo2ThresholdChanged: (Int) -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -257,18 +272,28 @@ fun FloorZoneContent(
                                     // 房间温度设定卡片
                                     RoomTemperatureCard(
                                         roomName = roomName,
+                                        controlState = roomControlState,
+                                        onTempChanged = onTargetTempChanged,
+                                        onCeilingToggle = onCeilingRadiationToggle,
+                                        onFloorToggle = onFloorRadiationToggle,
                                         isLoading = isLoadingRooms
                                     )
 
                                     // 房间湿度设定卡片
                                     RoomHumidityCard(
                                         roomName = roomName,
+                                        controlState = roomControlState,
+                                        onHumidityChanged = onTargetHumidityChanged,
                                         isLoading = isLoadingRooms
                                     )
 
                                     // 新风微控卡片
                                     FreshAirControlCard(
                                         roomName = roomName,
+                                        controlState = roomControlState,
+                                        onFanSpeedChanged = onFanSpeedChanged,
+                                        onCo2ThresholdChanged = onCo2ThresholdChanged,
+                                        onTargetHumidityChanged = onTargetHumidityChanged,
                                         isLoading = isLoadingRooms
                                     )
                                 }
@@ -826,15 +851,23 @@ private fun RoomChipSelector(
 @Composable
 private fun RoomTemperatureCard(
     roomName: String,
+    controlState: RoomControlState = RoomControlState(),
+    onTempChanged: (Float) -> Unit = {},
+    onCeilingToggle: () -> Unit = {},
+    onFloorToggle: () -> Unit = {},
     isLoading: Boolean = false
 ) {
-    var mainSwitch by remember { mutableStateOf(true) }
-    var topRadiation by remember { mutableStateOf(true) }
-    var bottomRadiation by remember { mutableStateOf(false) }
-    var tempValue by remember { mutableStateOf(23f) }
-    var selectedPreset by remember { mutableStateOf(1) }
+    var mainSwitch by remember(controlState.roomId) { mutableStateOf(true) }
+    val tempValue = controlState.targetTemperature
+    val topRadiation = controlState.ceilingRadiation
+    val bottomRadiation = controlState.floorRadiation
 
     val presets = listOf("偏低-", "适中", "偏高+")
+    val selectedPreset = when {
+        tempValue <= 20f -> 0
+        tempValue in 21f..25f -> 1
+        else -> 2
+    }
 
     Box(
         modifier = Modifier
@@ -914,7 +947,15 @@ private fun RoomTemperatureCard(
                                     color = if (isSelected) PrimaryBlue else DividerLight,
                                     shape = RoundedCornerShape(temp_preset_corner)
                                 )
-                                .clickable { selectedPreset = index }
+                                .clickable {
+                                    val newTemp = when (index) {
+                                        0 -> (controlState.temperature - 2f).coerceAtLeast(16f)
+                                        1 -> controlState.temperature
+                                        2 -> (controlState.temperature + 2f).coerceAtMost(30f)
+                                        else -> controlState.temperature
+                                    }
+                                    onTempChanged(newTemp)
+                                }
                                 .padding(
                                     horizontal = spacing_md,
                                     vertical = (temp_preset_button_height - 13.dp) / 2
@@ -937,7 +978,7 @@ private fun RoomTemperatureCard(
             Box(contentAlignment = Alignment.Center) {
                 Slider(
                     value = tempValue,
-                    onValueChange = { tempValue = it },
+                    onValueChange = onTempChanged,
                     valueRange = 16f..30f,
                     steps = ((30f - 16f - 1).toInt()),
                     colors = SliderDefaults.colors(
@@ -956,8 +997,8 @@ private fun RoomTemperatureCard(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                RadiationSwitchItem(label = "顶面辐射", isChecked = topRadiation) { topRadiation = it }
-                RadiationSwitchItem(label = "地面辐射", isChecked = bottomRadiation) { bottomRadiation = it }
+                RadiationSwitchItem(label = "顶面辐射", isChecked = topRadiation) { onCeilingToggle() }
+                RadiationSwitchItem(label = "地面辐射", isChecked = bottomRadiation) { onFloorToggle() }
             }
         }
     }
@@ -969,10 +1010,12 @@ private fun RoomTemperatureCard(
 @Composable
 private fun RoomHumidityCard(
     roomName: String,
+    controlState: RoomControlState = RoomControlState(),
+    onHumidityChanged: (Float) -> Unit = {},
     isLoading: Boolean = false
 ) {
-    var humidityValue by remember { mutableStateOf(60f) }
-    var selectedPreset by remember { mutableStateOf(1) }
+    val humidityValue = controlState.targetHumidity
+    var selectedPreset by remember(controlState.roomId) { mutableStateOf(1) }
     val presets = listOf("偏低-", "适中", "偏高+")
 
     Box(
@@ -1029,7 +1072,16 @@ private fun RoomHumidityCard(
                                     color = if (isSelected) PrimaryBlue else DividerLight,
                                     shape = RoundedCornerShape(temp_preset_corner)
                                 )
-                                .clickable { selectedPreset = index }
+                                .clickable {
+                                    val newHumidity = when (index) {
+                                        0 -> (controlState.humidity - 10f).coerceAtLeast(30f)
+                                        1 -> controlState.humidity
+                                        2 -> (controlState.humidity + 10f).coerceAtMost(70f)
+                                        else -> controlState.humidity
+                                    }
+                                    selectedPreset = index
+                                    onHumidityChanged(newHumidity)
+                                }
                                 .padding(
                                     horizontal = spacing_md,
                                     vertical = (temp_preset_button_height - 13.dp) / 2
@@ -1050,7 +1102,7 @@ private fun RoomHumidityCard(
             Box(contentAlignment = Alignment.Center) {
                 Slider(
                     value = humidityValue,
-                    onValueChange = { humidityValue = it },
+                    onValueChange = onHumidityChanged,
                     valueRange = 30f..70f,
                     steps = (70f - 30f - 1).toInt(),
                     colors = SliderDefaults.colors(
@@ -1076,7 +1128,7 @@ private fun RadiationSwitchItem(
     isChecked: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
-    var switchState by remember { mutableStateOf(isChecked) }
+    var switchState by remember(isChecked) { mutableStateOf(isChecked) }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(spacing_sm)
@@ -1110,11 +1162,15 @@ private fun RadiationSwitchItem(
 @Composable
 private fun FreshAirControlCard(
     roomName: String,
+    controlState: RoomControlState = RoomControlState(),
+    onFanSpeedChanged: (Int) -> Unit = {},
+    onCo2ThresholdChanged: (Int) -> Unit = {},
+    onTargetHumidityChanged: (Float) -> Unit = {},
     isLoading: Boolean = false
 ) {
-    var co2Threshold by remember { mutableStateOf(800f) }
-    var humiditySet by remember { mutableStateOf(50f) }
-    var selectedSpeed by remember { mutableStateOf(0) }
+    val co2Threshold = controlState.co2Threshold.toFloat()
+    val humiditySet = controlState.targetHumidity
+    val selectedSpeed = controlState.fanSpeed
     val speeds = listOf("自动", "低速", "中速", "高速")
 
     Box(
@@ -1162,7 +1218,7 @@ private fun FreshAirControlCard(
 
                 Slider(
                     value = co2Threshold,
-                    onValueChange = { co2Threshold = it },
+                    onValueChange = { onCo2ThresholdChanged(it.toInt()) },
                     valueRange = 400f..1500f,
                     steps = 10,
                     colors = SliderDefaults.colors(
@@ -1205,7 +1261,7 @@ private fun FreshAirControlCard(
 
                 Slider(
                     value = humiditySet,
-                    onValueChange = { humiditySet = it },
+                    onValueChange = onTargetHumidityChanged,
                     valueRange = 30f..70f,
                     steps = 7,
                     colors = SliderDefaults.colors(
@@ -1248,7 +1304,9 @@ private fun FreshAirControlCard(
                                         )
                                     } else Modifier
                                 )
-                                .clickable { selectedSpeed = index }
+                                .clickable {
+                                    onFanSpeedChanged(index)
+                                }
                                 .padding(
                                     horizontal = fan_speed_button_padding_h,
                                     vertical = (fan_speed_button_height - 14.dp) / 2

@@ -109,6 +109,40 @@ interface HomeRepository {
      */
     suspend fun saveScene(request: SaveSceneRequest): Flow<ApiResult<Unit>>
 
+    // ==================== 场景模块 - 度假模式接口 ====================
+
+    /**
+     * 设置度假模式
+     *
+     * @param houseId 房屋ID
+     * @param returnTime 归期时间戳（秒）
+     * @param tempSet 度假温度设置（可选）
+     * @param humiditySet 度假湿度设置（可选）
+     * @return 设置度假模式响应
+     */
+    suspend fun setVacationMode(
+        houseId: Int,
+        returnTime: Long,
+        tempSet: String? = null,
+        humiditySet: String? = null
+    ): Flow<ApiResult<SetVacationModeResponse>>
+
+    /**
+     * 获取度假模式状态
+     *
+     * @param houseId 房屋ID
+     * @return 度假模式状态
+     */
+    suspend fun getVacationStatus(houseId: Int): Flow<ApiResult<VacationStatusResponse>>
+
+    /**
+     * 取消度假模式
+     *
+     * @param houseId 房屋ID
+     * @return 操作结果
+     */
+    suspend fun cancelVacationMode(houseId: Int): Flow<ApiResult<Unit>>
+
     // ==================== 新版API - 系统模块 (4个接口) ====================
 
     /**
@@ -144,21 +178,47 @@ interface HomeRepository {
      */
     suspend fun setGlobalHumidity(houseId: Int, humidity: String): Flow<ApiResult<Unit>>
 
-    /**
-     * 获取系统参数
-     *
-     * @param houseId 房屋ID
-     * @return 系统参数（温度、湿度、CO2阈值等设置）
-     */
-    suspend fun getSystemParams(houseId: Int): Flow<ApiResult<SystemParams>>
+    // getSystemParams / setSystemParams -- 接口文档中不存在，暂不可用
 
-    /**
-     * 设置系统参数
-     *
-     * @param request 设置系统参数请求
-     * @return 设置响应，包含更新的参数列表
-     */
-    suspend fun setSystemParams(request: SetSystemParamsRequest): Flow<ApiResult<SetSystemParamsResponse>>
+    // ==================== 天气模块 ====================
+    suspend fun getWeather(lat: String, lng: String): Flow<ApiResult<WeatherData>>
+    suspend fun getOutdoorEnv(houseId: Int): Flow<ApiResult<OutdoorEnv>>
+
+    // ==================== 通知模块 ====================
+
+    suspend fun getNotificationList(): Flow<ApiResult<List<NotificationApiItem>>>
+
+    suspend fun markNotificationRead(notificationId: Int): Flow<ApiResult<Unit>>
+
+    suspend fun markAllNotificationsRead(): Flow<ApiResult<Unit>>
+
+    suspend fun clearAllNotifications(): Flow<ApiResult<Unit>>
+
+    // ==================== 服务预约模块 ====================
+
+    suspend fun bookService(
+        houseId: Int,
+        serviceType: String,
+        contactName: String,
+        contactPhone: String,
+        appointmentDate: String,
+        remark: String? = null
+    ): Flow<ApiResult<Unit>>
+
+    suspend fun getMaintenanceLog(houseId: Int): Flow<ApiResult<List<MaintenanceLogItem>>>
+
+    // ==================== 设备扩展模块 ====================
+
+    suspend fun getDeviceHistoryData(
+        deviceId: Int,
+        dataType: String? = null,
+        startTime: Long? = null,
+        endTime: Long? = null
+    ): Flow<ApiResult<List<HistoryDataPoint>>>
+
+    suspend fun renameDevice(deviceId: Int, deviceName: String): Flow<ApiResult<Unit>>
+
+    suspend fun deleteDevice(deviceId: Int): Flow<ApiResult<Unit>>
 }
 
 /**
@@ -413,6 +473,81 @@ class HomeRepositoryImpl @Inject constructor(
         }
     }
 
+    // ==================== 场景模块实现 - 度假模式 ====================
+
+    /**
+     * 设置度假模式
+     */
+    override suspend fun setVacationMode(
+        houseId: Int,
+        returnTime: Long,
+        tempSet: String?,
+        humiditySet: String?
+    ): Flow<ApiResult<SetVacationModeResponse>> = apiFlow(
+        operation = "setVacationMode",
+        params = "houseId=$houseId, returnTime=$returnTime"
+    ) {
+        if (useMock) {
+            kotlinx.coroutines.delay(500)
+            val mockResponse = SetVacationModeResponse(
+                houseId = houseId,
+                returnTime = returnTime,
+                returnTimeStr = "2026-04-23 12:00:00",
+                preStartTime = returnTime - 7200,
+                preStartTimeStr = "2026-04-23 10:00:00",
+                tempSet = tempSet ?: "18.00",
+                humiditySet = humiditySet ?: "55.00"
+            )
+            ApiResult.Success(mockResponse)
+        } else {
+            apiCall { apiService.setVacationMode(
+                SetVacationModeRequest(houseId, returnTime, tempSet, humiditySet)
+            )}
+        }
+    }
+
+    /**
+     * 获取度假模式状态
+     */
+    override suspend fun getVacationStatus(houseId: Int): Flow<ApiResult<VacationStatusResponse>> = apiFlow(
+        operation = "getVacationStatus",
+        params = "houseId=$houseId"
+    ) {
+        if (useMock) {
+            kotlinx.coroutines.delay(300)
+            val mockStatus = VacationStatusResponse(
+                active = true,
+                status = "waiting",
+                returnTime = 1745316000,
+                returnTimeStr = "2026-04-23 12:00:00",
+                preStartTime = 1745308800,
+                preStartTimeStr = "2026-04-23 10:00:00",
+                tempSet = "18.00",
+                humiditySet = "55.00",
+                countdownSeconds = 172800,
+                countdownText = "2天0小时"
+            )
+            ApiResult.Success(mockStatus)
+        } else {
+            apiCall { apiService.getVacationStatus(houseId) }
+        }
+    }
+
+    /**
+     * 取消度假模式
+     */
+    override suspend fun cancelVacationMode(houseId: Int): Flow<ApiResult<Unit>> = apiFlow(
+        operation = "cancelVacationMode",
+        params = "houseId=$houseId"
+    ) {
+        if (useMock) {
+            kotlinx.coroutines.delay(300)
+            ApiResult.Success(Unit)
+        } else {
+            apiCall { apiService.cancelVacationMode(CancelVacationRequest(houseId)) }
+        }
+    }
+
     // ==================== 新版API实现 - 系统模块 ====================
 
     override suspend fun getSystemStatus(houseId: Int): Flow<ApiResult<SystemStatus>> = apiFlow(
@@ -478,58 +613,211 @@ class HomeRepositoryImpl @Inject constructor(
         }
     }
 
-    // ==================== 新版API实现 - 系统参数模块 ====================
+    // getSystemParams / setSystemParams -- 接口文档中不存在，暂不可用
 
-    override suspend fun getSystemParams(houseId: Int): Flow<ApiResult<SystemParams>> = apiFlow(
-        operation = "getSystemParams",
+    // ==================== 天气模块实现 ====================
+
+    override suspend fun getWeather(lat: String, lng: String): Flow<ApiResult<WeatherData>> = apiFlow(
+        operation = "getWeather",
+        params = "lat=$lat, lng=$lng"
+    ) {
+        if (useMock) {
+            kotlinx.coroutines.delay(300)
+            val mockForecast = listOf(
+                WeatherForecast("2026-04-21", "28", "18", "晴间多云"),
+                WeatherForecast("2026-04-22", "25", "17", "小雨"),
+                WeatherForecast("2026-04-23", "27", "19", "多云")
+            )
+            val mockWeather = WeatherData(
+                location = "Hangzhou, Zhejiang",
+                latitude = lat,
+                longitude = lng,
+                temperature = "26",
+                weatherCode = "0",
+                weatherDesc = "多云",
+                humidity = "65",
+                windSpeed = "15",
+                windDirection = "NE",
+                visibility = "10",
+                uvIndex = "5",
+                aqi = 35,
+                aqiLevel = "优",
+                pm25 = 12,
+                pm10 = 28,
+                forecast = mockForecast
+            )
+            ApiResult.Success(mockWeather)
+        } else {
+            apiCall { apiService.getWeather(lat, lng) }
+        }
+    }
+
+    override suspend fun getOutdoorEnv(houseId: Int): Flow<ApiResult<OutdoorEnv>> = apiFlow(
+        operation = "getOutdoorEnv",
         params = "houseId=$houseId"
     ) {
         if (useMock) {
             kotlinx.coroutines.delay(300)
-            val mockParams = SystemParams(
-                houseId = houseId,
-                systemMode = "cooling",
-                globalTempSet = "24.00",
-                globalHumiditySet = "45.00",
-                tempMin = "16",
-                tempMax = "30",
-                humidityMin = "30",
-                humidityMax = "70",
-                co2Threshold = 800,
-                fanSpeedDefault = 1,
-                vacationMode = 0,
-                vacationStartTime = null,
-                vacationEndTime = null
+            val mockEnv = OutdoorEnv(
+                outdoorTemp = "26.00",
+                outdoorHumidity = "65.00",
+                outdoorAqi = 35,
+                outdoorPm25 = 12
             )
-            ApiResult.Success(mockParams)
+            ApiResult.Success(mockEnv)
         } else {
-            // 使用带重试机制的API调用
-            apiCallWithRetry(maxRetries = 3) { apiService.getSystemParams(houseId) }
+            apiCall { apiService.getOutdoorEnv(houseId) }
         }
     }
 
-    override suspend fun setSystemParams(request: SetSystemParamsRequest): Flow<ApiResult<SetSystemParamsResponse>> = apiFlow(
-        operation = "setSystemParams",
-        params = "houseId=${request.houseId}, params=${request.toString().take(100)}"
+    // ==================== 通知模块实现 ====================
+
+    override suspend fun getNotificationList(): Flow<ApiResult<List<NotificationApiItem>>> = apiFlow(
+        operation = "getNotificationList",
+        params = ""
+    ) {
+        if (useMock) {
+            kotlinx.coroutines.delay(300)
+            val now = System.currentTimeMillis() / 1000
+            val mockNotifications = listOf(
+                NotificationApiItem(1, "system", "系统通知", "您的房屋系统已完成定期巡检", 0, now - 3600),
+                NotificationApiItem(2, "alert", "滤芯到期提醒", "末端直饮机滤芯将于7天后到期，请及时更换", 0, now - 7200),
+                NotificationApiItem(3, "device", "设备离线提醒", "客厅温控器已离线，请检查设备连接状态", 1, now - 86400)
+            )
+            ApiResult.Success(mockNotifications)
+        } else {
+            apiCall { apiService.getNotificationList() }
+        }
+    }
+
+    override suspend fun markNotificationRead(notificationId: Int): Flow<ApiResult<Unit>> = apiFlow(
+        operation = "markNotificationRead",
+        params = "notificationId=$notificationId"
+    ) {
+        if (useMock) {
+            kotlinx.coroutines.delay(200)
+            ApiResult.Success(Unit)
+        } else {
+            apiCall { apiService.markNotificationRead(MarkNotificationReadRequest(notificationId)) }
+        }
+    }
+
+    override suspend fun markAllNotificationsRead(): Flow<ApiResult<Unit>> = apiFlow(
+        operation = "markAllNotificationsRead",
+        params = ""
+    ) {
+        if (useMock) {
+            kotlinx.coroutines.delay(200)
+            ApiResult.Success(Unit)
+        } else {
+            apiCall { apiService.markAllNotificationsRead() }
+        }
+    }
+
+    override suspend fun clearAllNotifications(): Flow<ApiResult<Unit>> = apiFlow(
+        operation = "clearAllNotifications",
+        params = ""
+    ) {
+        if (useMock) {
+            kotlinx.coroutines.delay(200)
+            ApiResult.Success(Unit)
+        } else {
+            apiCall { apiService.clearAllNotifications() }
+        }
+    }
+
+    // ==================== 服务预约模块实现 ====================
+
+    override suspend fun bookService(
+        houseId: Int,
+        serviceType: String,
+        contactName: String,
+        contactPhone: String,
+        appointmentDate: String,
+        remark: String?
+    ): Flow<ApiResult<Unit>> = apiFlow(
+        operation = "bookService",
+        params = "houseId=$houseId, serviceType=$serviceType"
     ) {
         if (useMock) {
             kotlinx.coroutines.delay(500)
-            val updatedParams = mutableListOf<String>()
-            if (request.globalTempSet != null) updatedParams.add("global_temp_set")
-            if (request.globalHumiditySet != null) updatedParams.add("global_humidity_set")
-            if (request.co2Threshold != null) updatedParams.add("co2_threshold")
-            if (request.fanSpeed != null) updatedParams.add("fan_speed")
-            if (request.vacationMode != null) updatedParams.add("vacation_mode")
-            
-            val mockResponse = SetSystemParamsResponse(
-                houseId = request.houseId,
-                updatedParams = updatedParams,
-                updateTime = System.currentTimeMillis() / 1000
-            )
-            ApiResult.Success(mockResponse)
+            ApiResult.Success(Unit)
         } else {
-            // 设置操作使用普通调用（不重试，避免重复设置）
-            apiCall { apiService.setSystemParams(request) }
+            apiCall {
+                apiService.bookService(
+                    BookServiceRequest(houseId, serviceType, contactName, contactPhone, appointmentDate, remark)
+                )
+            }
+        }
+    }
+
+    override suspend fun getMaintenanceLog(houseId: Int): Flow<ApiResult<List<MaintenanceLogItem>>> = apiFlow(
+        operation = "getMaintenanceLog",
+        params = "houseId=$houseId"
+    ) {
+        if (useMock) {
+            kotlinx.coroutines.delay(300)
+            val mockLogs = listOf(
+                MaintenanceLogItem(1, "滤芯更换", "2026-04-15", "前置过滤器滤芯更换", "张三"),
+                MaintenanceLogItem(2, "系统检修", "2026-03-20", "新风系统年度检修", "李四"),
+                MaintenanceLogItem(3, "常规保养", "2026-05-10", "全屋水管道清洗维护", "王五")
+            )
+            ApiResult.Success(mockLogs)
+        } else {
+            apiCall { apiService.getMaintenanceLog(houseId) }
+        }
+    }
+
+    // ==================== 设备扩展模块实现 ====================
+
+    override suspend fun getDeviceHistoryData(
+        deviceId: Int,
+        dataType: String?,
+        startTime: Long?,
+        endTime: Long?
+    ): Flow<ApiResult<List<HistoryDataPoint>>> = apiFlow(
+        operation = "getDeviceHistoryData",
+        params = "deviceId=$deviceId, dataType=$dataType"
+    ) {
+        if (useMock) {
+            kotlinx.coroutines.delay(300)
+            val now = System.currentTimeMillis() / 1000
+            val mockData = (0..23).map { i ->
+                HistoryDataPoint(
+                    timestamp = now - (23 - i) * 3600,
+                    temperature = "%.1f".format(22.0 + kotlin.math.sin(i * 0.3) * 3.0),
+                    humidity = "%.1f".format(45.0 + kotlin.math.cos(i * 0.2) * 5.0),
+                    co2 = 400 + (i % 3) * 50,
+                    pm25 = 20 + i % 4 * 5
+                )
+            }
+            ApiResult.Success(mockData)
+        } else {
+            apiCall { apiService.getDeviceHistoryData(deviceId, dataType, startTime, endTime) }
+        }
+    }
+
+    override suspend fun renameDevice(deviceId: Int, deviceName: String): Flow<ApiResult<Unit>> = apiFlow(
+        operation = "renameDevice",
+        params = "deviceId=$deviceId, deviceName=$deviceName"
+    ) {
+        if (useMock) {
+            kotlinx.coroutines.delay(300)
+            ApiResult.Success(Unit)
+        } else {
+            apiCall { apiService.renameDevice(RenameDeviceRequest(deviceId, deviceName)) }
+        }
+    }
+
+    override suspend fun deleteDevice(deviceId: Int): Flow<ApiResult<Unit>> = apiFlow(
+        operation = "deleteDevice",
+        params = "deviceId=$deviceId"
+    ) {
+        if (useMock) {
+            kotlinx.coroutines.delay(300)
+            ApiResult.Success(Unit)
+        } else {
+            apiCall { apiService.deleteDevice(DeleteDeviceRequest(deviceId)) }
         }
     }
 }

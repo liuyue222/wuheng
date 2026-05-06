@@ -46,14 +46,7 @@ interface WaterRepository {
         duration: Int? = null
     ): Flow<ApiResult<SetCirculationModeResponse>>
 
-    /**
-     * 3. 获取净水状态
-     * 对应API: GET /home/water/getWaterPurifierStatus
-     *
-     * @param houseId 房屋ID
-     * @return 净水状态（TDS、水质等）
-     */
-    suspend fun getWaterPurifierStatus(houseId: Int): Flow<ApiResult<WaterPurifierStatusResponse>>
+    // getWaterPurifierStatus -- 接口文档中不存在，暂不可用
 
     /**
      * 4. 获取滤芯状态列表
@@ -82,6 +75,23 @@ interface WaterRepository {
         contactPhone: String? = null,
         appointmentDate: String? = null
     ): Flow<ApiResult<Unit>>
+
+    /**
+     * 设置热力杀菌
+     *
+     * @param houseId 房屋ID
+     * @param enable 是否启用 (1=启用, 0=禁用)
+     * @param dayOfWeek 每周几 (逗号分隔, "1,3,5")
+     * @param time 时间 "HH:mm:00"
+     * @param temp 温度 (可选)
+     */
+    suspend fun setSterilization(
+        houseId: Int,
+        enable: Int,
+        dayOfWeek: String? = null,
+        time: String? = null,
+        temp: Int? = null
+    ): Flow<ApiResult<SterilizationApiResponse>>
 }
 
 /**
@@ -115,7 +125,8 @@ class WaterRepositoryImpl @Inject constructor(
                 circulationMode = "all_day",
                 circulationStatus = 1,
                 sterilizationEnable = 1,
-                sterilizationTime = "02:00:00"
+                sterilizationTime = "02:00:00",
+                sterilizationDay = "1,3,5"
             )
             ApiResult.Success(mockStatus)
         } else {
@@ -145,27 +156,7 @@ class WaterRepositoryImpl @Inject constructor(
         emit(result)
     }
 
-    override suspend fun getWaterPurifierStatus(houseId: Int): Flow<ApiResult<WaterPurifierStatusResponse>> = flow {
-        logOperation("getWaterPurifierStatus", "houseId=$houseId")
-        emit(ApiResult.Loading)
-
-        val result = if (useMock) {
-            delay(300)
-            val mockStatus = WaterPurifierStatusResponse(
-                tdsIn = 150,
-                tdsOut = 15,
-                waterQuality = "excellent",
-                totalFlow = "1250.5",
-                dailyFlow = "45.2",
-                deviceStatus = 1,
-                lastUpdate = "2026-04-23 14:30:00"
-            )
-            ApiResult.Success(mockStatus)
-        } else {
-            apiCallWithRetry(maxRetries = MAX_RETRY_COUNT) { apiService.getWaterPurifierStatus(houseId) }
-        }
-        emit(result)
-    }
+    // getWaterPurifierStatus -- 接口文档中不存在，暂不可用
 
     override suspend fun getFilterStatus(houseId: Int): Flow<ApiResult<List<FilterStatusInfo>>> = flow {
         logOperation("getFilterStatus", "houseId=$houseId")
@@ -199,10 +190,40 @@ class WaterRepositoryImpl @Inject constructor(
             delay(500)
             ApiResult.Success(Unit)
         } else {
-            // 注意：bookFilterReplace不在4个核心接口中，需要后端确认
-            // 这里使用模拟实现
-            Timber.w("bookFilterReplace API not in core 4 endpoints, using mock")
-            ApiResult.Success(Unit)
+            apiCallWithRetry(maxRetries = MAX_RETRY_COUNT) {
+                apiService.bookFilterReplace(
+                    BookFilterReplaceRequest(houseId, filterId, contactName, contactPhone, appointmentDate)
+                )
+            }
+        }
+        emit(result)
+    }
+
+    override suspend fun setSterilization(
+        houseId: Int,
+        enable: Int,
+        dayOfWeek: String?,
+        time: String?,
+        temp: Int?
+    ): Flow<ApiResult<SterilizationApiResponse>> = flow {
+        logOperation("setSterilization", "houseId=$houseId, enable=$enable, dayOfWeek=$dayOfWeek, time=$time, temp=$temp")
+        emit(ApiResult.Loading)
+
+        val result = if (useMock) {
+            delay(500)
+            val mockResponse = SterilizationApiResponse(
+                enable = enable,
+                dayOfWeek = dayOfWeek,
+                time = time,
+                temp = temp ?: 70
+            )
+            ApiResult.Success(mockResponse)
+        } else {
+            apiCallWithRetry(maxRetries = MAX_RETRY_COUNT) {
+                apiService.setSterilization(
+                    SetSterilizationRequest(houseId, enable, dayOfWeek, time, temp)
+                )
+            }
         }
         emit(result)
     }

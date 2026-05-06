@@ -408,7 +408,14 @@ enum class ServiceType(val displayName: String, val description: String) {
     REGULAR_MAINTENANCE("常规保养", "系统检查、清洁、调试"),
     FILTER_REPLACEMENT("滤芯更换", "全屋净水滤芯更换服务"),
     SYSTEM_INSPECTION("系统检修", "故障排查、部件更换"),
-    SEASONAL_SWITCH("换季切换", "制冷/制热模式切换服务")
+    SEASONAL_SWITCH("换季切换", "制冷/制热模式切换服务");
+
+    fun toApiValue(): String = when (this) {
+        REGULAR_MAINTENANCE -> "maintenance"
+        FILTER_REPLACEMENT -> "filter_replace"
+        SYSTEM_INSPECTION -> "repair"
+        SEASONAL_SWITCH -> "inspection"
+    }
 }
 
 /**

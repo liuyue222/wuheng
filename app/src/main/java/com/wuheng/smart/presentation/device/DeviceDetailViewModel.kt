@@ -3,6 +3,7 @@ package com.wuheng.smart.presentation.device
 import androidx.lifecycle.viewModelScope
 import com.wuheng.smart.data.model.DeviceData
 import com.wuheng.smart.data.model.DeviceInfo
+import com.wuheng.smart.data.model.DeviceStatus
 import com.wuheng.smart.data.network.ApiResult
 import com.wuheng.smart.data.repository.HomeRepository
 import com.wuheng.smart.presentation.base.BaseViewModel
@@ -50,10 +51,10 @@ class DeviceDetailViewModel @Inject constructor(
     val deviceDataState: StateFlow<UiDataState<DeviceData>> = _deviceDataState.asStateFlow()
 
     /**
-     * 设备历史数据状态（24小时趋势）
+     * 设备状态数据（当前实时数据，替代历史趋势）
      */
-    private val _historyDataState = createUiStateFlow<List<HistoryDataPoint>>()
-    val historyDataState: StateFlow<UiDataState<List<HistoryDataPoint>>> = _historyDataState.asStateFlow()
+    private val _historyDataState = createUiStateFlow<DeviceStatus>()
+    val historyDataState: StateFlow<UiDataState<DeviceStatus>> = _historyDataState.asStateFlow()
 
     /**
      * 操作状态（用于控制设备）
@@ -133,38 +134,74 @@ class DeviceDetailViewModel @Inject constructor(
     }
 
     /**
-     * 加载设备历史数据（24小时趋势）
+     * 加载设备历史数据
      *
      * @param deviceId 设备ID
      */
     fun loadHistoryData(deviceId: Int) {
         viewModelScope.launch {
             _historyDataState.value = UiDataState.Loading
-            Timber.d("Loading history data: $deviceId")
+            Timber.d("Loading device history data: $deviceId")
 
-            // 模拟历史数据加载
-            // TODO: 接入真实的历史数据API
-            kotlinx.coroutines.delay(800)
-
-            val mockHistoryData = generateMockHistoryData()
-            _historyDataState.value = UiDataState.Success(mockHistoryData)
-            Timber.d("Loaded ${mockHistoryData.size} history data points")
+            homeRepository.getDeviceHistoryData(deviceId).collectLatest { result ->
+                when (result) {
+                    is ApiResult.Loading -> {
+                        _historyDataState.value = UiDataState.Loading
+                    }
+                    is ApiResult.Success -> {
+                        val historyList = result.data
+                        if (historyList.isNotEmpty()) {
+                            val latest = historyList.maxByOrNull { it.timestamp }
+                            if (latest != null) {
+                                val status = DeviceStatus(
+                                    deviceId = deviceId,
+                                    onlineStatus = 1,
+                                    runStatus = "running",
+                                    power = 1,
+                                    temperature = latest.temperature,
+                                    humidity = latest.humidity,
+                                    co2 = latest.co2,
+                                    pm25 = latest.pm25,
+                                    voc = 150,
+                                    fanSpeed = null,
+                                    valveOpen = null,
+                                    reportTime = latest.timestamp
+                                )
+                                _historyDataState.value = UiDataState.Success(status)
+                            } else {
+                                _historyDataState.value = UiDataState.Success(
+                                    DeviceStatus(deviceId = deviceId, onlineStatus = 0, runStatus = "unknown", power = 0)
+                                )
+                            }
+                        } else {
+                            loadDeviceStatusFallback(deviceId)
+                        }
+                        Timber.d("Loaded device history data: ${historyList.size} records")
+                    }
+                    is ApiResult.Error -> {
+                        Timber.e(result.exception, "Failed to load device history, falling back to status")
+                        loadDeviceStatusFallback(deviceId)
+                    }
+                }
+            }
         }
     }
 
-    /**
-     * 生成模拟历史数据
-     */
-    private fun generateMockHistoryData(): List<HistoryDataPoint> {
-        val currentTime = System.currentTimeMillis()
-        return List(24) { index ->
-            val timestamp = currentTime - (23 - index) * 3600000
-            HistoryDataPoint(
-                timestamp = timestamp,
-                temperature = 22f + kotlin.random.Random.nextFloat() * 4,
-                humidity = 50f + kotlin.random.Random.nextFloat() * 20,
-                co2 = 400 + kotlin.random.Random.nextInt(400)
-            )
+    private fun loadDeviceStatusFallback(deviceId: Int) {
+        viewModelScope.launch {
+            homeRepository.getDeviceStatus(deviceId).collectLatest { result ->
+                when (result) {
+                    is ApiResult.Loading -> {
+                        _historyDataState.value = UiDataState.Loading
+                    }
+                    is ApiResult.Success -> {
+                        _historyDataState.value = UiDataState.Success(result.data)
+                    }
+                    is ApiResult.Error -> {
+                        _historyDataState.value = UiDataState.Error(result.exception)
+                    }
+                }
+            }
         }
     }
 
@@ -249,17 +286,25 @@ class DeviceDetailViewModel @Inject constructor(
             _operationState.value = UiDataState.Loading
             Timber.d("Renaming device: $deviceId to $newName")
 
-            // TODO: 接入真实的重命名API
-            kotlinx.coroutines.delay(500)
-
-            // 更新本地设备信息
-            val currentInfo = (_deviceInfoState.value as? UiDataState.Success<DeviceInfo>)?.data
-            if (currentInfo != null) {
-                _deviceInfoState.value = UiDataState.Success(currentInfo.copy(deviceName = newName))
+            homeRepository.renameDevice(deviceId, newName).collectLatest { result ->
+                when (result) {
+                    is ApiResult.Loading -> {
+                        _operationState.value = UiDataState.Loading
+                    }
+                    is ApiResult.Success -> {
+                        val currentInfo = (_deviceInfoState.value as? UiDataState.Success<DeviceInfo>)?.data
+                        if (currentInfo != null) {
+                            _deviceInfoState.value = UiDataState.Success(currentInfo.copy(deviceName = newName))
+                        }
+                        _operationState.value = UiDataState.Success(Unit)
+                        Timber.d("Device renamed successfully")
+                    }
+                    is ApiResult.Error -> {
+                        Timber.e(result.exception, "Rename device failed")
+                        _operationState.value = UiDataState.Error(result.exception)
+                    }
+                }
             }
-
-            _operationState.value = UiDataState.Success(Unit)
-            Timber.d("Device renamed successfully")
         }
     }
 
@@ -273,14 +318,23 @@ class DeviceDetailViewModel @Inject constructor(
             _operationState.value = UiDataState.Loading
             Timber.d("Resetting device: $deviceId")
 
-            // TODO: 接入真实的恢复出厂API
-            kotlinx.coroutines.delay(1000)
-
-            _operationState.value = UiDataState.Success(Unit)
-            Timber.d("Device reset successfully")
-
-            // 刷新设备数据
-            refreshDeviceData(deviceId)
+            homeRepository.controlDevice(deviceId, "reset", null).collectLatest { result ->
+                when (result) {
+                    is ApiResult.Loading -> {
+                        _operationState.value = UiDataState.Loading
+                    }
+                    is ApiResult.Success -> {
+                        _operationState.value = UiDataState.Success(Unit)
+                        Timber.d("Device reset successfully")
+                        // 刷新设备数据
+                        refreshDeviceData(deviceId)
+                    }
+                    is ApiResult.Error -> {
+                        Timber.e(result.exception, "Device reset failed")
+                        _operationState.value = UiDataState.Error(result.exception)
+                    }
+                }
+            }
         }
     }
 
@@ -294,11 +348,21 @@ class DeviceDetailViewModel @Inject constructor(
             _operationState.value = UiDataState.Loading
             Timber.d("Deleting device: $deviceId")
 
-            // TODO: 接入真实的删除设备API
-            kotlinx.coroutines.delay(800)
-
-            _operationState.value = UiDataState.Success(Unit)
-            Timber.d("Device deleted successfully")
+            homeRepository.deleteDevice(deviceId).collectLatest { result ->
+                when (result) {
+                    is ApiResult.Loading -> {
+                        _operationState.value = UiDataState.Loading
+                    }
+                    is ApiResult.Success -> {
+                        _operationState.value = UiDataState.Success(Unit)
+                        Timber.d("Device deleted successfully")
+                    }
+                    is ApiResult.Error -> {
+                        Timber.e(result.exception, "Delete device failed")
+                        _operationState.value = UiDataState.Error(result.exception)
+                    }
+                }
+            }
         }
     }
 

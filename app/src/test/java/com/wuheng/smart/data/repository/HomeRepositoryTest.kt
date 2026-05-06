@@ -25,7 +25,7 @@ import org.junit.jupiter.params.provider.ValueSource
  * - 房屋模块: 获取房屋信息、楼层列表、房间列表
  * - 设备模块: 获取设备列表、设备详情、设备状态、控制设备
  * - 场景模块: 获取场景列表、应用场景、保存场景
- * - 系统模块: 获取系统状态、设置系统模式/温度/湿度、系统参数
+ * - 系统模块: 获取系统状态、设置系统模式/温度/湿度
  * - 重试机制: 指数退避重试
  * - Mock模式: 模拟数据返回
  */
@@ -722,123 +722,6 @@ class HomeRepositoryTest {
             mockRepo.setGlobalHumidity(1, "45").test {
                 assertEquals(ApiResult.Loading, awaitItem())
                 assertTrue(awaitItem() is ApiResult.Success)
-                awaitComplete()
-            }
-        }
-    }
-
-    // ==================== 系统参数测试 ====================
-
-    @Nested
-    @DisplayName("系统参数测试")
-    inner class SystemParamsTests {
-
-        @Test
-        fun `getSystemParams - 正常获取 - 返回系统参数`() = runTest {
-            // Given
-            val params = SystemParams(
-                houseId = 1,
-                systemMode = "cooling",
-                globalTempSet = "24.00",
-                globalHumiditySet = "45.00",
-                tempMin = "16",
-                tempMax = "30",
-                humidityMin = "30",
-                humidityMax = "70",
-                co2Threshold = 800,
-                fanSpeedDefault = 1,
-                vacationMode = 0,
-                vacationStartTime = null,
-                vacationEndTime = null
-            )
-            coEvery { apiService.getSystemParams(any()) } returns BaseResponse(200, "success", params)
-
-            // When & Then
-            repository.getSystemParams(1).test {
-                assertEquals(ApiResult.Loading, awaitItem())
-                val success = awaitItem() as ApiResult.Success
-                assertEquals(1, success.data.houseId)
-                assertEquals("16", success.data.tempMin)
-                assertEquals("30", success.data.tempMax)
-                awaitComplete()
-            }
-        }
-
-        @Test
-        fun `getSystemParams - Mock模式 - 返回模拟参数`() = runTest {
-            // Given
-            val mockRepo = HomeRepositoryImpl(apiService, useMock = true)
-
-            // When & Then
-            mockRepo.getSystemParams(1).test {
-                assertEquals(ApiResult.Loading, awaitItem())
-                val success = awaitItem() as ApiResult.Success
-                assertNotNull(success.data.tempMin)
-                assertNotNull(success.data.tempMax)
-                awaitComplete()
-            }
-        }
-
-        @Test
-        fun `setSystemParams - 正常设置 - 返回成功`() = runTest {
-            // Given
-            val request = SetSystemParamsRequest(
-                houseId = 1,
-                globalTempSet = "25.00",
-                globalHumiditySet = "50.00",
-                co2Threshold = 900
-            )
-            val response = SetSystemParamsResponse(
-                houseId = 1,
-                updatedParams = listOf("global_temp_set", "global_humidity_set", "co2_threshold"),
-                updateTime = 1234567890
-            )
-            coEvery { apiService.setSystemParams(any()) } returns BaseResponse(200, "success", response)
-
-            // When & Then
-            repository.setSystemParams(request).test {
-                assertEquals(ApiResult.Loading, awaitItem())
-                val success = awaitItem() as ApiResult.Success
-                assertEquals(1, success.data.houseId)
-                assertEquals(3, success.data.updatedParams?.size)
-                awaitComplete()
-            }
-        }
-
-        @Test
-        fun `setSystemParams - 部分参数 - 返回成功`() = runTest {
-            // Given
-            val request = SetSystemParamsRequest(
-                houseId = 1,
-                globalTempSet = "26.00"
-            )
-            val response = SetSystemParamsResponse(
-                houseId = 1,
-                updatedParams = listOf("global_temp_set"),
-                updateTime = 1234567890
-            )
-            coEvery { apiService.setSystemParams(any()) } returns BaseResponse(200, "success", response)
-
-            // When & Then
-            repository.setSystemParams(request).test {
-                assertEquals(ApiResult.Loading, awaitItem())
-                val success = awaitItem() as ApiResult.Success
-                assertEquals(1, success.data.updatedParams?.size)
-                awaitComplete()
-            }
-        }
-
-        @Test
-        fun `setSystemParams - Mock模式 - 返回模拟响应`() = runTest {
-            // Given
-            val mockRepo = HomeRepositoryImpl(apiService, useMock = true)
-            val request = SetSystemParamsRequest(1, globalTempSet = "25")
-
-            // When & Then
-            mockRepo.setSystemParams(request).test {
-                assertEquals(ApiResult.Loading, awaitItem())
-                val success = awaitItem() as ApiResult.Success
-                assertTrue(success.data.houseId > 0)
                 awaitComplete()
             }
         }

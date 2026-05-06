@@ -19,14 +19,17 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.wuheng.smart.data.location.LocationManager
-import com.wuheng.smart.data.location.WeatherManager
 import com.wuheng.smart.data.model.SceneType
 import com.wuheng.smart.presentation.components.ErrorRetryView
 import com.wuheng.smart.presentation.components.LoadingIndicator
 import com.wuheng.smart.presentation.components.ResponsiveContainer
 import com.wuheng.smart.presentation.theme.WuHengTheme
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 /**
  * 首页 Screen - 处理ViewModel和状态管理
@@ -40,7 +43,6 @@ fun HomeScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val locationManager = remember { LocationManager(context) }
-    val weatherManager = remember { WeatherManager() }
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val sceneListState by viewModel.sceneListState.collectAsStateWithLifecycle()
@@ -50,14 +52,6 @@ fun HomeScreen(
     var showModeConfirmDialog by remember { mutableStateOf<ClimateMode?>(null) }
     var showPermissionDeniedDialog by remember { mutableStateOf(false) }
     var showHouseSelectorDialog by remember { mutableStateOf(false) }
-
-    // 模拟房产列表（实际应从API获取）
-    val houseList = remember {
-        listOf(
-            MyHouseInfo("5", "未来科技城公寓", "浙江省杭州市余杭区"),
-            MyHouseInfo("6", "西湖一号院", "浙江省杭州市西湖区")
-        )
-    }
 
     // 检查是否有度假模式场景
     val hasVacationScene = (sceneListState as? com.wuheng.smart.presentation.base.UiDataState.Success)?.data?.any {
@@ -73,7 +67,7 @@ fun HomeScreen(
                     permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true -> {
                 // 权限已获取，开始定位
                 scope.launch {
-                    updateLocationAndWeather(context, locationManager, weatherManager, viewModel)
+                    updateLocationAndWeather(context, locationManager, viewModel)
                 }
             }
             else -> {
@@ -89,7 +83,7 @@ fun HomeScreen(
         when {
             locationManager.hasLocationPermission() -> {
                 // 已有权限，直接获取位置
-                updateLocationAndWeather(context, locationManager, weatherManager, viewModel)
+                updateLocationAndWeather(context, locationManager, viewModel)
             }
             else -> {
                 // 申请权限
@@ -126,7 +120,7 @@ fun HomeScreen(
             // 刷新时也更新位置
             scope.launch {
                 if (locationManager.hasLocationPermission()) {
-                    updateLocationAndWeather(context, locationManager, weatherManager, viewModel)
+                    updateLocationAndWeather(context, locationManager, viewModel)
                 }
             }
         }
@@ -150,7 +144,17 @@ fun HomeScreen(
         VacationModeBottomSheet(
             onDismiss = { showVacationDialog = false },
             onConfirm = { returnDateTime ->
-                // TODO: 调用API设置度假模式
+                // 将日期字符串转换为时间戳（秒），调用API设置度假模式
+                try {
+                    val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+                    val date = sdf.parse(returnDateTime)
+                    if (date != null) {
+                        val returnTimestamp = date.time / 1000 // 转为秒
+                        viewModel.setVacationMode(returnTimestamp)
+                    }
+                } catch (e: Exception) {
+                    Timber.e(e, "解析返程时间失败: $returnDateTime")
+                }
                 showVacationDialog = false
             }
         )
@@ -184,13 +188,17 @@ fun HomeScreen(
         )
     }
 
-    // 房产选择对话框
+    // 房产选择对话框 - 使用真实数据
     if (showHouseSelectorDialog) {
+        val myHousesState by viewModel.myHousesState.collectAsStateWithLifecycle()
+        val houses = (myHousesState as? com.wuheng.smart.presentation.base.UiDataState.Success)?.data ?: emptyList()
+        val currentHouseId = viewModel.getCurrentHouseId()
+
         HouseSelectorDialog(
-            houses = houseList,
-            currentHouseId = "5", // TODO: 从TokenManager获取当前房屋ID
+            houses = houses,
+            currentHouseId = currentHouseId,
             onHouseSelected = { house ->
-                // TODO: 切换房屋
+                viewModel.switchHouse(house.houseId.toString())
                 showHouseSelectorDialog = false
             },
             onDismiss = { showHouseSelectorDialog = false }
@@ -257,38 +265,31 @@ private fun ModeSwitchConfirmDialog(
 private suspend fun updateLocationAndWeather(
     context: android.content.Context,
     locationManager: LocationManager,
-    weatherManager: WeatherManager,
     viewModel: HomeViewModel
 ) {
-    try {
-        // 先显示定位中
-        viewModel.updateLocation("定位中...")
+    withContext(NonCancellable) {
+        try {
+            viewModel.updateLocation("定位中...")
 
-        // 获取位置（现在总是返回有效地址，不会失败）
-        val (address, location) = locationManager.getFormattedLocation()
+            val (address, location) = locationManager.getFormattedLocation()
 
-        // 更新位置
-        viewModel.updateLocation(address)
+            viewModel.updateLocation(address)
 
-        // 强制模拟雨天
-        viewModel.updateWeather(
-            temperature = 22,
-            weather = "雨",
-            aqi = 45,
-            pm25 = 18,
-            humidity = 85
-        )
-    } catch (e: Exception) {
-        // 异常时使用默认地址（理论上不会走到这里，因为LocationManager已处理）
-        Timber.e(e, "更新位置和天气异常")
-        viewModel.updateLocation("杭州市 · 余杭区")
-        viewModel.updateWeather(
-            temperature = 22,
-            weather = "雨",
-            aqi = 45,
-            pm25 = 18,
-            humidity = 85
-        )
+            viewModel.fetchWeatherByCoordinates(
+                lat = location.latitude.toString(),
+                lng = location.longitude.toString()
+            )
+        } catch (e: Exception) {
+            Timber.e(e, "更新位置和天气异常")
+            viewModel.updateLocation("杭州市 · 余杭区")
+            viewModel.updateWeather(
+                temperature = 22,
+                weather = "雨",
+                aqi = 45,
+                pm25 = 18,
+                humidity = 85
+            )
+        }
     }
 }
 

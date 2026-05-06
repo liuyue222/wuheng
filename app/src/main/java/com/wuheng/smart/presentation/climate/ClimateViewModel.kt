@@ -369,13 +369,72 @@ class ClimateViewModel @Inject constructor(
      */
     fun onFloorToggle(floorId: String, enabled: Boolean) {
         Timber.d("ClimateViewModel onFloorToggle: floorId=$floorId, enabled=$enabled")
-        // 更新UI状态
         val updatedFloors = _uiState.value.floors.map {
             if (it.id == floorId) it.copy(isEnabled = enabled) else it
         }
         _uiState.value = _uiState.value.copy(floors = updatedFloors)
         Timber.d("ClimateViewModel onFloorToggle: updated ${updatedFloors.size} floors")
+    }
 
-        // TODO: 调用API设置区域电源（需要新版API支持）
+    /**
+     * 选中楼层并加载该楼层的房间列表（inline展示）
+     */
+    fun onFloorSelected(floorId: String) {
+        Timber.d("ClimateViewModel onFloorSelected: floorId=$floorId")
+        _uiState.value = _uiState.value.copy(
+            selectedFloorId = floorId,
+            rooms = emptyList(),
+            roomsLoading = true
+        )
+        val houseId = tokenManager.getCurrentHouseId()
+        if (houseId.isEmpty()) {
+            Timber.w("ClimateViewModel onFloorSelected: houseId is empty")
+            _uiState.value = _uiState.value.copy(roomsLoading = false)
+            return
+        }
+        loadRoomsForFloor(houseId, floorId)
+    }
+
+    private fun loadRoomsForFloor(houseId: String, floorId: String) {
+        val floorIdInt = floorId.toIntOrNull() ?: return
+        viewModelScope.launch {
+            climateRepository.getRoomInfo(houseId.toInt(), floorIdInt).collectLatest { result ->
+                when (result) {
+                    is ApiResult.Loading -> {
+                        _uiState.value = _uiState.value.copy(roomsLoading = true)
+                    }
+                    is ApiResult.Success -> {
+                        val roomList = result.data ?: emptyList()
+                        val roomItems = roomList.map { room ->
+                            RoomUiItem(
+                                id = room.roomId.toString(),
+                                name = room.roomName,
+                                floorId = floorId,
+                                roomType = room.roomType,
+                                area = room.area,
+                                deviceCount = room.deviceCount,
+                                currentTemp = 0f,
+                                targetTemp = 24f,
+                                humidity = 0f,
+                                isRunning = false,
+                                isOnline = true
+                            )
+                        }
+                        _uiState.value = _uiState.value.copy(
+                            rooms = roomItems,
+                            roomsLoading = false
+                        )
+                        Timber.d("ClimateViewModel loadRoomsForFloor: loaded ${roomItems.size} rooms")
+                    }
+                    is ApiResult.Error -> {
+                        Timber.e("ClimateViewModel loadRoomsForFloor error: ${result.exception.message}")
+                        _uiState.value = _uiState.value.copy(
+                            rooms = emptyList(),
+                            roomsLoading = false
+                        )
+                    }
+                }
+            }
+        }
     }
 }

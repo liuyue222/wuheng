@@ -151,9 +151,7 @@ fun NavGraph(
             val viewModel: ClimateViewModel = hiltViewModel()
             ClimateScreen(
                 viewModel = viewModel,
-                onNavigateToFloorDetail = { floorId ->
-                    navController.navigate(NavigationRoutes.floorZone(floorId.toIntOrNull()))
-                }
+                onNavigateToFloorDetail = {}
             )
         }
 

@@ -26,10 +26,10 @@ import javax.inject.Inject
  * 3. 协调Repository层数据获取与UI状态更新
  *
  * 使用新版API（水系统模块4个接口）：
- * - getHotWaterStatus(houseId)      -> GET /home/water/getHotWaterStatus
+ * - getHotWaterStatus(houseId)      -> GET /home/water/getHeaterStatus
  * - setCirculationMode(houseId, mode, duration) -> POST /home/water/setCirculationMode
- * - getWaterPurifierStatus(houseId) -> GET /home/water/getWaterPurifierStatus
  * - getFilterStatus(houseId)        -> GET /home/water/getFilterStatus
+ * - bookFilterReplace(...)           -> POST /home/water/bookFilterReplace
  *
  * UI组件映射：
  * - HotWaterCirculationCard: cycleModeState, currentTemp, temporaryDuration
@@ -54,12 +54,6 @@ class WaterViewModel @Inject constructor(
      */
     private val _hotWaterStatusState = createUiStateFlow<HotWaterStatusResponse>()
     val hotWaterStatusState: StateFlow<UiDataState<HotWaterStatusResponse>> = _hotWaterStatusState.asStateFlow()
-
-    /**
-     * 净水状态（新版API: getWaterPurifierStatus）
-     */
-    private val _waterPurifierStatusState = createUiStateFlow<WaterPurifierStatusResponse>()
-    val waterPurifierStatusState: StateFlow<UiDataState<WaterPurifierStatusResponse>> = _waterPurifierStatusState.asStateFlow()
 
     /**
      * 当前选中的循环模式
@@ -113,7 +107,6 @@ class WaterViewModel @Inject constructor(
         val houseId = tokenManager.getCurrentHouseId()
         if (houseId.isNotEmpty()) {
             loadHotWaterStatus(houseId)
-            loadWaterPurifierStatus(houseId)
             loadFilterStatus(houseId)
         } else {
             Timber.w("No house ID available, skipping water data load")
@@ -125,10 +118,12 @@ class WaterViewModel @Inject constructor(
     /**
      * 1. 加载热水循环状态（新版API: getHotWaterStatus）
      */
-    fun loadHotWaterStatus(houseId: String) {
+    fun loadHotWaterStatus(houseId: String, isRefresh: Boolean = false) {
         viewModelScope.launch {
             _hotWaterStatusState.value = UiDataState.Loading
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            if (!isRefresh) {
+                _uiState.value = _uiState.value.copy(isLoading = true)
+            }
 
             try {
                 val houseIdInt = houseId.toIntOrNull()
@@ -143,13 +138,19 @@ class WaterViewModel @Inject constructor(
                     when (result) {
                         is ApiResult.Loading -> {
                             _hotWaterStatusState.value = UiDataState.Loading
-                            _uiState.value = _uiState.value.copy(isLoading = true)
+                            if (!isRefresh) {
+                                _uiState.value = _uiState.value.copy(isLoading = true)
+                            }
                         }
                         is ApiResult.Success -> {
                             _hotWaterStatusState.value = UiDataState.Success(result.data)
-                            // 同步更新UI状态
                             _currentTempState.value = result.data.currentTemp.toFloatOrNull() ?: 55f
-                            // 更新统一UI State
+
+                            val scheduleText = formatSterilizationSchedule(
+                                result.data.sterilizationDay,
+                                result.data.sterilizationTime
+                            )
+
                             _uiState.value = _uiState.value.copy(
                                 isLoading = false,
                                 errorMessage = null,
@@ -160,7 +161,8 @@ class WaterViewModel @Inject constructor(
                                     "off" -> HotWaterMode.OFF
                                     else -> HotWaterMode.OFF
                                 },
-                                currentTemp = result.data.currentTemp.toFloatOrNull()?.toInt() ?: 55
+                                currentTemp = result.data.currentTemp.toFloatOrNull()?.toInt() ?: 55,
+                                sterilizationSchedule = scheduleText
                             )
                         }
                         is ApiResult.Error -> {
@@ -181,53 +183,28 @@ class WaterViewModel @Inject constructor(
         }
     }
 
-    /**
-     * 2. 加载净水状态（新版API: getWaterPurifierStatus）
-     */
-    fun loadWaterPurifierStatus(houseId: String) {
-        viewModelScope.launch {
-            _waterPurifierStatusState.value = UiDataState.Loading
-
-            try {
-                val houseIdInt = houseId.toIntOrNull()
-                if (houseIdInt == null) {
-                    _waterPurifierStatusState.value = UiDataState.Error(
-                        com.wuheng.smart.data.network.AppException.BusinessError(-1, "无效的房屋ID")
-                    )
-                    return@launch
-                }
-
-                waterRepository.getWaterPurifierStatus(houseIdInt).collectLatest { result ->
-                    when (result) {
-                        is ApiResult.Loading -> {
-                            _waterPurifierStatusState.value = UiDataState.Loading
-                        }
-                        is ApiResult.Success -> {
-                            _waterPurifierStatusState.value = UiDataState.Success(result.data)
-                            Timber.d("Water purifier status loaded: TDS in=${result.data.tdsIn}, out=${result.data.tdsOut}")
-                        }
-                        is ApiResult.Error -> {
-                            _waterPurifierStatusState.value = UiDataState.Error(result.exception)
-                            Timber.e("Failed to load water purifier status: ${result.exception.message}")
-                        }
-                    }
-                }
-            } catch (e: Exception) {
-                Timber.e(e, "Error loading water purifier status")
-                _waterPurifierStatusState.value = UiDataState.Error(
-                    com.wuheng.smart.data.network.AppException.UnknownError(e.message ?: "加载失败")
-                )
-            }
-        }
+    private fun formatSterilizationSchedule(dayStr: String, timeStr: String): String {
+        if (dayStr.isBlank()) return ""
+        val dayNames = mapOf(
+            "1" to "一", "2" to "二", "3" to "三", "4" to "四",
+            "5" to "五", "6" to "六", "7" to "日"
+        )
+        val days = dayStr.split(",").mapNotNull { dayNames[it.trim()] }
+        if (days.isEmpty()) return ""
+        val dayPart = days.joinToString("、")
+        val timePart = if (timeStr.length >= 5) timeStr.substring(0, 5) else timeStr
+        return "每周$dayPart $timePart"
     }
 
     /**
-     * 3. 加载滤芯状态（新版API: getFilterStatus）
+     * 2. 加载滤芯状态（新版API: getFilterStatus）
      */
-    fun loadFilterStatus(houseId: String) {
+    fun loadFilterStatus(houseId: String, isRefresh: Boolean = false) {
         viewModelScope.launch {
             _filterStatusState.value = UiDataState.Loading
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            if (!isRefresh) {
+                _uiState.value = _uiState.value.copy(isLoading = true)
+            }
 
             try {
                 val houseIdInt = houseId.toIntOrNull()
@@ -242,13 +219,15 @@ class WaterViewModel @Inject constructor(
                     when (result) {
                         is ApiResult.Loading -> {
                             _filterStatusState.value = UiDataState.Loading
-                            _uiState.value = _uiState.value.copy(isLoading = true)
+                            if (!isRefresh) {
+                                _uiState.value = _uiState.value.copy(isLoading = true)
+                            }
                         }
                         is ApiResult.Success -> {
                             _filterStatusState.value = UiDataState.Success(result.data)
-                            // 更新统一UI State - 将FilterStatusInfo映射为FilterItem
                             val filterItems = result.data.map { filterStatus ->
                                 FilterItem(
+                                    filterId = filterStatus.filterId.toString(),
                                     name = filterStatus.filterName,
                                     progress = filterStatus.lifePercent / 100f,
                                     status = when {
@@ -334,8 +313,7 @@ class WaterViewModel @Inject constructor(
                         }
                         is ApiResult.Success -> {
                             _operationState.value = UiDataState.Success(Unit)
-                            // 成功后刷新热水状态，但不改变isLoading状态
-                            loadHotWaterStatus(houseId)
+                            loadHotWaterStatus(houseId, isRefresh = true)
                         }
                         is ApiResult.Error -> {
                             _operationState.value = UiDataState.Error(result.exception)
@@ -418,8 +396,7 @@ class WaterViewModel @Inject constructor(
                                     isLoading = false,
                                     errorMessage = null
                                 )
-                                // 刷新滤芯状态
-                                loadFilterStatus(houseId)
+                                loadFilterStatus(houseId, isRefresh = true)
                             }
                             is ApiResult.Error -> {
                                 _operationState.value = UiDataState.Error(result.exception)
@@ -448,7 +425,6 @@ class WaterViewModel @Inject constructor(
         val houseId = tokenManager.getCurrentHouseId()
         if (houseId.isNotEmpty()) {
             loadHotWaterStatus(houseId)
-            loadWaterPurifierStatus(houseId)
             loadFilterStatus(houseId)
         }
     }
@@ -484,19 +460,56 @@ class WaterViewModel @Inject constructor(
      * 更新热力杀菌预约时间
      */
     fun updateSterilizationSchedule(dayOfWeek: Int, hour: Int, minute: Int) {
+        val houseIdStr = tokenManager.getCurrentHouseId()
+        if (houseIdStr.isEmpty()) {
+            _sterilizationState.value = UiDataState.Error(
+                com.wuheng.smart.data.network.AppException.BusinessError(-1, "未选择房屋")
+            )
+            return
+        }
+        val houseIdInt = houseIdStr.toIntOrNull() ?: return
+
         viewModelScope.launch {
             _sterilizationState.value = UiDataState.Loading
 
-            // TODO: 调用API更新热力杀菌时间
-            // 模拟网络请求
-            kotlinx.coroutines.delay(1000)
+            val dayOfWeekStr = dayOfWeek.toString()
+            val timeStr = String.format("%02d:%02d:00", hour, minute)
 
-            // 更新UI状态
-            val daysOfWeek = listOf("周一", "周二", "周三", "周四", "周五", "周六", "周日")
-            val scheduleText = "每周${daysOfWeek[dayOfWeek - 1]} ${String.format("%02d:%02d", hour, minute)}"
-            _uiState.value = _uiState.value.copy(sterilizationSchedule = scheduleText)
+            waterRepository.setSterilization(
+                houseId = houseIdInt,
+                enable = 1,
+                dayOfWeek = dayOfWeekStr,
+                time = timeStr,
+                temp = null
+            ).collectLatest { result ->
+                when (result) {
+                    is ApiResult.Loading -> {
+                        _sterilizationState.value = UiDataState.Loading
+                    }
+                    is ApiResult.Success -> {
+                        val daysOfWeek = listOf("周一", "周二", "周三", "周四", "周五", "周六", "周日")
+                        val scheduleText = "每周${daysOfWeek[dayOfWeek - 1]} ${String.format("%02d:%02d", hour, minute)}"
+                        _uiState.value = _uiState.value.copy(sterilizationSchedule = scheduleText)
 
-            _sterilizationState.value = UiDataState.Success(Unit)
+                        val currentStatus = _hotWaterStatusState.value
+                        if (currentStatus is UiDataState.Success) {
+                            val updated = currentStatus.data.copy(
+                                sterilizationDay = dayOfWeekStr,
+                                sterilizationTime = timeStr,
+                                sterilizationEnable = 1
+                            )
+                            _hotWaterStatusState.value = UiDataState.Success(updated)
+                        }
+
+                        _sterilizationState.value = UiDataState.Success(Unit)
+                        Timber.d("Sterilization schedule set: dayOfWeek=$dayOfWeekStr, time=$timeStr")
+                    }
+                    is ApiResult.Error -> {
+                        _sterilizationState.value = UiDataState.Error(result.exception)
+                        Timber.e(result.exception, "Failed to set sterilization schedule")
+                    }
+                }
+            }
         }
     }
 
@@ -570,8 +583,7 @@ class WaterViewModel @Inject constructor(
                         }
                         is ApiResult.Success -> {
                             _filterReplaceState.value = UiDataState.Success(Unit)
-                            // 刷新滤芯状态
-                            loadFilterStatus(houseId)
+                            loadFilterStatus(houseId, isRefresh = true)
                         }
                         is ApiResult.Error -> {
                             _filterReplaceState.value = UiDataState.Error(result.exception)
